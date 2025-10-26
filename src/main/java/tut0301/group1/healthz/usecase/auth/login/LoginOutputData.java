@@ -13,7 +13,6 @@ public class LoginOutputData {
         this.displayName = displayName;
     }
 
-    // Getters
     public String getAccessToken() {
         return accessToken;
     }
@@ -28,11 +27,5 @@ public class LoginOutputData {
 
     public String getDisplayName() {
         return displayName;
-    }
-
-    // Hide secrets when printed or logged
-    @Override
-    public String toString() {
-        return "LoginOutputData[userId=" + userId + ", displayName=" + displayName + "]";
     }
 }

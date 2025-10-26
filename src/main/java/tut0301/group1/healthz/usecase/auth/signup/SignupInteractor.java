@@ -13,11 +13,20 @@ public class SignupInteractor implements SignupInputBoundary {
 
     @Override
     public void execute(SignupInputData input) {
+        // 1. Validate passwords match
+        if (!input.passwordsMatch()) {
+            presenter.prepareFailView("Passwords do not match.");
+            return;
+        }
+
+        // 2. Call the gateway to perform the signup
         try {
-            auth.signUpEmail(input.email(), input.password());
-            presenter.prepareSuccessView(); // user may need to confirm email
+            auth.signUpEmail(input.getEmail(), input.getPassword1());
+            // 3. On success, notify the presenter
+            presenter.prepareSuccessView();
         } catch (Exception e) {
-            presenter.prepareFailView(e.getMessage());
+            // 4. On failure, show the error message
+            presenter.prepareFailView("Sign-up failed: " + e.getMessage());
         }
     }
 }

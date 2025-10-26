@@ -1,19 +1,51 @@
 package tut0301.group1.healthz.interfaceadapter.auth.login;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
 public class LoginViewModel {
-    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    private String loggedInUserId;
-    private String error;
+    private String message;  // This holds the message (success or error)
+    private String accessToken;
+    private String refreshToken;
+    private String userId;
+    private String displayName;
 
-    public void addPropertyChangeListener(PropertyChangeListener l) { pcs.addPropertyChangeListener(l); }
-    public void firePropertyChanged() { pcs.firePropertyChange("state", null, this); }
+    // Getter and Setter for message
+    public String getMessage() {
+        return message;
+    }
 
-    public void setLoggedInUserId(String id) { this.loggedInUserId = id; }
-    public String getLoggedInUserId() { return loggedInUserId; }
+    public void setMessage(String message) {
+        this.message = message;  // Set the message (success or error)
+    }
 
-    public void setError(String e) { this.error = e; }
-    public String getError() { return error; }
+    // Getters and Setters for other fields
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 }

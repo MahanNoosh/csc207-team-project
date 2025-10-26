@@ -19,25 +19,34 @@ public class LoginInteractor implements LoginInputBoundary {
             String password = input.getPassword();
 
             // Call signInEmail method from AuthGateway
-            auth.signInEmail(email, password);
+            auth.signInEmail(email, password);  // Assuming synchronous for this example
 
-            // Get user info from AuthGateway
+            // Ensure we have the required data after login attempt
+            String accessToken = auth.getAccessToken();
+            String refreshToken = auth.getRefreshToken();
             String userId = auth.getCurrentUserId();
-            String display = auth.getCurrentUserEmail(); // default “display name”
+            String displayName = auth.getCurrentUserEmail(); // Assuming this is the default display name
 
+            // Check if the necessary data is available
+            if (accessToken == null || userId == null) {
+                // Login failed due to missing data
+                presenter.prepareFailView("Login failed. Please retry.");
+                return;
+            }
+
+            // Construct LoginOutputData with all the necessary information
             LoginOutputData outputData = new LoginOutputData(
-                    auth.getAccessToken(),
-                    auth.getRefreshToken(),
+                    accessToken,
+                    refreshToken,
                     userId,
-                    display
+                    displayName
             );
 
-            // Use prepareSuccessView to present the success response
+            // Send the result to the presenter
             presenter.prepareSuccessView(outputData);
-
         } catch (Exception e) {
-            // Surface the error via a failure view — using prepareFailView
-            presenter.prepareFailView("ERROR: " + e.getMessage());
+            // If there's an error, send the error message to the presenter
+            presenter.prepareFailView(e.getMessage());
         }
     }
 }
