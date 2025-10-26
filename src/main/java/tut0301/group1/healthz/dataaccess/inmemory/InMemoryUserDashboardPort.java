@@ -1,6 +1,6 @@
 package tut0301.group1.healthz.dataaccess.inmemory;
 
-import tut0301.group1.healthz.usecase.dashport.UserDashboardPort;
+import tut0301.group1.healthz.usecase.dashboard.UserDashboardPort;
 
 import java.util.Map;
 import java.util.Optional;

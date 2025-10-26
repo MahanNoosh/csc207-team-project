@@ -2,7 +2,7 @@ package tut0301.group1.healthz.presenter;
 
 import tut0301.group1.healthz.usecase.scorefood.ScoreFoodOutputBoundary;
 import tut0301.group1.healthz.usecase.scorefood.model.ScoreFoodResponseModel;
-import tut0301.group1.healthz.viewmodel.ScoreFoodViewModel;
+import tut0301.group1.healthz.view.ScoreFoodViewModel;
 
 /**
  * Presenter: converts ResponseModel → ViewModel for the controller/UI.

@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.controllers;
+package tut0301.group1.healthz.interfaceadapter;
 
 import tut0301.group1.healthz.presenter.SearchRecipesPresenter;
 import tut0301.group1.healthz.usecase.recipes.SearchRecipesInputBoundary;

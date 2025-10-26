@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.usecase.dashport;
+package tut0301.group1.healthz.usecase.dashboard;
 
 import java.util.Optional;
 
