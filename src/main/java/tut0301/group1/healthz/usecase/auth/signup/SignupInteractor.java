@@ -1,5 +1,6 @@
 package tut0301.group1.healthz.usecase.auth.signup;
 
+import org.json.JSONObject;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 
 public class SignupInteractor implements SignupInputBoundary {
@@ -13,20 +14,34 @@ public class SignupInteractor implements SignupInputBoundary {
 
     @Override
     public void execute(SignupInputData input) {
-        // 1. Validate passwords match
-        if (!input.passwordsMatch()) {
-            presenter.prepareFailView("Passwords do not match.");
-            return;
-        }
-
-        // 2. Call the gateway to perform the signup
         try {
+            // 1. Validate passwords match
+            if (!input.passwordsMatch()) {
+                presenter.prepareFailView("Passwords do not match.");
+                return;
+            }
+
+            // 2. Perform signup via gateway
             auth.signUpEmail(input.getEmail(), input.getPassword1());
-            // 3. On success, notify the presenter
-            presenter.prepareSuccessView();
+
+            // 3. On success, return minimal output data
+            SignupOutputData output = new SignupOutputData(input.getEmail());
+            presenter.prepareSuccessView(output);
+
         } catch (Exception e) {
-            // 4. On failure, show the error message
-            presenter.prepareFailView("Sign-up failed: " + e.getMessage());
+            // 4. Extract a clean message if the error body is JSON (Supabase-style)
+            String message = e.getMessage();
+            try {
+                int brace = message.indexOf('{');
+                if (brace >= 0) {
+                    JSONObject err = new JSONObject(message.substring(brace));
+                    message = err.optString("msg", message);
+                }
+            } catch (Exception ignore) {
+                // not JSON, keep the original message
+            }
+
+            presenter.prepareFailView("Sign-up failed: " + message);
         }
     }
 }

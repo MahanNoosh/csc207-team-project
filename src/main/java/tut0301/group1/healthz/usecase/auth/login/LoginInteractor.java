@@ -14,12 +14,8 @@ public class LoginInteractor implements LoginInputBoundary {
     @Override
     public void execute(LoginInputData input) {
         try {
-            // Get email and password from input data
-            String email = input.getEmail();
-            String password = input.getPassword();
-
             // Call signInEmail method from AuthGateway
-            auth.signInEmail(email, password);  // Assuming synchronous for this example
+            auth.signInEmail(input.getEmail(), input.getPassword());  // Assuming synchronous for this example
 
             // Ensure we have the required data after login attempt
             String accessToken = auth.getAccessToken();

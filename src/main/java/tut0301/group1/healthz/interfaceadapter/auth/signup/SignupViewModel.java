@@ -3,7 +3,6 @@ package tut0301.group1.healthz.interfaceadapter.auth.signup;
 public class SignupViewModel {
     private String message;
 
-    // Getter and Setter for message
     public String getMessage() {
         return message;
     }

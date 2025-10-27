@@ -1,6 +1,6 @@
 package tut0301.group1.healthz.usecase.auth.signup;
 
 public interface SignupOutputBoundary {
-    void prepareSuccessView();
+    void prepareSuccessView(SignupOutputData output);
     void prepareFailView(String errorMessage);
 }

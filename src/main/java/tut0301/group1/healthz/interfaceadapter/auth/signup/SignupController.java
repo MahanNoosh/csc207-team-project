@@ -4,21 +4,20 @@ import tut0301.group1.healthz.usecase.auth.signup.SignupInputBoundary;
 import tut0301.group1.healthz.usecase.auth.signup.SignupInputData;
 
 public class SignupController {
+    private final SignupInputBoundary signupUseCase;
+    private final SignupPresenter presenter;
 
-    private final SignupInputBoundary signupInputBoundary;
-
-    public SignupController(SignupInputBoundary signupInputBoundary) {
-        this.signupInputBoundary = signupInputBoundary;
+    public SignupController(SignupInputBoundary signupUseCase, SignupPresenter presenter) {
+        this.signupUseCase = signupUseCase;
+        this.presenter = presenter;
     }
 
-    public void signup(String username, String password1, String password2) {
-        // Check if passwords match before passing to the use case
-        if (!password1.equals(password2)) {
-            System.out.println("Error: Passwords do not match.");
-            return;
-        }
+    public void signup(String email, String password1, String password2) {
+        SignupInputData inputData = new SignupInputData(email, password1, password2);
+        signupUseCase.execute(inputData);
+    }
 
-        SignupInputData inputData = new SignupInputData(username, password1, password2);
-        signupInputBoundary.execute(inputData);
+    public SignupViewModel getViewModel() {
+        return presenter.getViewModel();
     }
 }
