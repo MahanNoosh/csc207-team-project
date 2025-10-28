@@ -17,6 +17,11 @@ public class InMemoryUserDashboardPort implements UserDashboardPort {
         return Optional.ofNullable(store.get(userId));
     }
 
+    @Override
+    public void saveProfile(UserProfile userProfile) {
+        store.put(userProfile.userId(), userProfile);
+    }
+
     public void upsert(UserProfile profile) {
         store.put(profile.userId(), profile);
     }

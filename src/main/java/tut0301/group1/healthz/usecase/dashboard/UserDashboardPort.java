@@ -9,10 +9,18 @@ import java.util.Optional;
 public interface UserDashboardPort {
 
     Optional<UserProfile> getProfile(String userId);
+    void saveProfile(UserProfile userProfile);
 
     enum Sex { MALE, FEMALE, OTHER }
 
     enum Goal { GENERAL_HEALTH, WEIGHT_LOSS, ATHLETIC }
+    enum HealthCondition {
+        DIABETES,
+        HYPERTENSION,
+        HEART_DISEASE,
+        THYROID,
+        NONE
+    }
 
     /** Immutable snapshot of user state relevant to scoring. */
     record UserProfile(
@@ -22,6 +30,9 @@ public interface UserDashboardPort {
             Integer ageYears,
             Sex sex,
             Goal goal,
-            Double activityLevelMET // optional: e.g., 1.2 sedentary, 1.4 light, 1.6 moderate, 1.8+ high
+            Double activityLevelMET, // optional: e.g., 1.2 sedentary, 1.4 light, 1.6 moderate, 1.8+ high
+            Double targetWeightKg,
+            Optional<Double> dailyCalorieTarget,
+            HealthCondition healthCondition
     ) {}
 }
