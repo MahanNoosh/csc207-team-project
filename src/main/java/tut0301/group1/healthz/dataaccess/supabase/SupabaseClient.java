@@ -1,6 +1,10 @@
 package tut0301.group1.healthz.dataaccess.supabase;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import tut0301.group1.healthz.usecase.dashboard.Profile;
+import tut0301.group1.healthz.usecase.dashboard.UserDashboardPort;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -8,6 +12,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Tiny Supabase client using Java 11 HttpClient + org.json.
@@ -109,41 +114,6 @@ public class SupabaseClient {
         return refreshToken;
     }
 
-    // ---------- Choices ------------
-
-    public void upsertChoice(String userId, String key, String value) throws Exception {
-        var uri = URI.create(supaUrl + "/rest/v1/choices");
-        var body = new JSONObject();
-        body.put("user_id", userId);
-        body.put("key", key);
-        body.put("value", value);
-
-        var req = HttpRequest.newBuilder(uri)
-                .header("apikey", anonKey)
-                .header("Authorization", "Bearer " + accessToken)
-                .header("Content-Type", "application/json")
-                .method("POST", HttpRequest.BodyPublishers.ofString(body.toString()))
-                .build();
-
-        var res = send(req);
-        if (res.statusCode() >= 400) throw new RuntimeException("Upsert failed: " + res.body());
-    }
-
-    public String listChoices() throws Exception {
-        var userId = getUserId(); // Get userId from the authenticated user
-        var uri = URI.create(supaUrl + "/rest/v1/choices?user_id=eq." + userId);
-        var req = HttpRequest.newBuilder(uri)
-                .header("apikey", anonKey)
-                .header("Authorization", "Bearer " + accessToken)
-                .GET()
-                .build();
-
-        var res = send(req);
-        if (res.statusCode() >= 400) throw new RuntimeException("List failed: " + res.body());
-
-        return res.body(); // Returns the JSON response as a string
-    }
-
     // ---------- session refresh ----------
     public void refresh() throws Exception {
         if (refreshToken == null) throw new IllegalStateException("No refresh token");
@@ -179,5 +149,88 @@ public class SupabaseClient {
         return HttpRequest.newBuilder()
                 .uri(URI.create(supaUrl + "/rest/v1/" + endpoint))
                 .header("apikey", anonKey); // Common header for authorization
+    }
+
+    // ---------- User Data ------------
+    public Optional<Profile> loadCurrentUserProfile() throws Exception {
+        var userId = this.getUserId(); // ensures session
+        var uri = URI.create(supaUrl
+                + "/rest/v1/user_data?select=*&userId=eq." + userId + "&limit=1");
+        var req = HttpRequest.newBuilder(uri)
+                .header("apikey", anonKey)
+                .header("Authorization", "Bearer " + accessToken)
+                .GET().build();
+
+        HttpResponse<String> res = this.send(req);
+        if (res.statusCode() >= 400) throw new RuntimeException("Fetch user_data failed: " + res.body());
+
+        var arr = new JSONArray(res.body());
+        if (arr.isEmpty()) return Optional.empty();
+        return Optional.of(jsonToProfile(arr.getJSONObject(0)));
+    }
+
+    public Profile createBlankForCurrentUserIfMissing() throws Exception {
+        // Strategy: try to insert {}, which trigger completes with auth.uid().
+        // Use upsert that **won’t overwrite** existing data:
+        //   - If row exists, we send no updatable columns, so nothing changes.
+        var uri = URI.create(supaUrl + "/rest/v1/user_data?on_conflict=userId");
+        var req = HttpRequest.newBuilder(uri)
+                .header("apikey", anonKey)
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Content-Type", "application/json")
+                // merge-duplicates: UPSERT; since body has no other cols, it won't clobber existing fields
+                .header("Prefer", "resolution=merge-duplicates,return=representation")
+                .POST(HttpRequest.BodyPublishers.ofString(new JSONObject().toString(), StandardCharsets.UTF_8))
+                .build();
+
+        HttpResponse<String> res = this.send(req);
+        if (res.statusCode() >= 400) throw new RuntimeException("Init profile failed: " + res.body());
+
+        var arr = new JSONArray(res.body());
+        // PostgREST returns the representation; if existing row, body may be [] depending on settings.
+        // If empty, fall back to a select:
+        if (arr.isEmpty()) {
+            return loadCurrentUserProfile()
+                    .orElseThrow(() -> new IllegalStateException("Profile not returned after init"));
+        }
+        return jsonToProfile(arr.getJSONObject(0));
+    }
+
+    // ---- mapping helpers ----
+
+    private Profile jsonToProfile(JSONObject r) {
+        String userId = r.optString("userId", null);
+
+        Double weightKg = r.isNull("weightKg") ? null : r.getDouble("weightKg");
+        Double heightCm = r.isNull("heightCm") ? null : r.getDouble("heightCm");
+        Integer ageYears = r.isNull("ageYears") ? null : r.getInt("ageYears");
+
+        UserDashboardPort.Sex sex = r.isNull("sex") ? null :
+                parseEnumSafe(UserDashboardPort.Sex.class, r.getString("sex"));
+
+        UserDashboardPort.Goal goal = r.isNull("goal") ? null :
+                parseEnumSafe(UserDashboardPort.Goal.class, r.getString("goal"));
+
+        Double activityLevelMET = r.isNull("activityLevelMET") ? null : r.getDouble("activityLevelMET");
+        Double targetWeightKg   = r.isNull("targetWeightKg")   ? null : r.getDouble("targetWeightKg");
+
+        java.util.Optional<Double> dailyCalorieTarget =
+                r.isNull("dailyCalorieTarget") ? java.util.Optional.empty() :
+                        java.util.Optional.of(r.getDouble("dailyCalorieTarget"));
+
+        UserDashboardPort.HealthCondition hc = r.isNull("healthCondition") ? null :
+                parseEnumSafe(UserDashboardPort.HealthCondition.class, r.getString("healthCondition"));
+
+        return new Profile(
+                userId, weightKg, heightCm, ageYears, sex, goal,
+                activityLevelMET, targetWeightKg, dailyCalorieTarget, hc
+        );
+    }
+
+    private static <E extends Enum<E>> E parseEnumSafe(Class<E> clazz, String raw) {
+        if (raw == null) return null;
+        var norm = raw.trim().toUpperCase();
+        try { return Enum.valueOf(clazz, norm); }
+        catch (IllegalArgumentException ex) { return null; }
     }
 }
