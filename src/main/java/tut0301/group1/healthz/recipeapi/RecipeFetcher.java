@@ -26,15 +26,14 @@ public class RecipeFetcher implements Recipe {
             String responseBody = response.body().string();
             JSONObject recipeObject = new JSONObject(responseBody);
 
-            String status = recipeObject.getString("status");
-            if (!status.equals("success")) {
-                throw new Recipe.RecipeNotFoundException(recipe);
+            if (recipeObject.isNull("meals")) {
+                throw new RecipeNotFoundException(recipe);
             }
 
-            JSONArray recipeArray = recipeObject.getJSONArray("message");
-            String recipeName;
+            JSONArray meals = recipeObject.getJSONArray("meals");
+            JSONObject meal = meals.getJSONObject(0);
 
-            return recipeName;
+            return meal.getString("strMeal");
 
         } catch (IOException e) {
             throw new Recipe.RecipeNotFoundException(recipe);

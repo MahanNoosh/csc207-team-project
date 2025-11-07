@@ -1,4 +1,4 @@
-package recipeapi;
+package tut0301.group1.healthz.recipeapi;
 
 /**
  * Interface for getting a recipe name.

@@ -4,7 +4,7 @@ import tut0301.group1.healthz.presenter.SearchRecipesPresenter;
 import tut0301.group1.healthz.usecase.recipes.SearchRecipesInputBoundary;
 import tut0301.group1.healthz.usecase.recipes.model.SearchRecipesRequestModel;
 
-/** Controller for recipe-related operations. */
+/** Controller for tut0301.group1.healthz.entities.recipe-related operations. */
 public class RecipeController {
     private final SearchRecipesInputBoundary searchUC;
     private final SearchRecipesPresenter presenter;

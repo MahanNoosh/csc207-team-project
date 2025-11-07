@@ -5,7 +5,7 @@ import tut0301.group1.healthz.usecase.recipes.model.SearchRecipesResponseModel;
 import tut0301.group1.healthz.viewmodel.SearchRecipesViewModel;
 
 /**
- * Presenter: converts recipe list response to a simple view model.
+ * Presenter: converts tut0301.group1.healthz.entities.recipe list response to a simple view model.
  */
 public class SearchRecipesPresenter implements SearchRecipesOutputBoundary {
     private SearchRecipesViewModel vm;

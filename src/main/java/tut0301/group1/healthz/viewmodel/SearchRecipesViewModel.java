@@ -5,7 +5,7 @@ import tut0301.group1.healthz.usecase.recipes.model.SearchRecipesResponseModel;
 import java.util.List;
 
 /**
- * ViewModel for recipe search results.
+ * ViewModel for tut0301.group1.healthz.entities.recipe search results.
  */
 public record SearchRecipesViewModel(List<Item> items) {
     public static SearchRecipesViewModel from(SearchRecipesResponseModel r) {
