@@ -1,53 +1,53 @@
 package tut0301.group1.healthz.dataaccess.API;
 
-import okhttp3.*;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 import java.io.IOException;
 
+/**
+ * Uses FatSecret API to search foods by name.
+ */
 public class FatSecretFoodSearchGateway {
+
+    private static final String SEARCH_URL = "https://platform.fatsecret.com/rest/server.api";
     private final OkHttpClient client = new OkHttpClient();
 
     /**
-     * @param CLIENT_ID FatSecret 的 client_id
-     * @param CLIENT_SECRET FatSecret 的 client_secret
-     * @param query food name
-     * @return API return
-     * @throws IOException internet or API error
+     * Searches food information from FatSecret API.
+     *
+     * @param token     OAuth access token (Bearer)
+     * @param foodName  The name of the food to search for
+     * @return JSON response from API
+     * @throws IOException if network or API error occurs
      */
-    public String searchFoods(String CLIENT_ID, String CLIENT_SECRET, String query) throws IOException {
-        // 1️⃣  access token
-        FatSecretOAuthTokenFetcher fetcher = new FatSecretOAuthTokenFetcher();
-        String token = fetcher.FatSecretOAuthTokenFetcher(CLIENT_ID, CLIENT_SECRET);
-        System.out.println("Access Token: " + token);
-
-        // 2️⃣  API endpoint（ OAuth token）
-        String url = "https://platform.fatsecret.com/rest/server.api";
-
-        // 3️⃣  URL
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder()
+    public String searchFoodByName(String token, String foodName) throws IOException {
+        // ✅ Build query URL
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(SEARCH_URL).newBuilder()
                 .addQueryParameter("method", "foods.search")
-                .addQueryParameter("search_expression", query)
+                .addQueryParameter("search_expression", foodName)
                 .addQueryParameter("format", "json")
                 .addQueryParameter("max_results", "5");
 
+        // ✅ Create HTTP GET request
         Request request = new Request.Builder()
                 .url(urlBuilder.build())
                 .addHeader("Authorization", "Bearer " + token)
                 .get()
                 .build();
 
-        // 4️⃣ send back JSON
+        // ✅ Send request
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response: " + response.code());
+                throw new IOException("Unexpected response: " + response.code() + " - " + response.message());
             }
 
-            String responseBody = response.body() != null ? response.body().string() : "{}";
-
-            System.out.println("=== Raw Response Body ===");
-            System.out.println(responseBody);
-            System.out.println("==========================");
-
-            return responseBody;
+            String jsonBody = response.body() != null ? response.body().string() : "{}";
+            System.out.println("=== Raw JSON Response ===");
+            System.out.println(jsonBody);
+            return jsonBody;
         }
     }
 }

@@ -1,45 +1,110 @@
 package tut0301.group1.healthz.dataaccess.API;
 
-import okhttp3.*;
-import org.json.JSONObject;
+
 import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import org.json.JSONObject;
 
+/**
+ * Simple class that requests a FatSecret OAuth 2.0 access token
+ * and prints the raw JSON response (no parsing).
+ */
 public class FatSecretOAuthTokenFetcher {
-    private final OkHttpClient client = new OkHttpClient();
 
-    // getAccessToken
-    public String FatSecretOAuthTokenFetcher(String CLIENT_ID, String CLIENT_SECRET) throws IOException {
-        String credentials = CLIENT_ID + ":" + CLIENT_SECRET;
-        String basicAuth = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes());
+    private static final String TOKEN_URL = "https://oauth.fatsecret.com/connect/token";
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final String clientId;
+    private final String clientSecret;
 
-        String url = "https://oauth.fatsecret.com/connect/token";
+    public FatSecretOAuthTokenFetcher(String clientId, String clientSecret) {
+        if (clientId == null || clientSecret == null)
+            throw new IllegalArgumentException("Client ID and secret must not be null.");
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+    }
 
-        RequestBody formBody = new FormBody.Builder()
-                .add("grant_type", "client_credentials")
-                .add("scope", "basic")
+    /**
+     * Fetches an access token from FatSecret and returns the raw JSON body.
+     */
+    public String getAccessTokenRaw(String scope) throws IOException, InterruptedException {
+        String credentials = clientId + ":" + clientSecret;
+        String encoded = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+        String authHeader = "Basic " + encoded;
+
+        String body = "grant_type=client_credentials";
+        if (scope != null && !scope.isBlank()) {
+            body += "&scope=" + URLEncoder.encode(scope, StandardCharsets.UTF_8);
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(TOKEN_URL))
+                .header("Authorization", authHeader)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Accept", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", basicAuth)
-                .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                .post(formBody)
-                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                System.out.println("HTTP Code: " + response.code());
-                throw new IOException("Unexpected code " + response);
+        // Print some debug info
+        System.out.println("HTTP Status: " + response.statusCode());
+        System.out.println("Response Headers: " + response.headers().map());
+
+        return response.body(); // raw JSON response text
+    }
+
+
+    public class TokenParser {
+
+        /**
+         * Extracts the access_token value from a JSON string.
+         *
+         * @param jsonResponse JSON string returned from FatSecret API
+         * @return access token if found, otherwise null
+         */
+        public static String extractAccessToken(String jsonResponse) {
+            if (jsonResponse == null || jsonResponse.isBlank()) {
+                System.err.println("❌ Empty JSON response!");
+                return null;
             }
 
-            String responseBody = response.body().string();
-            System.out.println("=== Raw Response Body ===");
-            System.out.println(responseBody);
-            System.out.println("==========================");
+            try {
+                JSONObject json = new JSONObject(jsonResponse);
 
-            JSONObject json = new JSONObject(responseBody);
-            return json.getString("access_token");
+                if (json.has("access_token")) {
+                    String token = json.getString("access_token");
+                    System.out.println("✅ Extracted Access Token: " + token);
+                    return token;
+                } else {
+                    System.err.println("❌ No 'access_token' field found in JSON.");
+                    return null;
+                }
+            } catch (Exception e) {
+                System.err.println("❌ Failed to parse JSON: " + e.getMessage());
+                return null;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        // Replace with your actual credentials
+        String clientId = "9ef37d375ad34d71a2e1f0703d79c93c";
+        String clientSecret = "c1d1657075174b2e93a8f4dc270a3aa5";
+        String scope = "basic";
+
+        FatSecretOAuthTokenFetcher fetcher = new FatSecretOAuthTokenFetcher(clientId, clientSecret);
+        try {
+            String rawResponse = fetcher.getAccessTokenRaw(scope);
+            System.out.println("\n=== RAW RESPONSE BODY ===");
+            System.out.println(rawResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
