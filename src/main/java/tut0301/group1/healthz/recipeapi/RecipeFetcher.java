@@ -12,7 +12,7 @@ public class RecipeFetcher implements Recipe {
     private final OkHttpClient client = new OkHttpClient();
 
     public String getRecipeName(String recipe) throws Recipe.RecipeNotFoundException{
-        String url = "www.themealdb.com/api/json/v1/1/search.php?s=" + recipe;
+        String url = "http://themealdb.com/api/json/v1/1/search.php?s=" + recipe;
 
         Request request = new Request.Builder()
                 .url(url)
