@@ -1,5 +1,4 @@
 package tut0301.group1.healthz.usecase.macro;
-package fatsecretapi;
 
 import java.io.IOException;
 import java.net.URI;
