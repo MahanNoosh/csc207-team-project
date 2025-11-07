@@ -1,0 +1,43 @@
+package tut0301.group1.healthz.recipeapi;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+public class RecipeFetcher implements Recipe {
+    private final OkHttpClient client = new OkHttpClient();
+
+    public String getRecipeName(String recipe) throws Recipe.RecipeNotFoundException{
+        String url = "www.themealdb.com/api/json/v1/1/search.php?s=" + recipe;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful() || response.body() == null) {
+                throw new Recipe.RecipeNotFoundException(recipe);
+            }
+
+            String responseBody = response.body().string();
+            JSONObject recipeObject = new JSONObject(responseBody);
+
+            String status = recipeObject.getString("status");
+            if (!status.equals("success")) {
+                throw new Recipe.RecipeNotFoundException(recipe);
+            }
+
+            JSONArray recipeArray = recipeObject.getJSONArray("message");
+            String recipeName;
+
+            return recipeName;
+
+        } catch (IOException e) {
+            throw new Recipe.RecipeNotFoundException(recipe);
+        }
+    }
+}
