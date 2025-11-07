@@ -36,7 +36,7 @@ public class Recipe {
     // ============================================================================
 
     /**
-     * Full constructor (typically used when loading from database)
+     * Full constructor
      */
     public Recipe(String recipeId, String name, String description,
                   List<String> instructions, List<RecipeIngredient> ingredients,
@@ -70,7 +70,7 @@ public class Recipe {
     }
 
     /**
-     * Private constructor for builder pattern
+     * private constructor for builder pattern
      */
     private Recipe(RecipeBuilder builder) {
         this.recipeId = builder.recipeId;
