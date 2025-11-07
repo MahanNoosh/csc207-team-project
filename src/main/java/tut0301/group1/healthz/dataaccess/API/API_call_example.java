@@ -1,8 +1,12 @@
 package tut0301.group1.healthz.dataaccess.API;
 
+import org.json.JSONObject;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 
-public class API_main_test {
+import java.awt.*;
+import java.util.List;
+
+public class API_call_example {
     public static void main(String[] args) {
         try {
             // ===================== 1 Read FatSecret credentials from environment variables =====================
@@ -33,7 +37,7 @@ public class API_main_test {
 
             // ===================== 4 Use the token to search for food =====================
             FatSecretFoodSearchGateway gateway = new FatSecretFoodSearchGateway();
-            String foodName = "mushroom";
+            String foodName = "Apple";
 
             System.out.println("🔎 Searching for food: " + foodName + " ...\n");
 
@@ -42,16 +46,22 @@ public class API_main_test {
             System.out.println("=== Food Search Result  ===");
             System.out.println(foodJson);
             System.out.println("=================================\n");
+            List<String> foodJsonlist = gateway.searchFoodByNameToList(token, foodName);
+            System.out.println("=== Food Search Result(List)  ===");
+            System.out.println(foodJsonlist);
+            JSONObject fjl = gateway.searchFoodByNameFormated(token, foodName);
+            System.out.println("=== Food Search Result(formated)  ===");
 
             // ===================== 5 Use the token to search for macro =====================
-            MacroAPI m = new MacroAPI();
-            String foodName_1 = "apple";
+            MacroAPI api = new MacroAPI();
+            String foodNamemacro = "Apple";
 
             System.out.println("🔎 Searching for food: " + foodName + " ...\n");
 
-            Macro macro = m.getMacroByName(token, foodName_1);
+            Macro macro = api.getMacroByName(token, foodNamemacro);
 
             System.out.println("=== Macro Search Result  ===");
+            System.out.println(foodNamemacro);
             System.out.println(macro);
             System.out.println("=================================\n");
 
