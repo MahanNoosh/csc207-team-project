@@ -37,7 +37,7 @@ public class API_call_example {
 
             // ===================== 4 Use the token to search for food =====================
             FatSecretFoodSearchGateway gateway = new FatSecretFoodSearchGateway();
-            String foodName = "Apple";
+            String foodName = "Banana";
 
             System.out.println("🔎 Searching for food: " + foodName + " ...\n");
 
@@ -54,7 +54,7 @@ public class API_call_example {
 
             // ===================== 5 Use the token to search for macro =====================
             MacroAPI api = new MacroAPI();
-            String foodNamemacro = "Apple";
+            String foodNamemacro = "Banana";
 
             System.out.println("🔎 Searching for food: " + foodName + " ...\n");
 
