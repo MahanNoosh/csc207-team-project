@@ -1,5 +1,4 @@
 package tut0301.group1.healthz.usecase.macro;
-package fatsecretapi;
 
 import java.io.IOException;
 import java.net.URI;
@@ -60,8 +59,8 @@ public class FatSecretOAuthTokenFetcher {
 
     public static void main(String[] args) {
         // Replace with your actual credentials
-        String clientId = "9ef37d375ad34d71a2e1f0703d79c93c";
-        String clientSecret = "c1d1657075174b2e93a8f4dc270a3aa5";
+        String clientId = "";
+        String clientSecret = "";
         String scope = "basic";
 
         FatSecretOAuthTokenFetcher fetcher = new FatSecretOAuthTokenFetcher(clientId, clientSecret);
