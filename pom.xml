@@ -19,6 +19,34 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- OkHttp for HTTP requests -->
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>5.3.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>5.3.0</version>
+      <classifier>javadoc</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <!-- org.json for JSON parsing -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20240303</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20240303</version>
+      <classifier>javadoc</classifier>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
