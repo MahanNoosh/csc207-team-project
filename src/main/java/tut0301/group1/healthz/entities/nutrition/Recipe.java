@@ -17,7 +17,7 @@ public class Recipe {
     private String name;
     private String description;
     private List<String> instructions;
-    private List<RecipeIngredient> ingredients;
+    // private List<RecipeIngredient> ingredients;
     private int prepTimeMinutes;
     private int cookTimeMinutes;
     private int servings;
@@ -39,7 +39,7 @@ public class Recipe {
      * Full constructor (typically used when loading from database)
      */
     public Recipe(String recipeId, String name, String description,
-                  List<String> instructions, List<RecipeIngredient> ingredients,
+                  List<String> instructions, // List<RecipeIngredient> ingredients,
                   int prepTimeMinutes, int cookTimeMinutes, int servings,
                   String cuisine, String difficulty, String imageUrl,
                   List<String> tags, LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -47,7 +47,7 @@ public class Recipe {
         this.name = name;
         this.description = description;
         this.instructions = new ArrayList<>(instructions);
-        this.ingredients = new ArrayList<>(ingredients);
+        // this.ingredients = new ArrayList<>(ingredients);
         this.prepTimeMinutes = prepTimeMinutes;
         this.cookTimeMinutes = cookTimeMinutes;
         this.servings = servings;
@@ -63,16 +63,17 @@ public class Recipe {
     /**
      * Minimal constructor for creating new recipes
      */
-    public Recipe(String recipeId, String name, List<RecipeIngredient> ingredients,
+    public Recipe(String recipeId, String name, // List<RecipeIngredient> ingredients,
                   List<String> instructions, int servings) {
-        this(recipeId, name, "", instructions, ingredients, 0, 0, servings,
+        this(recipeId, name, "", instructions, // ingredients,
+                0, 0, servings,
                 "", "Medium", "", new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now());
     }
 
     /**
      * Private constructor for builder pattern
      */
-    private Recipe(RecipeBuilder builder) {
+    /** private Recipe(RecipeBuilder builder) {
         this.recipeId = builder.recipeId;
         this.name = builder.name;
         this.description = builder.description;
@@ -88,5 +89,5 @@ public class Recipe {
         this.createdAt = builder.createdAt != null ? builder.createdAt : LocalDateTime.now();
         this.updatedAt = builder.updatedAt != null ? builder.updatedAt : LocalDateTime.now();
         this.cachedHealthScore = null;
-    }
+    }**/
 }
