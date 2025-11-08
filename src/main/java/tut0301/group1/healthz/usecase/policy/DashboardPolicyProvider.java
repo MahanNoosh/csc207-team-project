@@ -2,7 +2,7 @@ package tut0301.group1.healthz.usecase.policy;
 
 import tut0301.group1.healthz.entities.nutrition.HealthyScorePolicy;
 import tut0301.group1.healthz.entities.nutrition.HealthyScorePresets;
-import tut0301.group1.healthz.usecase.dashport.UserDashboardPort;
+import tut0301.group1.healthz.usecase.dashboard.UserDashboardPort;
 
 import java.util.Optional;
 
