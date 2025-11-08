@@ -13,7 +13,7 @@ public interface UserDashboardPort {
 
     enum Sex { MALE, FEMALE, OTHER }
 
-    enum Goal { GENERAL_HEALTH, WEIGHT_LOSS, ATHLETIC }
+    enum Goal { GENERAL_HEALTH, WEIGHT_LOSS, WEIGHT_GAIN, MUSCLE_GAIN }
     enum HealthCondition {
         DIABETES,
         HYPERTENSION,
