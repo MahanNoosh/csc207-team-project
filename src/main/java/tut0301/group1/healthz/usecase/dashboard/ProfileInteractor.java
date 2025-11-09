@@ -1,27 +1,37 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
-import tut0301.group1.healthz.usecase.auth.AuthGateway;
+import java.util.NoSuchElementException;
 
-/** Ensures the profile row exists for the signed-in user, then loads it. */
-public class ProfileInteractor {
-    private final AuthGateway auth;
+public class ProfileInteractor implements ProfileInputBoundary {
     private final UserDataGateway gateway;
 
-    public ProfileInteractor(AuthGateway auth, UserDataGateway gateway) {
-        this.auth = auth;
+    public ProfileInteractor(UserDataGateway gateway) {
         this.gateway = gateway;
     }
 
-    public Profile execute() throws Exception {
-        // must be signed in; your AuthGateway already enforces this
-        auth.getCurrentUserId();
+    @Override
+    public void createProfile(Profile profile) {
+        throw new UnsupportedOperationException("createProfile not implemented yet");
+    }
 
-        // If no row yet (fresh sign-up), create a blank one, else keep existing
-        var existing = gateway.loadCurrentUserProfile();
-        if (existing.isPresent()) return existing.get();
+    @Override
+    public void updateProfile(Profile profile) {
+        throw new UnsupportedOperationException("updateProfile not implemented yet");
+    }
 
-        gateway.createBlankForCurrentUserIfMissing();
-        return gateway.loadCurrentUserProfile()
-                .orElseThrow(() -> new IllegalStateException("Profile row was not created"));
+    @Override
+    public Profile getProfile(String userId) {
+        try {
+            // If missing, create a blank row (via Supabase defaults) and return it.
+            return gateway.loadCurrentUserProfile()
+                    .orElseGet(() -> {
+                        try { return gateway.createBlankForCurrentUserIfMissing(); }
+                        catch (Exception e) { throw new RuntimeException(e); }
+                    });
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load profile: " + e.getMessage(), e);
+        }
     }
 }
