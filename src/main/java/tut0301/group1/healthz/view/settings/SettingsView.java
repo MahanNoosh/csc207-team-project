@@ -48,19 +48,65 @@ public class SettingsView {
     }
 
     // Header Section
+    private VBox createHeader() {
+        VBox header = new VBox(10);
+        header.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Settings");
+        title.setFont(Font.font("System", FontWeight.BOLD, 28));
+
+        Label subtitle = new Label("View or Update your personal details, biometrics, and dietary goals.");
+        subtitle.setStyle("-fx-text-fill: #666666;");
+
+        header.getChildren().addAll(title, subtitle);
+        return header;
+    }
 
     // Profile Details Section
+    private VBox createProfileSection() {
+
+    }
 
     // Biometrics Section
+    private VBox createBiometricsSection() {
+
+    }
 
     // Notification Section
+    private VBox createNotificationSection() {
+
+    }
 
     // Button Section
+    private HBox createButtonSection() {
+
+    }
 
     // Helper Methods
+    private Label createSectionTitle(String text) {
+
+    }
+
+    private Separator createDivider() {
+        Separator separator = new Separator();
+    }
+
+    private void styleCheckBox(CheckBox checkBox) {
+
+    }
 
     // Event Handlers
+    private void HandleSave() {
+
+    }
+
+    private void HandleCancel() {
+
+    }
 
     // Getter for the scene
+    public Scene getScene() {
+        return scene;
+    }
 
 }
