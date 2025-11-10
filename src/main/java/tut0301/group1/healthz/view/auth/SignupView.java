@@ -93,31 +93,34 @@ public class SignupView {
         VBox stepPanel = null;
         switch (stepNumber) {
             case 1:
-                if (step1Panel == null) step1Panel = new Step1NamePanel();
+                if (step1Panel == null) step1Panel = new Step1Panel();
                 stepPanel = step1Panel.getPanel();
                 break;
             case 2:
-                if (step2Panel == null) step2Panel = new Step2GoalsPanel();
+                if (step2Panel == null) step2Panel = new Step2Panel();
                 stepPanel = step2Panel.getPanel();
                 break;
             case 3:
-                if (step3Panel == null) step3Panel = new Step3ActivityPanel();
+                if (step3Panel == null) step3Panel = new Step3Panel();
                 stepPanel = step3Panel.getPanel();
                 break;
             case 4:
-                if (step4Panel == null) step4Panel = new Step4DietPanel();
+                if (step4Panel == null) step4Panel = new Step4Panel();
                 stepPanel = step4Panel.getPanel();
                 break;
             case 5:
-                if (step5Panel == null) step5Panel = new Step5MedicalPanel();
+                if (step5Panel == null) step5Panel = new Step5Panel();
                 stepPanel = step5Panel.getPanel();
                 break;
             case 6:
-                if (step6Panel == null) step6Panel = new Step6MetricsPanel();
+                if (step6Panel == null) {
+                    step6Panel = new Step6Panel(signupData);
+                }
+                step6Panel.updateGoalWeightFromData(); // Auto-fill
                 stepPanel = step6Panel.getPanel();
                 break;
             case 7:
-                if (step7Panel == null) step7Panel = new Step7AccountPanel();
+                if (step7Panel == null) step7Panel = new Step7Panel();
                 stepPanel = step7Panel.getPanel();
                 break;
         }
@@ -317,7 +320,7 @@ public class SignupView {
     // data class for storing sign up info
     public static class SignupData {
         String fullName;
-        String goal;
+        public String goal;
         String activityLevel;
         java.util.List<String> dietaryRestrictions;
         String medicalConsiderations;
