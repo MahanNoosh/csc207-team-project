@@ -6,6 +6,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.view.auth.SignupView;
 
 /**
  * Step 3: Activity Level Panel
@@ -14,7 +15,7 @@ public class Step3Panel {
     private VBox panel;
     private ToggleGroup activityToggleGroup;
 
-    public Step3Panel() {
+    public Step3Panel(SignupView.SignupData signupData) {
         panel = createPanel();
     }
 
@@ -32,10 +33,10 @@ public class Step3Panel {
         options.setAlignment(Pos.CENTER);
 
         options.getChildren().addAll(
-                createActivityOption("😴 Sedentary", "Little or no exercise", activityToggleGroup),
-                createActivityOption("🚶 Lightly Active", "Exercise 1-3 times/week", activityToggleGroup),
-                createActivityOption("🏃 Moderately Active", "Exercise 4-5 times/week", activityToggleGroup),
-                createActivityOption("💪 Very Active", "Intense exercise 6-7 times/week", activityToggleGroup)
+                createActivityOption("Sedentary", "Little or no exercise", activityToggleGroup),
+                createActivityOption("Lightly Active", "Exercise 1-3 times/week", activityToggleGroup),
+                createActivityOption("Moderately Active", "Exercise 4-5 times/week", activityToggleGroup),
+                createActivityOption("Very Active", "Intense exercise 6-7 times/week", activityToggleGroup)
         );
 
         container.getChildren().addAll(title, options);

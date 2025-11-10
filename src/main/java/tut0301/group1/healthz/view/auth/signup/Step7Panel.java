@@ -6,6 +6,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.view.auth.SignupView;
 
 public class Step7Panel {
     private VBox panel;
@@ -13,7 +14,7 @@ public class Step7Panel {
     private PasswordField passwordField;
     private PasswordField confirmPasswordField;
 
-    public Step7Panel() {
+    public Step7Panel(SignupView.SignupData signupData) {
         panel = createPanel();
     }
 

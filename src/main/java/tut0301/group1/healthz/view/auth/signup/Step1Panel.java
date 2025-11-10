@@ -6,6 +6,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.view.auth.SignupView;
 
 /**
  * Step 1: Full Name Panel
@@ -14,7 +15,7 @@ public class Step1Panel {
     private VBox panel;
     private TextField nameField;
 
-    public Step1Panel() {
+    public Step1Panel(SignupView.SignupData signupData) {
         panel = createPanel();
     }
 

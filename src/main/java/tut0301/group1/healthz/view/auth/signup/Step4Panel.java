@@ -6,81 +6,143 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.view.auth.SignupView;
 
-/**
- * Step 4: Dietary Restrictions Panel
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class Step4Panel {
-    private VBox panel;
-    private ToggleGroup activityToggleGroup;
 
-    public Step4Panel() {
+    private VBox panel;
+    private SignupView.SignupData signupData;
+
+    private List<CheckBox> dietCheckBoxes;
+    private List<String> selectedDiets;
+
+    private static final String[] DIET_OPTIONS = {
+            "None",
+            "Vegetarian",
+            "Vegan",
+            "Pescatarian",
+            "Gluten-Free",
+            "Dairy-Free",
+            "Nut-Free",
+            "Halal",
+            "Kosher"
+    };
+
+    public Step4Panel(SignupView.SignupData signupData) {
+        this.signupData = signupData;
+        this.dietCheckBoxes = new ArrayList<>();
+        this.selectedDiets = new ArrayList<>();
         panel = createPanel();
     }
 
     private VBox createPanel() {
-        VBox container = new VBox(20);
+        VBox container = new VBox(25);
         container.setAlignment(Pos.TOP_CENTER);
+        container.setMaxWidth(450);
 
-        Label title = new Label("Do you have any dietary restrictions?");
+        Label title = new Label("Do you have any dietary\nrestrictions?");
         title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
         title.setTextFill(Color.web("#111827"));
+        title.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        title.setWrapText(true);
 
-        activityToggleGroup = new ToggleGroup();
+        Label subtitle = new Label("Select all that apply");
+        subtitle.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
+        subtitle.setTextFill(Color.web("#6B7280"));
 
-        VBox options = new VBox(15);
-        options.setAlignment(Pos.CENTER);
+        VBox options = createDietOptions();
 
-        options.getChildren().addAll(
-                createActivityOption("Vegetarian", activityToggleGroup),
-                createActivityOption("Vegan", activityToggleGroup),
-                createActivityOption("Pescetarian", activityToggleGroup),
-                createActivityOption("Gluten-free", activityToggleGroup),
-                createActivityOption("Dairy-free", activityToggleGroup),
-                createActivityOption("Halal", activityToggleGroup),
-                createActivityOption("Kosher", activityToggleGroup),
-                createActivityOption("None", activityToggleGroup)
-        );
-
-        container.getChildren().addAll(title, options);
+        container.getChildren().addAll(title, subtitle, options);
         return container;
     }
 
-    private VBox createActivityOption(String main, ToggleGroup group) {
-        VBox optionBox = new VBox(5);
-        optionBox.setPrefWidth(350);
-        optionBox.setPrefHeight(70);
-        optionBox.setAlignment(Pos.CENTER_LEFT);
-        optionBox.setPadding(new javafx.geometry.Insets(15));
-        optionBox.setStyle(
+    private VBox createDietOptions() {
+        VBox optionsContainer = new VBox(12);
+        optionsContainer.setAlignment(Pos.CENTER);
+
+        for (String diet : DIET_OPTIONS) {
+            CheckBox checkBox = createDietCheckBox(diet);
+            dietCheckBoxes.add(checkBox);
+            optionsContainer.getChildren().add(checkBox);
+        }
+
+        return optionsContainer;
+    }
+
+    private CheckBox createDietCheckBox(String diet) {
+        CheckBox checkBox = new CheckBox(diet);
+        checkBox.setPrefWidth(350);
+        checkBox.setPrefHeight(50);
+        checkBox.setFont(Font.font("Inter", FontWeight.MEDIUM, 14));
+        checkBox.setStyle(
                 "-fx-background-color: white; " +
                         "-fx-border-color: #D1D5DB; " +
+                        "-fx-border-width: 1.5px; " +
                         "-fx-border-radius: 8px; " +
                         "-fx-background-radius: 8px; " +
+                        "-fx-padding: 10px 15px; " +
                         "-fx-cursor: hand;"
         );
 
-        Label mainLabel = new Label(main);
-        mainLabel.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 14));
+        if (diet.equals("None")) {
+            checkBox.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+                if (isSelected) {
+                    for (CheckBox cb : dietCheckBoxes) {
+                        if (cb != checkBox) {
+                            cb.setSelected(false);
+                        }
+                    }
+                }
+            });
+        } else {
+            checkBox.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+                if (isSelected && dietCheckBoxes.size() > 0) {
+                    dietCheckBoxes.get(0).setSelected(false);
+                }
+            });
+        }
 
-        optionBox.getChildren().addAll(mainLabel);
-
-        // Make clickable
-        RadioButton hiddenButton = new RadioButton();
-        hiddenButton.setToggleGroup(group);
-        hiddenButton.setVisible(false);
-
-        optionBox.setOnMouseClicked(e -> {
-            hiddenButton.setSelected(true);
-            // Update styling
+        checkBox.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+            if (isSelected) {
+                checkBox.setStyle(
+                        "-fx-background-color: #ECFDF5; " +
+                                "-fx-border-color: #059669; " +
+                                "-fx-border-width: 2px; " +
+                                "-fx-border-radius: 8px; " +
+                                "-fx-background-radius: 8px; " +
+                                "-fx-padding: 10px 15px; " +
+                                "-fx-cursor: hand;"
+                );
+            } else {
+                checkBox.setStyle(
+                        "-fx-background-color: white; " +
+                                "-fx-border-color: #D1D5DB; " +
+                                "-fx-border-width: 1.5px; " +
+                                "-fx-border-radius: 8px; " +
+                                "-fx-background-radius: 8px; " +
+                                "-fx-padding: 10px 15px; " +
+                                "-fx-cursor: hand;"
+                );
+            }
         });
 
-        return optionBox;
+        return checkBox;
     }
 
-    public String getSelectedActivity() {
-        // Implementation
-        return "Vegan";
+    public List<String> getSelectedDiets() {
+        selectedDiets.clear();
+        for (CheckBox checkBox : dietCheckBoxes) {
+            if (checkBox.isSelected()) {
+                selectedDiets.add(checkBox.getText());
+            }
+        }
+        if (selectedDiets.isEmpty()) {
+            selectedDiets.add("None");
+        }
+        return new ArrayList<>(selectedDiets);
     }
 
     public VBox getPanel() {

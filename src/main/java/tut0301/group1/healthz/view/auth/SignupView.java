@@ -10,6 +10,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import tut0301.group1.healthz.view.auth.signup.*;
 
+import java.util.List;
+
 
 public class SignupView {
 
@@ -32,7 +34,7 @@ public class SignupView {
 
     private SignupData signupData;
 
-    public void SignUpView() {
+    public SignupView() {
         signupData = new SignupData();
         root = createMainLayout();
         scene = new Scene(root, 900, 700);
@@ -93,23 +95,23 @@ public class SignupView {
         VBox stepPanel = null;
         switch (stepNumber) {
             case 1:
-                if (step1Panel == null) step1Panel = new Step1Panel();
+                if (step1Panel == null) step1Panel = new Step1Panel(signupData);
                 stepPanel = step1Panel.getPanel();
                 break;
             case 2:
-                if (step2Panel == null) step2Panel = new Step2Panel();
+                if (step2Panel == null) step2Panel = new Step2Panel(signupData);
                 stepPanel = step2Panel.getPanel();
                 break;
             case 3:
-                if (step3Panel == null) step3Panel = new Step3Panel();
+                if (step3Panel == null) step3Panel = new Step3Panel(signupData);
                 stepPanel = step3Panel.getPanel();
                 break;
             case 4:
-                if (step4Panel == null) step4Panel = new Step4Panel();
+                if (step4Panel == null) step4Panel = new Step4Panel(signupData);
                 stepPanel = step4Panel.getPanel();
                 break;
             case 5:
-                if (step5Panel == null) step5Panel = new Step5Panel();
+                if (step5Panel == null) step5Panel = new Step5Panel(signupData);
                 stepPanel = step5Panel.getPanel();
                 break;
             case 6:
@@ -120,7 +122,7 @@ public class SignupView {
                 stepPanel = step6Panel.getPanel();
                 break;
             case 7:
-                if (step7Panel == null) step7Panel = new Step7Panel();
+                if (step7Panel == null) step7Panel = new Step7Panel(signupData);
                 stepPanel = step7Panel.getPanel();
                 break;
         }
@@ -181,7 +183,7 @@ public class SignupView {
         nextButton.setPrefWidth(currentStep == TOTAL_STEPS ? 160 : 120);
         nextButton.setPrefHeight(45);
         nextButton.setStyle(
-                "-fx-background-color: #059669; " +
+                "-fx-background-color: #27692A; " +
                         "-fx-text-fill: white; " +
                         "-fx-font-size: 14px; " +
                         "-fx-font-weight: 600; " +
@@ -322,7 +324,7 @@ public class SignupView {
         String fullName;
         public String goal;
         String activityLevel;
-        java.util.List<String> dietaryRestrictions;
+        List<String> dietaryRestrictions;
         String medicalConsiderations;
         String sex;
         String dateOfBirth;

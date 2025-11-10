@@ -6,6 +6,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.view.auth.SignupView;
 
 /**
  * Step 2: Goals Panel
@@ -14,7 +15,7 @@ public class Step2Panel {
     private VBox panel;
     private ToggleGroup goalToggleGroup;
 
-    public Step2Panel() {
+    public Step2Panel(SignupView.SignupData signupData) {
         panel = createPanel();
     }
 
@@ -32,10 +33,10 @@ public class Step2Panel {
         options.setAlignment(Pos.CENTER);
 
         options.getChildren().addAll(
-                createOptionButton("🎯 Lose Weight", goalToggleGroup),
-                createOptionButton("⚖️ Maintain Weight", goalToggleGroup),
-                createOptionButton("📈 Gain Weight", goalToggleGroup),
-                createOptionButton("💪 Build Muscle", goalToggleGroup)
+                createOptionButton("Lose Weight", goalToggleGroup),
+                createOptionButton("Maintain Weight", goalToggleGroup),
+                createOptionButton("Gain Weight", goalToggleGroup),
+                createOptionButton("Build Muscle", goalToggleGroup)
         );
 
         container.getChildren().addAll(title, options);
@@ -53,7 +54,8 @@ public class Step2Panel {
                         "-fx-border-color: #D1D5DB; " +
                         "-fx-border-radius: 8px; " +
                         "-fx-background-radius: 8px; " +
-                        "-fx-cursor: hand;"
+                        "-fx-cursor: hand;" +
+                        "-fx-padding: 10 20 10 20;"
         );
 
         // Style when selected
@@ -65,7 +67,8 @@ public class Step2Panel {
                                 "-fx-border-width: 2px; " +
                                 "-fx-border-radius: 8px; " +
                                 "-fx-background-radius: 8px; " +
-                                "-fx-cursor: hand;"
+                                "-fx-cursor: hand;" +
+                                "-fx-padding: 10 20 10 20;"
                 );
             } else {
                 button.setStyle(

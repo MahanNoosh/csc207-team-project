@@ -2,32 +2,28 @@ package tut0301.group1.healthz.app;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import tut0301.group1.healthz.view.settings.SettingsView;
+import tut0301.group1.healthz.view.auth.SignupView;
 
-/**
- * JavaFX UI Launcher - runs the GUI without backend dependencies
- * Use this for UI development and testing
- */
 public class MainUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
         try {
-            System.out.println("🎨 Launching UI (no backend)...");
+            System.out.println("🎨 Launching Signup UI...");
 
-            // Create the settings view
-            SettingsView settingsView = new SettingsView();
+            // Create the signup view (CHANGED FROM SettingsView)
+            SignupView signupView = new SignupView();
 
             // Configure the window
-            primaryStage.setScene(settingsView.getScene());
-            primaryStage.setTitle("HealthZ - Settings");
-            primaryStage.setWidth(1200);
-            primaryStage.setHeight(800);
+            primaryStage.setScene(signupView.getScene());
+            primaryStage.setTitle("HealthZ - Sign Up");
+            primaryStage.setWidth(900);
+            primaryStage.setHeight(700);
 
             // Show the window
             primaryStage.show();
 
-            System.out.println("✅ Settings UI launched successfully!");
+            System.out.println("✅ Signup UI launched successfully!");
 
         } catch (Exception e) {
             System.err.println("❌ Error launching UI:");
@@ -36,9 +32,6 @@ public class MainUI extends Application {
     }
 
     public static void main(String[] args) {
-        // No Supabase
-        // No backend initialization
-        // Just pure UI
         launch(args);
     }
 }
