@@ -7,6 +7,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+/**
+ * Step 4: Dietary Restrictions Panel
+ */
 public class Step4Panel {
     private VBox panel;
     private ToggleGroup activityToggleGroup;

@@ -7,6 +7,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+/**
+ * Step 1: Full Name Panel
+ */
 public class Step1Panel {
     private VBox panel;
     private TextField nameField;

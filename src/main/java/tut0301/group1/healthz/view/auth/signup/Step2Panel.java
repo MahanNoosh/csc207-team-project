@@ -7,6 +7,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+/**
+ * Step 2: Goals Panel
+ */
 public class Step2Panel {
     private VBox panel;
     private ToggleGroup goalToggleGroup;
