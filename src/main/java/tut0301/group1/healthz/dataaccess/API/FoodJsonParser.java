@@ -91,6 +91,53 @@ public class FoodJsonParser {
     }
 
     /**
+     * Extracts Macro information from food.get.v2 API response.
+     * This method parses the detailed food object returned by the food.get API.
+     *
+     * @param jsonResponse the JSON string returned from food.get.v2 API
+     * @return a Macro object with nutritional data (or null if not found)
+     */
+    public static Macro getMacroFromFoodGet(String jsonResponse) {
+        try {
+            JSONObject root = new JSONObject(jsonResponse);
+            if (!root.has("food")) {
+                System.err.println("❌ Invalid JSON: missing 'food' object.");
+                return null;
+            }
+
+            JSONObject food = root.getJSONObject("food");
+
+            // The food.get API returns servings with detailed nutrition info
+            if (!food.has("servings")) {
+                System.err.println("❌ No servings data found.");
+                return null;
+            }
+
+            JSONObject servings = food.getJSONObject("servings");
+            JSONArray servingArray = servings.optJSONArray("serving");
+
+            if (servingArray == null || servingArray.length() == 0) {
+                System.err.println("⚠️ No serving information available.");
+                return null;
+            }
+
+            // Use the first serving (usually the default/standard serving)
+            JSONObject serving = servingArray.getJSONObject(0);
+
+            double calories = serving.optDouble("calories", 0);
+            double protein = serving.optDouble("protein", 0);
+            double fat = serving.optDouble("fat", 0);
+            double carbs = serving.optDouble("carbohydrate", 0);
+
+            return new Macro(calories, protein, fat, carbs);
+
+        } catch (Exception e) {
+            System.err.println("❌ Failed to extract macro info from food.get: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Helper: Parses "Calories: 89kcal | Fat: 0.3g | Carbs: 23g | Protein: 1.1g"
      * into a Macro object.
      */

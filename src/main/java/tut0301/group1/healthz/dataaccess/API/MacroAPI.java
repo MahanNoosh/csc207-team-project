@@ -44,4 +44,40 @@ public class MacroAPI {
             return null;
         }
     }
+
+    /**
+     * Calls the FatSecret API using an existing token to get macro data for a given food ID.
+     *
+     * @param token   Valid OAuth access token
+     * @param foodId  The food ID to look up
+     * @return Macro object with calories, protein, fat, carbs (or null if not found)
+     */
+    public static Macro getMacroByFoodId(String token, long foodId) {
+        try {
+            if (token == null || token.isBlank()) {
+                System.err.println("❌ Invalid token (null or empty).");
+                return null;
+            }
+
+            System.out.println("🔎 Getting food details for ID: " + foodId + " using provided token...");
+
+            // ✅ Step 1: Call food.get.v2 API via gateway
+            String foodJson = gateway.getFoodById(token, foodId);
+
+            // ✅ Step 2: Parse macro data from JSON
+            Macro macro = FoodJsonParser.getMacroFromFoodGet(foodJson);
+
+            // ✅ Step 3: Print results
+            if (macro == null) {
+                System.err.println("No nutrition data found for food ID: " + foodId);
+            }
+
+            return macro;
+
+        } catch (Exception e) {
+            System.err.println("API call failed: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

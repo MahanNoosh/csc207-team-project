@@ -37,7 +37,7 @@ public class API_call_example {
 
             // ===================== 4 Use the token to search for food =====================
             FatSecretFoodSearchGateway gateway = new FatSecretFoodSearchGateway();
-            String foodName = "Cheese Pizza";
+            String foodName = "Apple";
 
             System.out.println("🔎 Searching for food: " + foodName + " ...\n");
 
@@ -52,18 +52,60 @@ public class API_call_example {
             JSONObject fjl = gateway.searchFoodByNameFormated(token, foodName);
             System.out.println("=== Food Search Result(formated)  ===");
 
-            // ===================== 5 Use the token to search for macro =====================
-            MacroAPI api = new MacroAPI();
-
+            // ===================== 5 Use the token to search for macro by name =====================
 
             System.out.println("🔎 Searching for food: " + foodName + " ...\n");
 
-            Macro macro = api.getMacroByName(token, foodName);
+            Macro macro = MacroAPI.getMacroByName(token, foodName);
 
-            System.out.println("=== Macro Search Result  ===");
-            System.out.println(foodName);
-            System.out.println(macro);
+            System.out.println("=== Macro Search Result (by name) ===");
+            System.out.println("Food Name: " + foodName);
+            if (macro != null) {
+                System.out.println("Calories: " + macro.calories() + " kcal");
+                System.out.println("Protein: " + macro.proteinG() + "g");
+                System.out.println("Fat: " + macro.fatG() + "g");
+                System.out.println("Carbs: " + macro.carbsG() + "g");
+            } else {
+                System.out.println("No macro data found");
+            }
             System.out.println("=================================\n");
+
+            // ===================== 6 Use the token to get macro by food ID =====================
+            // Extract food_id from the search results list
+            if (foodJsonlist != null && !foodJsonlist.isEmpty()) {
+                String firstFood = foodJsonlist.get(0);
+                System.out.println("📋 First food from search: " + firstFood + "\n");
+
+                // Extract food_id from "12345 - Food Name" format
+                String[] parts = firstFood.split(" - ");
+                if (parts.length > 0) {
+                    try {
+                        long foodId = 44911664;
+                        //or input foodId
+
+                        System.out.println("🔎 Getting food details by ID: " + foodId + " ...\n");
+
+                        Macro macroById = MacroAPI.getMacroByFoodId(token, foodId);
+
+                        System.out.println("=== Macro Search Result (by ID) ===");
+                        System.out.println("Food ID: " + foodId);
+                        if (macroById != null) {
+                            System.out.println("Calories: " + macroById.calories() + " kcal");
+                            System.out.println("Protein: " + macroById.proteinG() + "g");
+                            System.out.println("Fat: " + macroById.fatG() + "g");
+                            System.out.println("Carbs: " + macroById.carbsG() + "g");
+                        } else {
+                            System.out.println("No macro data found for ID: " + foodId);
+                        }
+                        System.out.println("=================================\n");
+
+                    } catch (NumberFormatException e) {
+                        System.err.println("⚠️ Could not parse food ID from: " + firstFood);
+                    }
+                }
+            } else {
+                System.out.println("⚠️ No food results to extract ID from. Skipping getMacroByFoodId test.\n");
+            }
 
         } catch (Exception e) {
             System.err.println("❌ An error occurred: " + e.getMessage());
