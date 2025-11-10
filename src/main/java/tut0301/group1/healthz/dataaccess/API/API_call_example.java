@@ -37,7 +37,7 @@ public class API_call_example {
 
             // ===================== 4 Use the token to search for food =====================
             FatSecretFoodSearchGateway gateway = new FatSecretFoodSearchGateway();
-            String foodName = "fish";
+            String foodName = "Cheese Pizza";
 
             System.out.println("🔎 Searching for food: " + foodName + " ...\n");
 
