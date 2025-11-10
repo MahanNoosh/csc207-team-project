@@ -59,7 +59,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
-                    <mainClass>tut0301.group1.healthz.app.Main</mainClass>
+                    <mainClass>tut0301.group1.healthz.app.MainUI</mainClass>
                 </configuration>
             </plugin>
 
@@ -68,7 +68,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>tut0301.group1.healthz.app.Main</mainClass>
+                    <mainClass>tut0301.group1.healthz.app.MainUI</mainClass>
                 </configuration>
             </plugin>
         </plugins>
