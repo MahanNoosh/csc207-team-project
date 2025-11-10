@@ -49,7 +49,7 @@ public class SettingsView {
 
         // Load CSS
         scene.getStylesheets()
-                .add(getClass().getResource("/styles/Settings.css").toExternalForm());
+                .add(getClass().getResource("/styles/settings.css").toExternalForm());
     }
 
     // main layout = left sidebar + content area
