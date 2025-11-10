@@ -30,6 +30,11 @@ public class SignupView {
     private Step6Panel step6Panel;
     private Step7Panel step7Panel;
 
-
-
+    public void display(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Notification");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }
