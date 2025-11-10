@@ -6,7 +6,7 @@ import tut0301.group1.healthz.usecase.recipes.SearchRecipesInteractor.RecipeCata
 import java.util.List;
 
 /**
- * In-memory fake recipe catalog for demo.
+ * In-memory fake tut0301.group1.healthz.entities.recipe catalog for demo.
  * Implements the gateway expected by SearchRecipesInteractor.
  */
 public class FakeRecipeCatalog implements RecipeCatalogGateway {

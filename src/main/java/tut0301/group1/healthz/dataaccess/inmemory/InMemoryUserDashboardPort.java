@@ -1,6 +1,6 @@
 package tut0301.group1.healthz.dataaccess.inmemory;
 
-import tut0301.group1.healthz.usecase.dashboard.UserDashboardPort;
+import tut0301.group1.healthz.usecase.dashport.UserDashboardPort;
 
 import java.util.Map;
 import java.util.Optional;
@@ -15,11 +15,6 @@ public class InMemoryUserDashboardPort implements UserDashboardPort {
     @Override
     public Optional<UserProfile> getProfile(String userId) {
         return Optional.ofNullable(store.get(userId));
-    }
-
-    @Override
-    public void saveProfile(UserProfile userProfile) {
-        store.put(userProfile.userId(), userProfile);
     }
 
     public void upsert(UserProfile profile) {
