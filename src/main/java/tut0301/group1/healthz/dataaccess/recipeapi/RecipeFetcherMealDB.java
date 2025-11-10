@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.recipeapi;
+package tut0301.group1.healthz.dataaccess.recipeapi;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class RecipeFetcher implements Recipe {
+public class RecipeFetcherMealDB implements Recipe {
     private final OkHttpClient client = new OkHttpClient();
 
     public String getRecipeName(String recipe) throws Recipe.RecipeNotFoundException{

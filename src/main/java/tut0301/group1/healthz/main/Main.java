@@ -17,8 +17,8 @@ import tut0301.group1.healthz.entities.user.UserId;
 import tut0301.group1.healthz.presenter.AuthLoginPresenter;
 import tut0301.group1.healthz.presenter.SearchRecipesPresenter;
 
-import tut0301.group1.healthz.recipeapi.Recipe;
-import tut0301.group1.healthz.recipeapi.RecipeFetcher;
+import tut0301.group1.healthz.dataaccess.recipeapi.Recipe;
+import tut0301.group1.healthz.dataaccess.recipeapi.RecipeFetcherMealDB;
 import tut0301.group1.healthz.usecase.auth.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.LoginInteractor;
 
@@ -110,7 +110,7 @@ public class Main {
 
         // Recipe API call
         try {
-            RecipeFetcher fetcher = new RecipeFetcher();
+            RecipeFetcherMealDB fetcher = new RecipeFetcherMealDB();
             String name = fetcher.getRecipeName("Arrabiata");
             System.out.println(name);
         } catch (Recipe.RecipeNotFoundException e) {
