@@ -1,4 +1,5 @@
-package tut0301.group1.healthz.usecase.macro;
+package tut0301.group1.healthz.dataaccess.API;
+
 
 import java.io.IOException;
 import java.net.URI;
@@ -8,6 +9,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import org.json.JSONObject;
 
 /**
  * Simple class that requests a FatSecret OAuth 2.0 access token
@@ -57,10 +59,43 @@ public class FatSecretOAuthTokenFetcher {
         return response.body(); // raw JSON response text
     }
 
+
+    public class TokenParser {
+
+        /**
+         * Extracts the access_token value from a JSON string.
+         *
+         * @param jsonResponse JSON string returned from FatSecret API
+         * @return access token if found, otherwise null
+         */
+        public static String extractAccessToken(String jsonResponse) {
+            if (jsonResponse == null || jsonResponse.isBlank()) {
+                System.err.println("❌ Empty JSON response!");
+                return null;
+            }
+
+            try {
+                JSONObject json = new JSONObject(jsonResponse);
+
+                if (json.has("access_token")) {
+                    String token = json.getString("access_token");
+                    System.out.println("✅ Extracted Access Token: " + token);
+                    return token;
+                } else {
+                    System.err.println("❌ No 'access_token' field found in JSON.");
+                    return null;
+                }
+            } catch (Exception e) {
+                System.err.println("❌ Failed to parse JSON: " + e.getMessage());
+                return null;
+            }
+        }
+    }
+
     public static void main(String[] args) {
         // Replace with your actual credentials
-        String clientId = "";
-        String clientSecret = "";
+        String clientId = "9ef37d375ad34d71a2e1f0703d79c93c";
+        String clientSecret = "c1d1657075174b2e93a8f4dc270a3aa5";
         String scope = "basic";
 
         FatSecretOAuthTokenFetcher fetcher = new FatSecretOAuthTokenFetcher(clientId, clientSecret);
