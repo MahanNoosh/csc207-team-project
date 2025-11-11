@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import tut0301.group1.healthz.entities.nutrition.BasicFood;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 
+
 /**
  * Mapper for converting FatSecret API JSON responses to BasicFood entities.
  * This class belongs to the Data Access layer and can depend on external libraries.
