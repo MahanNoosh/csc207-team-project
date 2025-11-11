@@ -4,7 +4,6 @@ import org.json.JSONObject;
 import tut0301.group1.healthz.entities.nutrition.BasicFood;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 
-import java.awt.*;
 import java.util.List;
 
 public class API_call_example {
@@ -109,22 +108,23 @@ public class API_call_example {
             }
 
 
-            // ===================== 7 Parse and output BasicFood =====================
-            System.out.println("🔎 Creating BasicFood from search result...\n");
+            // ===================== 7 Parse and output BasicFood (Clean Architecture) =====================
+            System.out.println("🔎 Creating BasicFood from search result using Mapper...\n");
 
             try {
-                // Create BasicFood with JSON and food name
-                BasicFood basicFood = new BasicFood(foodJson, foodName);
+                // Use FatSecretFoodMapper to convert JSON to BasicFood entity
+                FatSecretFoodMapper mapper = new FatSecretFoodMapper();
+                BasicFood basicFood = mapper.fromJson(foodJson, foodName);
 
-                // Also show individual getters
-                System.out.println("=== BasicFood Details (using getters) ===");
+                // Display the entity data
+                System.out.println("=== BasicFood Details (Clean Architecture) ===");
                 System.out.println("Food ID: " + basicFood.getFoodId());
                 System.out.println("Food Name: " + basicFood.getFoodName());
                 System.out.println("Food Type: " + basicFood.getFoodType());
                 System.out.println("Food Description: " + basicFood.getFoodDescription());
                 System.out.println("Macro: " + basicFood.getMacro());
                 System.out.println("URL: " + basicFood.getFoodUrl());
-                System.out.println("=========================================\n");
+                System.out.println("===============================================\n");
 
             } catch (Exception e) {
                 System.err.println("❌ Failed to create BasicFood: " + e.getMessage());
