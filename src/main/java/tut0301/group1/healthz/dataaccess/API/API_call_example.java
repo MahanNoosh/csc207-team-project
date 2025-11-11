@@ -1,6 +1,7 @@
 package tut0301.group1.healthz.dataaccess.API;
 
 import org.json.JSONObject;
+import tut0301.group1.healthz.entities.nutrition.BasicFood;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 
 import java.awt.*;
@@ -105,6 +106,29 @@ public class API_call_example {
                 }
             } else {
                 System.out.println("⚠️ No food results to extract ID from. Skipping getMacroByFoodId test.\n");
+            }
+
+
+            // ===================== 7 Parse and output BasicFood =====================
+            System.out.println("🔎 Creating BasicFood from search result...\n");
+
+            try {
+                // Create BasicFood with JSON and food name
+                BasicFood basicFood = new BasicFood(foodJson, foodName);
+
+                // Also show individual getters
+                System.out.println("=== BasicFood Details (using getters) ===");
+                System.out.println("Food ID: " + basicFood.getFoodId());
+                System.out.println("Food Name: " + basicFood.getFoodName());
+                System.out.println("Food Type: " + basicFood.getFoodType());
+                System.out.println("Food Description: " + basicFood.getFoodDescription());
+                System.out.println("Macro: " + basicFood.getMacro());
+                System.out.println("URL: " + basicFood.getFoodUrl());
+                System.out.println("=========================================\n");
+
+            } catch (Exception e) {
+                System.err.println("❌ Failed to create BasicFood: " + e.getMessage());
+                e.printStackTrace();
             }
 
         } catch (Exception e) {

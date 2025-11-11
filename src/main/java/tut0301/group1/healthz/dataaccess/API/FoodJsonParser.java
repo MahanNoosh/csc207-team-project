@@ -169,6 +169,135 @@ public class FoodJsonParser {
     }
 
     /**
+     * Parses a single food entry from foods.search API response (when max_results=1).
+     * This handles the case where "food" is an object, not an array.
+     *
+     * Example JSON:
+     * {
+     *   "foods": {
+     *     "food": {
+     *       "food_description": "Per 100g - Calories: 22kcal | Fat: 0.34g | Carbs: 3.28g | Protein: 3.09g",
+     *       "food_id": "36421",
+     *       "food_name": "Mushrooms",
+     *       "food_type": "Generic",
+     *       "food_url": "https://foods.fatsecret.com/calories-nutrition/usda/mushrooms"
+     *     }
+     *   }
+     * }
+     *
+     * @param jsonResponse the JSON string returned from foods.search API
+     * @return a FoodSearchResult object with food details (or null if not found)
+     */
+    public static FoodSearchResult parseFoodEntry(String jsonResponse) {
+        try {
+            JSONObject root = new JSONObject(jsonResponse);
+            if (!root.has("foods")) {
+                System.err.println("❌ Invalid JSON: missing 'foods' object.");
+                return null;
+            }
+
+            JSONObject foodsObj = root.getJSONObject("foods");
+
+            // Handle both cases: "food" as object or array
+            JSONObject food;
+            if (foodsObj.has("food")) {
+                Object foodObj = foodsObj.get("food");
+                if (foodObj instanceof JSONObject) {
+                    // Single food object
+                    food = (JSONObject) foodObj;
+                } else if (foodObj instanceof JSONArray) {
+                    // Array of foods, get first one
+                    JSONArray foodArray = (JSONArray) foodObj;
+                    if (foodArray.length() == 0) {
+                        System.err.println("⚠️ No food items in array.");
+                        return null;
+                    }
+                    food = foodArray.getJSONObject(0);
+                } else {
+                    System.err.println("❌ Unexpected 'food' type.");
+                    return null;
+                }
+            } else {
+                System.err.println("❌ No 'food' found in JSON.");
+                return null;
+            }
+
+            // Extract food details
+            String foodId = food.optString("food_id", "");
+            String foodName = food.optString("food_name", "Unknown");
+            String foodDescription = food.optString("food_description", "");
+            String foodType = food.optString("food_type", "");
+            String foodUrl = food.optString("food_url", "");
+
+            // Parse macro from description
+            Macro macro = parseMacroFromDescription(foodDescription);
+
+            return new FoodSearchResult(foodId, foodName, foodDescription, foodType, foodUrl, macro);
+
+        } catch (Exception e) {
+            System.err.println("❌ Failed to parse food entry: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Data class to hold food search result details.
+     */
+    public static class FoodSearchResult {
+        public final String foodId;
+        public final String foodName;
+        public final String foodDescription;
+        public final String foodType;
+        public final String foodUrl;
+        public final Macro macro;
+
+        public FoodSearchResult(String foodId, String foodName, String foodDescription,
+                                String foodType, String foodUrl, Macro macro) {
+            this.foodId = foodId;
+            this.foodName = foodName;
+            this.foodDescription = foodDescription;
+            this.foodType = foodType;
+            this.foodUrl = foodUrl;
+            this.macro = macro;
+        }
+
+        @Override
+        public String toString() {
+            return "FoodSearchResult{" +
+                    "foodId='" + foodId + '\'' +
+                    ", foodName='" + foodName + '\'' +
+                    ", foodDescription='" + foodDescription + '\'' +
+                    ", foodType='" + foodType + '\'' +
+                    ", foodUrl='" + foodUrl + '\'' +
+                    ", macro=" + macro +
+                    '}';
+        }
+
+        /**
+         * Format as a readable food entry output.
+         */
+        public String toFoodEntry() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("=== Food Entry ===\n");
+            sb.append("Food ID: ").append(foodId).append("\n");
+            sb.append("Name: ").append(foodName).append("\n");
+            sb.append("Type: ").append(foodType).append("\n");
+            sb.append("Description: ").append(foodDescription).append("\n");
+            if (macro != null) {
+                sb.append("Nutrition (per serving):\n");
+                sb.append("  - Calories: ").append(macro.calories()).append(" kcal\n");
+                sb.append("  - Protein: ").append(macro.proteinG()).append(" g\n");
+                sb.append("  - Fat: ").append(macro.fatG()).append(" g\n");
+                sb.append("  - Carbs: ").append(macro.carbsG()).append(" g\n");
+            }
+            sb.append("URL: ").append(foodUrl).append("\n");
+            sb.append("==================");
+            return sb.toString();
+        }
+    }
+
+    /**
      * Extracts the first numeric value after the colon (or after "Calories", "Fat", etc.).
      * Example:
      *  - "Per 1 apple - Calories: 100kcal" → 100.0
