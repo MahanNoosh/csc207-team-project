@@ -45,8 +45,16 @@ public class FatSecretFoodMapper {
             // Parse macro from description
             Macro macro = parseMacroFromDescription(foodDescription);
 
+            // Parse serving size from description (e.g., "Per 100g")
+            String d = food.optString("food_description", "");
+            int start = d.indexOf("Per ") + 4; // 从 "Per " 后面开始
+            int end = d.indexOf(" -");         // 到第一个 " -" 为止
+
+            // 截取中间部分
+            String servingSize = d.substring(start, end).trim();
+
             // Create BasicFood entity using simple constructor
-            return new BasicFood(foodId, foodName, foodDescription, foodType, foodUrl, macro);
+            return new BasicFood(foodId, foodName, foodDescription, foodType, foodUrl, macro, servingSize);
 
         } catch (Exception e) {
             System.err.println("❌ Failed to parse BasicFood from JSON: " + e.getMessage());
@@ -191,6 +199,7 @@ public class FatSecretFoodMapper {
             System.out.println("Food Type: " + basicFood.getFoodType());
             System.out.println("Food Description: " + basicFood.getFoodDescription());
             System.out.println("Food URL: " + basicFood.getFoodUrl());
+            System.out.println("Serving Size: " + basicFood.getServingSize());
             System.out.println("\n");
 
             // Test macro getter
@@ -224,7 +233,8 @@ public class FatSecretFoodMapper {
                     "Apple",
                     "Per 100g - Fresh apple",
                     "Generic",
-                    testMacro
+                    testMacro,
+                    "Per 100g"
             );
 
             System.out.println("=== BasicFood created directly (no mapper) ===");
