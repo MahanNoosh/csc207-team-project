@@ -45,16 +45,12 @@ public class FatSecretFoodMapper {
             // Parse macro from description
             Macro macro = parseMacroFromDescription(foodDescription);
 
-            // Parse serving size from description (e.g., "Per 100g")
-            String d = food.optString("food_description", "");
-            int start = d.indexOf("Per ") + 4; // 从 "Per " 后面开始
-            int end = d.indexOf(" -");         // 到第一个 " -" 为止
-
-            // 截取中间部分
-            String servingSize = d.substring(start, end).trim();
+            // Parse serving size and unit from description (e.g., "Per 100g")
+            ServingInfo servingInfo = parseServingFromDescription(foodDescription);
 
             // Create BasicFood entity using simple constructor
-            return new BasicFood(foodId, foodName, foodDescription, foodType, foodUrl, macro, servingSize);
+            return new BasicFood(foodId, foodName, foodDescription, foodType, foodUrl, macro,
+                               servingInfo.amount, servingInfo.unit);
 
         } catch (Exception e) {
             System.err.println("❌ Failed to parse BasicFood from JSON: " + e.getMessage());
@@ -80,9 +76,8 @@ public class FatSecretFoodMapper {
         if (foodObj instanceof JSONObject) {
             // Single food object
             return (JSONObject) foodObj;
-        } else if (foodObj instanceof JSONArray) {
+        } else if (foodObj instanceof JSONArray foodArray) {
             // Array of foods, search for matching food name
-            JSONArray foodArray = (JSONArray) foodObj;
 
             for (int i = 0; i < foodArray.length(); i++) {
                 JSONObject currentFood = foodArray.getJSONObject(i);
@@ -161,6 +156,65 @@ public class FatSecretFoodMapper {
     }
 
     /**
+     * Parse serving information from description.
+     * Example: "Per 100g - ..." → ServingInfo(100.0, "g")
+     *          "Per 1 cup - ..." → ServingInfo(1.0, "cup")
+     *
+     * @param description The food description string
+     * @return ServingInfo with amount and unit
+     */
+    private ServingInfo parseServingFromDescription(String description) {
+        if (description == null || description.isBlank()) {
+            return new ServingInfo(100.0, "g"); // Default
+        }
+
+        try {
+            String lowerDesc = description.toLowerCase().trim();
+            if (!lowerDesc.startsWith("per ")) {
+                return new ServingInfo(100.0, "g");
+            }
+
+            // Extract the part after "Per " and before " -"
+            int dashIndex = description.indexOf(" -");
+            String servingPart;
+            if (dashIndex > 0) {
+                servingPart = description.substring(4, dashIndex).trim(); // Skip "Per "
+            } else {
+                servingPart = description.substring(4).trim();
+            }
+
+            // Parse amount and unit (e.g., "100g", "1 cup")
+            java.util.regex.Matcher matcher = java.util.regex.Pattern
+                    .compile("(\\d+(?:\\.\\d+)?)\\s*([a-zA-Z]+)")
+                    .matcher(servingPart);
+
+            if (matcher.find()) {
+                double amount = Double.parseDouble(matcher.group(1));
+                String unit = matcher.group(2);
+                return new ServingInfo(amount, unit);
+            }
+
+        } catch (Exception e) {
+            // If parsing fails, return default
+        }
+
+        return new ServingInfo(100.0, "g");
+    }
+
+    /**
+     * Helper class to hold serving information.
+     */
+    private static class ServingInfo {
+        final double amount;
+        final String unit;
+
+        ServingInfo(double amount, String unit) {
+            this.amount = amount;
+            this.unit = unit;
+        }
+    }
+
+    /**
      * Main method to test the mapper with sample JSON.
      */
     public static void main(String[] args) {
@@ -200,6 +254,7 @@ public class FatSecretFoodMapper {
             System.out.println("Food Description: " + basicFood.getFoodDescription());
             System.out.println("Food URL: " + basicFood.getFoodUrl());
             System.out.println("Serving Size: " + basicFood.getServingSize());
+            System.out.println("Serving SizeUnit: " + basicFood.getServingUnit());
             System.out.println("\n");
 
             // Test macro getter
@@ -233,8 +288,7 @@ public class FatSecretFoodMapper {
                     "Apple",
                     "Per 100g - Fresh apple",
                     "Generic",
-                    testMacro,
-                    "Per 100g"
+                    testMacro
             );
 
             System.out.println("=== BasicFood created directly (no mapper) ===");
@@ -243,6 +297,7 @@ public class FatSecretFoodMapper {
             System.out.println("Food Type: " + simpleFood.getFoodType());
             System.out.println("Food Description: " + simpleFood.getFoodDescription());
             System.out.println("Food URL: " + simpleFood.getFoodUrl() + " (should be null)");
+            System.out.println("Serving Size: " + simpleFood.getServingSize() + simpleFood.getServingUnit() + " (default: 0g)");
             System.out.println("\nMacro Information:");
             System.out.println("  Calories: " + simpleFood.getMacro().calories() + " kcal");
             System.out.println("  Protein: " + simpleFood.getMacro().proteinG() + " g");
