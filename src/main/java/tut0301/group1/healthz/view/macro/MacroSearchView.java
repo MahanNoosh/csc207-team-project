@@ -31,6 +31,7 @@ public class MacroSearchView {
 
         // top section
 
+
         // bottom section
 
     }
