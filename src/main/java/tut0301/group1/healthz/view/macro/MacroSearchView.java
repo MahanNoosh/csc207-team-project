@@ -152,7 +152,7 @@ public class MacroSearchView {
         // History title
         Label historyTitle = new Label("History");
         historyTitle.setFont(Font.font("Inter", FontWeight.BOLD, 24));
-        historyTitle.setTextFill(Color.web("#059669"));
+        historyTitle.setStyle("-fx-text-fill: #059669;");
 
         // Results container
         resultsContainer = new VBox(15);
@@ -198,11 +198,11 @@ public class MacroSearchView {
 
         Label foodName = new Label(food.name);
         foodName.setFont(Font.font("Inter", FontWeight.BOLD, 20));
-        foodName.setTextFill(Color.web("#111827"));
+        foodName.setStyle("-fx-text-fill: #111827;");
 
         Label servingSize = new Label("Serving Size: " + food.servingSize);
         servingSize.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
-        servingSize.setTextFill(Color.web("#6B7280"));
+        servingSize.setStyle("-fx-text-fill: #6B7280");
 
         // Macros row
         HBox macrosRow = new HBox(30);
@@ -230,7 +230,7 @@ public class MacroSearchView {
     private Label createMacroLabel(String text) {
         Label label = new Label(text);
         label.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
-        label.setTextFill(Color.web("#374151"));
+        label.setStyle("-fx-text-fill: #374151;");
         return label;
     }
 
