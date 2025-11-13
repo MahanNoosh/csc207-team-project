@@ -28,9 +28,6 @@ public class MacroSearchView {
     public MacroSearchView() {
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1200, 800);
-
-        // Load CSS if you have it
-        // scene.getStylesheets().add(getClass().getResource("/styles/macrosearch.css").toExternalForm());
     }
 
     private BorderPane createMainLayout() {
