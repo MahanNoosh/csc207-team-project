@@ -37,7 +37,7 @@ public class RecipeSearchView {
         root.setTop(header);
 
         // Center section
-        ScrollPane contentScroll = new ScrollPane(contentContentArea());
+        ScrollPane contentScroll = new ScrollPane(createContentArea());
         contentScroll.setFitToWidth(true);
         contentScroll.setFitToHeight(true);
         contentScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
@@ -82,6 +82,14 @@ public class RecipeSearchView {
 
         profileSection.getChildren().addAll(healthzLogo, spacer, profilePic);
         return profileSection;
+    }
+
+    // TODO: implement createContentArea
+    private ScrollPane createContentArea() {
+        ScrollPane contentScroll = new ScrollPane();
+        contentScroll.setFitToWidth(true);
+
+        return contentScroll;
     }
 
     private static class RecipeItem {
