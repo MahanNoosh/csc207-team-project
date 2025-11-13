@@ -34,11 +34,11 @@ public class MacroSearchView {
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #F5F5F5;");
 
-        // Top section - header
+        // top section - header
         VBox header = createHeader();
         root.setTop(header);
 
-        // Center section - content area with search results
+        // center section - content area with search results
         ScrollPane contentScroll = new ScrollPane(createContentArea());
         contentScroll.setFitToWidth(true);
         contentScroll.setFitToHeight(true);
@@ -56,20 +56,17 @@ public class MacroSearchView {
         header.setPadding(new Insets(30, 60, 30, 60));
         header.setStyle("-fx-background-color: white;");
 
-        // Profile section (HealthZ logo + profile pic)
+        // profile section (HealthZ logo + profile pic)
         HBox profileSection = createProfileSection();
 
-        // Title
         Label macroTitle = new Label("Nutrition Lookup");
         macroTitle.setFont(Font.font("Inter", FontWeight.BOLD, 48));
         macroTitle.setTextFill(Color.web("#111827"));
 
-        // Subtitle
         Label macroSubTitle = new Label("Search for a food to see its nutritional information.");
         macroSubTitle.setFont(Font.font("Inter", FontWeight.NORMAL, 18));
         macroSubTitle.setTextFill(Color.web("#059669"));
 
-        // Search bar
         HBox searchBar = createSearchBar();
 
         header.getChildren().addAll(profileSection, macroTitle, macroSubTitle, searchBar);
@@ -119,11 +116,9 @@ public class MacroSearchView {
                         "-fx-border-width: 2px;"
         );
 
-        // Search icon
         Label searchIcon = new Label("🔍");
         searchIcon.setFont(Font.font(20));
 
-        // Search text field
         searchField = new TextField();
         searchField.setPromptText("Search for a food like \"apple\"...");
         searchField.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
@@ -135,7 +130,6 @@ public class MacroSearchView {
         searchField.setPrefWidth(700);
         HBox.setHgrow(searchField, Priority.ALWAYS);
 
-        // Handle search on Enter key
         searchField.setOnAction(e -> performSearch(searchField.getText()));
 
         searchContainer.getChildren().addAll(searchIcon, searchField);
@@ -149,16 +143,14 @@ public class MacroSearchView {
         VBox content = new VBox(20);
         content.setPadding(new Insets(30, 60, 30, 60));
 
-        // History title
+        // history title
         Label historyTitle = new Label("History");
         historyTitle.setFont(Font.font("Inter", FontWeight.BOLD, 24));
         historyTitle.setStyle("-fx-text-fill: #059669;");
 
-        // Results container
         resultsContainer = new VBox(15);
         resultsContainer.setAlignment(Pos.TOP_CENTER);
 
-        // Load sample history
         loadSampleHistory();
 
         content.getChildren().addAll(historyTitle, resultsContainer);
@@ -192,7 +184,7 @@ public class MacroSearchView {
         );
         card.setMaxWidth(1080);
 
-        // Left side - Food info
+        // left side - Food info
         VBox foodInfo = new VBox(8);
         HBox.setHgrow(foodInfo, Priority.ALWAYS);
 
@@ -204,7 +196,7 @@ public class MacroSearchView {
         servingSize.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
         servingSize.setStyle("-fx-text-fill: #6B7280");
 
-        // Macros row
+        // macros row
         HBox macrosRow = new HBox(30);
         macrosRow.setAlignment(Pos.CENTER_LEFT);
 
@@ -217,7 +209,7 @@ public class MacroSearchView {
 
         foodInfo.getChildren().addAll(foodName, servingSize, macrosRow);
 
-        // Right side - Add button
+        // right side - Add button
         Button addButton = createAddButton();
 
         card.getChildren().addAll(foodInfo, addButton);
@@ -249,7 +241,6 @@ public class MacroSearchView {
                         "-fx-cursor: hand;"
         );
 
-        // Hover effect
         addButton.setOnMouseEntered(e ->
                 addButton.setStyle(
                         "-fx-background-color: #8FB3A9; " +
@@ -270,7 +261,7 @@ public class MacroSearchView {
 
         addButton.setOnAction(e -> {
             System.out.println("Add to Log clicked!");
-            // TODO: Implement add to log functionality
+            // TODO: implement add to log functionality
         });
 
         return addButton;
@@ -286,8 +277,8 @@ public class MacroSearchView {
 
         System.out.println("Searching for: " + query);
 
-        // TODO: Replace with actual API call
-        // For now, just show a message
+        // TODO: replace with actual API call
+        // just showing a message for now
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Search");
         alert.setHeaderText("Searching for: " + query);

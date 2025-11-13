@@ -1,3 +1,4 @@
+/*
 package tut0301.group1.healthz.view.recipe;
 
 import javafx.geometry.Insets;
@@ -14,6 +15,7 @@ import tut0301.group1.healthz.recipeapi.Recipe;
 /**
  * Recipe Search page that allows user to search recipe of food by name or ingredient.
  */
+/*
 public class RecipeSearchView {
     private Scene scene;
     private TextField searchField;
@@ -60,6 +62,7 @@ public class RecipeSearchView {
     /**
      * Create profile section with HealthZ logo and profile picture
      */
+/*
     private HBox createProfileSection() {
         HBox profileSection = new HBox();
         profileSection.setAlignment(Pos.CENTER_LEFT);
@@ -109,3 +112,4 @@ public class RecipeSearchView {
     }
 }
 
+*/

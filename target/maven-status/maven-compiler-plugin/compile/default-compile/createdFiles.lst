@@ -87,7 +87,6 @@ tut0301/group1/healthz/usecase/auth/forgotpassword/ForgotPasswordInteractor.clas
 tut0301/group1/healthz/usecase/auth/LoginInteractor.class
 tut0301/group1/healthz/dataaccess/supabase/mapping/ProfileJsonMapper.class
 tut0301/group1/healthz/usecase/auth/LoginOutputBoundary.class
-tut0301/group1/healthz/view/recipe/RecipeSearchView$RecipeItem.class
 tut0301/group1/healthz/interfaceadapter/auth/AuthController.class
 tut0301/group1/healthz/dataaccess/API/API_call_example.class
 tut0301/group1/healthz/usecase/auth/forgotpassword/ForgotPasswordInputData.class
@@ -135,4 +134,3 @@ tut0301/group1/healthz/viewmodel/AuthLoginViewModel.class
 tut0301/group1/healthz/entities/user/User.class
 tut0301/group1/healthz/usecase/auth/signup/SignupInputData.class
 tut0301/group1/healthz/dataaccess/inmemory/PlainPasswordHasher.class
-tut0301/group1/healthz/view/recipe/RecipeSearchView.class
