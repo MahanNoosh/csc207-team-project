@@ -21,12 +21,12 @@ public class Recipe {
     private int prepTimeMinutes;
     private int cookTimeMinutes;
     private int servings;
-    private String cuisine;
-    private String difficulty;
+    // private String cuisine;
+    // private String difficulty;
     private String imageUrl;
-    private List<String> tags;
-    private final LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    // private List<String> tags;
+    // private final LocalDateTime createdAt;
+    // private LocalDateTime updatedAt;
 
     // Cached health score (recalculate when ingredients change)
     private Double cachedHealthScore;
@@ -41,8 +41,10 @@ public class Recipe {
     public Recipe(String recipeId, String name, String description,
                   List<String> instructions, // List<RecipeIngredient> ingredients,
                   int prepTimeMinutes, int cookTimeMinutes, int servings,
-                  String cuisine, String difficulty, String imageUrl,
-                  List<String> tags, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                  // String cuisine, String difficulty,
+                  String imageUrl
+                  // List<String> tags, LocalDateTime createdAt, LocalDateTime updatedAt
+                  ) {
         this.recipeId = recipeId;
         this.name = name;
         this.description = description;
@@ -51,29 +53,32 @@ public class Recipe {
         this.prepTimeMinutes = prepTimeMinutes;
         this.cookTimeMinutes = cookTimeMinutes;
         this.servings = servings;
-        this.cuisine = cuisine;
-        this.difficulty = difficulty;
+        // this.cuisine = cuisine;
+        // this.difficulty = difficulty;
         this.imageUrl = imageUrl;
-        this.tags = new ArrayList<>(tags);
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        // this.tags = new ArrayList<>(tags);
+        // this.createdAt = createdAt;
+        // this.updatedAt = updatedAt;
         this.cachedHealthScore = null;
     }
 
     /**
      * Minimal constructor for creating new recipes
-     */
     public Recipe(String recipeId, String name, // List<RecipeIngredient> ingredients,
                   List<String> instructions, int servings) {
         this(recipeId, name, "", instructions, // ingredients,
                 0, 0, servings,
                 "", "Medium", "", new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now());
+    }*/
+
+    public String getName() {
+        return name;
     }
 
     /**
+     *
      * Private constructor for builder pattern
-     */
-    /** private Recipe(RecipeBuilder builder) {
+     private Recipe(RecipeBuilder builder) {
         this.recipeId = builder.recipeId;
         this.name = builder.name;
         this.description = builder.description;
@@ -89,5 +94,6 @@ public class Recipe {
         this.createdAt = builder.createdAt != null ? builder.createdAt : LocalDateTime.now();
         this.updatedAt = builder.updatedAt != null ? builder.updatedAt : LocalDateTime.now();
         this.cachedHealthScore = null;
-    }**/
+    }
+     */
 }
