@@ -24,11 +24,6 @@ public class GetDailySummaryUseCase {
 
     /**
      * DailySummary: Output data structure containing daily nutrition summary.
-     *
-     * This is an immutable data transfer object that encapsulates:
-     * - The date being summarized
-     * - All food logs for that date
-     * - Total macro consumed
      */
     public static class DailySummary {
         private final LocalDate date;

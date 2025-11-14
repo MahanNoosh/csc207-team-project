@@ -1,6 +1,7 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
-import tut0301.group1.healthz.entities.nutrition.BasicFood;
+import tut0301.group1.healthz.dataaccess.API.FatSecretFoodGetClient;
+import tut0301.group1.healthz.entities.nutrition.DetailFood;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 
@@ -32,33 +33,45 @@ public class GetDailySummaryUseCaseTest {
             System.out.println("Created profile: " + profile.getUserId());
             System.out.println("Target: " + profile.getDailyCalorieTarget().orElse(0.0) + " kcal\n");
 
-            // 2. Create test foods
+            // 2. Create test foods with DetailFood and FatSecretFoodGetClient.ServingInfo
             Macro appleMacro = new Macro(52, 0.3, 0.2, 14);
-            BasicFood apple = new BasicFood(1, "Apple", "Fresh apple", "Generic",
-                    "http://example.com", appleMacro, 100.0, "g");
+            DetailFood apple = new DetailFood(1, "Apple", "Fresh apple", "Generic",
+                    "http://example.com", appleMacro, 100.0, "g",
+                    null, null, null, null);
+            FatSecretFoodGetClient.ServingInfo appleServing = new FatSecretFoodGetClient.ServingInfo(
+                    1001, "100 g", 100.0, "g",
+                    52.0, 0.3, 0.2, 14.0, null, null, null);
 
             Macro chickenMacro = new Macro(165, 31, 3.6, 0);
-            BasicFood chicken = new BasicFood(2, "Chicken Breast", "Grilled chicken", "Generic",
-                    "http://example.com", chickenMacro, 100.0, "g");
+            DetailFood chicken = new DetailFood(2, "Chicken Breast", "Grilled chicken", "Generic",
+                    "http://example.com", chickenMacro, 100.0, "g",
+                    null, null, null, null);
+            FatSecretFoodGetClient.ServingInfo chickenServing = new FatSecretFoodGetClient.ServingInfo(
+                    2001, "100 g", 100.0, "g",
+                    165.0, 31.0, 3.6, 0.0, null, null, null);
 
             Macro riceMacro = new Macro(130, 2.7, 0.3, 28);
-            BasicFood rice = new BasicFood(3, "White Rice", "Cooked rice", "Generic",
-                    "http://example.com", riceMacro, 100.0, "g");
+            DetailFood rice = new DetailFood(3, "White Rice", "Cooked rice", "Generic",
+                    "http://example.com", riceMacro, 100.0, "g",
+                    null, null, null, null);
+            FatSecretFoodGetClient.ServingInfo riceServing = new FatSecretFoodGetClient.ServingInfo(
+                    3001, "100 g", 100.0, "g",
+                    130.0, 2.7, 0.3, 28.0, null, null, null);
 
             // 3. Use LogFoodIntakeUseCase to add some food logs
             LogFoodIntakeUseCase logUseCase = new LogFoodIntakeUseCase();
 
             System.out.println("--- Logging food intake ---");
-            logUseCase.execute(profile, apple, 150.0, "Breakfast");
+            logUseCase.executeWithAmount(profile, apple, appleServing, 150.0, "Breakfast");
             System.out.println("Logged: 150g Apple (Breakfast)");
 
-            logUseCase.execute(profile, chicken, 200.0, "Lunch");
+            logUseCase.executeWithAmount(profile, chicken, chickenServing, 200.0, "Lunch");
             System.out.println("Logged: 200g Chicken (Lunch)");
 
-            logUseCase.execute(profile, rice, 150.0, "Lunch");
+            logUseCase.executeWithAmount(profile, rice, riceServing, 150.0, "Lunch");
             System.out.println("Logged: 150g Rice (Lunch)");
 
-            logUseCase.execute(profile, chicken, 150.0, "Dinner");
+            logUseCase.executeWithAmount(profile, chicken, chickenServing, 150.0, "Dinner");
             System.out.println("Logged: 150g Chicken (Dinner)");
             System.out.println();
 

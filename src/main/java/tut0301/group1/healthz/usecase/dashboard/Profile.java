@@ -21,8 +21,6 @@ public class Profile {
     private Double targetWeightKg;
     private Optional<Double> dailyCalorieTarget;
     private UserDashboardPort.HealthCondition healthCondition;
-
-    // Food intake tracking
     private final List<FoodLog> foodLogs;
 
     public Profile(String userId, Double weightKg, Double heightCm, Integer ageYears,

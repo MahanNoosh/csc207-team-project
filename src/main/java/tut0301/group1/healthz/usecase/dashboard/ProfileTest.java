@@ -1,6 +1,7 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
-import tut0301.group1.healthz.entities.nutrition.BasicFood;
+import tut0301.group1.healthz.dataaccess.API.FatSecretFoodGetClient;
+import tut0301.group1.healthz.entities.nutrition.DetailFood;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 
@@ -37,42 +38,54 @@ public class ProfileTest {
             System.out.println("Daily calorie target: " + profile.getDailyCalorieTarget().orElse(0.0) + " kcal");
             System.out.println();
 
-            // Create test foods
+            // Create test foods with DetailFood and FatSecretFoodGetClient.ServingInfo
             Macro appleMacro = new Macro(52, 0.3, 0.2, 14);  // per 100g
-            BasicFood apple = new BasicFood(
+            DetailFood apple = new DetailFood(
                     1, "Apple", "Fresh apple", "Generic", "http://example.com",
-                    appleMacro, 100.0, "g");
+                    appleMacro, 100.0, "g",
+                    null, null, null, null);
+            FatSecretFoodGetClient.ServingInfo appleServing = new FatSecretFoodGetClient.ServingInfo(
+                    1001, "100 g", 100.0, "g",
+                    52.0, 0.3, 0.2, 14.0, null, null, null);
 
             Macro chickenMacro = new Macro(165, 31, 3.6, 0);  // per 100g
-            BasicFood chicken = new BasicFood(
+            DetailFood chicken = new DetailFood(
                     2, "Chicken Breast", "Grilled chicken", "Generic", "http://example.com",
-                    chickenMacro, 100.0, "g");
+                    chickenMacro, 100.0, "g",
+                    null, null, null, null);
+            FatSecretFoodGetClient.ServingInfo chickenServing = new FatSecretFoodGetClient.ServingInfo(
+                    2001, "100 g", 100.0, "g",
+                    165.0, 31.0, 3.6, 0.0, null, null, null);
 
             Macro riceMacro = new Macro(130, 2.7, 0.3, 28);  // per 100g
-            BasicFood rice = new BasicFood(
+            DetailFood rice = new DetailFood(
                     3, "White Rice", "Cooked white rice", "Generic", "http://example.com",
-                    riceMacro, 100.0, "g");
+                    riceMacro, 100.0, "g",
+                    null, null, null, null);
+            FatSecretFoodGetClient.ServingInfo riceServing = new FatSecretFoodGetClient.ServingInfo(
+                    3001, "100 g", 100.0, "g",
+                    130.0, 2.7, 0.3, 28.0, null, null, null);
 
             // Test 1: Add food logs for today
             System.out.println("--- Test 1: Logging food intake ---");
             LocalDateTime now = LocalDateTime.now();
 
-            // Breakfast: 150g apple
-            FoodLog log1 = new FoodLog(apple, 1.5, "Breakfast", now.withHour(8).withMinute(0));
+            // Breakfast: 150g apple (1.5 servings of 100g)
+            FoodLog log1 = new FoodLog(apple, appleServing, 1.5, "Breakfast", now.withHour(8).withMinute(0));
             profile.addFoodLog(log1);
             System.out.println("Breakfast: 150g Apple → " + log1.getActualMacro().calories() + " kcal");
 
             // Lunch: 200g chicken + 150g rice
-            FoodLog log2 = new FoodLog(chicken, 2.0, "Lunch", now.withHour(12).withMinute(30));
-            FoodLog log3 = new FoodLog(rice, 1.5, "Lunch", now.withHour(12).withMinute(30));
+            FoodLog log2 = new FoodLog(chicken, chickenServing, 2.0, "Lunch", now.withHour(12).withMinute(30));
+            FoodLog log3 = new FoodLog(rice, riceServing, 1.5, "Lunch", now.withHour(12).withMinute(30));
             profile.addFoodLog(log2);
             profile.addFoodLog(log3);
             System.out.println("Lunch: 200g Chicken → " + log2.getActualMacro().calories() + " kcal");
             System.out.println("Lunch: 150g Rice → " + log3.getActualMacro().calories() + " kcal");
 
             // Dinner: 150g chicken + 100g rice
-            FoodLog log4 = new FoodLog(chicken, 1.5, "Dinner", now.withHour(19).withMinute(0));
-            FoodLog log5 = new FoodLog(rice, 1.0, "Dinner", now.withHour(19).withMinute(0));
+            FoodLog log4 = new FoodLog(chicken, chickenServing, 1.5, "Dinner", now.withHour(19).withMinute(0));
+            FoodLog log5 = new FoodLog(rice, riceServing, 1.0, "Dinner", now.withHour(19).withMinute(0));
             profile.addFoodLog(log4);
             profile.addFoodLog(log5);
             System.out.println("Dinner: 150g Chicken → " + log4.getActualMacro().calories() + " kcal");
