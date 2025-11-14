@@ -4,7 +4,7 @@ package tut0301.group1.healthz.entities.nutrition;
  * BasicFood: Pure domain entity representing basic food information.
  */
 public class BasicFood {
-    private final int foodId;
+    private final long foodId;
     private final String foodName;
     private final String foodDescription;
     private final String foodType;
@@ -17,7 +17,7 @@ public class BasicFood {
      * Full constructor for creating a BasicFood entity.
      * All parsing and data extraction should be done before calling this constructor.
      */
-    public BasicFood(int foodId, String foodName, String foodDescription,
+    public BasicFood(long foodId, String foodName, String foodDescription,
                      String foodType, String foodUrl, Macro macro,
                      double servingSize, String servingUnit) {
         this.foodId = foodId;
@@ -35,12 +35,12 @@ public class BasicFood {
      * Sets foodId to 0, foodUrl to null, servingSize to 100.0, and servingUnit to "g".
      */
     public BasicFood(String foodName, String foodDescription, String foodType, Macro macro) {
-        this(0, foodName, foodDescription, foodType, null, macro, 0, "g");
+        this(0L, foodName, foodDescription, foodType, null, macro, 0, "g");
     }
 
     // Getters
 
-    public int getFoodId() {
+    public long getFoodId() {
         return foodId;
     }
 

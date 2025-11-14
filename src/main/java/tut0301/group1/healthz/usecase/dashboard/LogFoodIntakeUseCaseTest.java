@@ -1,20 +1,20 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
 import tut0301.group1.healthz.dataaccess.API.FatSecretFoodGetClient;
-import tut0301.group1.healthz.entities.nutrition.DetailFood;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * Simple test for LogFoodIntakeUseCase (Updated with FatSecretFoodGetClient.ServingInfo).
+ * Simple test for LogFoodIntakeUseCase (Updated with FatSecretFoodGetClient.FoodDetails).
  */
 public class LogFoodIntakeUseCaseTest {
 
     public static void main(String[] args) {
-        System.out.println("=== Testing LogFoodIntakeUseCase (Updated) ===\n");
+        System.out.println("=== Testing LogFoodIntakeUseCase (Updated with FoodDetails) ===\n");
 
         try {
             // 1. Create a Profile
@@ -33,26 +33,7 @@ public class LogFoodIntakeUseCaseTest {
             System.out.println("Created profile: " + profile.getUserId());
             System.out.println();
 
-            // 2. Create a test DetailFood (Apple)
-            Macro baseMacro = new Macro(52, 0.3, 0.2, 14);
-            DetailFood apple = new DetailFood(
-                    1,
-                    "Apple",
-                    "Fresh apple",
-                    "Generic",
-                    "http://example.com",
-                    baseMacro,
-                    100.0,
-                    "g",
-                    null,  // foodImages
-                    null,  // foodAttributes
-                    null,  // preferences
-                    null   // servings
-            );
-            System.out.println("Created food: " + apple.getFoodName());
-            System.out.println();
-
-            // 3. Create FatSecretFoodGetClient.ServingInfo options
+            // 2. Create FatSecretFoodGetClient.ServingInfo options
             FatSecretFoodGetClient.ServingInfo serving100g = new FatSecretFoodGetClient.ServingInfo(
                     1001,           // servingId
                     "100 g",        // servingDescription
@@ -79,7 +60,18 @@ public class LogFoodIntakeUseCaseTest {
                     null, null, null
             );
 
-            System.out.println("Available servings:");
+            // 3. Create FatSecretFoodGetClient.FoodDetails (Apple) with multiple servings
+            FatSecretFoodGetClient.FoodDetails apple = new FatSecretFoodGetClient.FoodDetails(
+                    1,              // foodId
+                    "Apple",        // name
+                    "Generic",      // foodType
+                    null,           // brandName
+                    "http://example.com/apple",  // foodUrl
+                    Arrays.asList(serving100g, servingSmall)  // servings
+            );
+
+            System.out.println("Created food: " + apple.name);
+            System.out.println("Available servings: " + apple.servings.size());
             System.out.println("  1. " + serving100g.servingDescription +
                              " = " + serving100g.calories + " kcal");
             System.out.println("  2. " + servingSmall.servingDescription +

@@ -1,12 +1,13 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
 import tut0301.group1.healthz.dataaccess.API.FatSecretFoodGetClient;
-import tut0301.group1.healthz.entities.nutrition.DetailFood;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,33 +39,42 @@ public class ProfileTest {
             System.out.println("Daily calorie target: " + profile.getDailyCalorieTarget().orElse(0.0) + " kcal");
             System.out.println();
 
-            // Create test foods with DetailFood and FatSecretFoodGetClient.ServingInfo
-            Macro appleMacro = new Macro(52, 0.3, 0.2, 14);  // per 100g
-            DetailFood apple = new DetailFood(
-                    1, "Apple", "Fresh apple", "Generic", "http://example.com",
-                    appleMacro, 100.0, "g",
-                    null, null, null, null);
+            // Create test foods with FatSecretFoodGetClient.FoodDetails and ServingInfo
             FatSecretFoodGetClient.ServingInfo appleServing = new FatSecretFoodGetClient.ServingInfo(
                     1001, "100 g", 100.0, "g",
                     52.0, 0.3, 0.2, 14.0, null, null, null);
+            FatSecretFoodGetClient.FoodDetails apple = new FatSecretFoodGetClient.FoodDetails(
+                    1,              // foodId
+                    "Apple",        // name
+                    "Generic",      // foodType
+                    null,           // brandName
+                    "http://example.com/apple",  // foodUrl
+                    Collections.singletonList(appleServing)  // servings
+            );
 
-            Macro chickenMacro = new Macro(165, 31, 3.6, 0);  // per 100g
-            DetailFood chicken = new DetailFood(
-                    2, "Chicken Breast", "Grilled chicken", "Generic", "http://example.com",
-                    chickenMacro, 100.0, "g",
-                    null, null, null, null);
             FatSecretFoodGetClient.ServingInfo chickenServing = new FatSecretFoodGetClient.ServingInfo(
                     2001, "100 g", 100.0, "g",
                     165.0, 31.0, 3.6, 0.0, null, null, null);
+            FatSecretFoodGetClient.FoodDetails chicken = new FatSecretFoodGetClient.FoodDetails(
+                    2,              // foodId
+                    "Chicken Breast",  // name
+                    "Generic",      // foodType
+                    null,           // brandName
+                    "http://example.com/chicken",  // foodUrl
+                    Collections.singletonList(chickenServing)  // servings
+            );
 
-            Macro riceMacro = new Macro(130, 2.7, 0.3, 28);  // per 100g
-            DetailFood rice = new DetailFood(
-                    3, "White Rice", "Cooked white rice", "Generic", "http://example.com",
-                    riceMacro, 100.0, "g",
-                    null, null, null, null);
             FatSecretFoodGetClient.ServingInfo riceServing = new FatSecretFoodGetClient.ServingInfo(
                     3001, "100 g", 100.0, "g",
                     130.0, 2.7, 0.3, 28.0, null, null, null);
+            FatSecretFoodGetClient.FoodDetails rice = new FatSecretFoodGetClient.FoodDetails(
+                    3,              // foodId
+                    "White Rice",   // name
+                    "Generic",      // foodType
+                    null,           // brandName
+                    "http://example.com/rice",  // foodUrl
+                    Collections.singletonList(riceServing)  // servings
+            );
 
             // Test 1: Add food logs for today
             System.out.println("--- Test 1: Logging food intake ---");
@@ -100,7 +110,7 @@ public class ProfileTest {
             System.out.println("Total food entries today: " + todayLogs.size());
             System.out.println("\nDetailed log:");
             for (FoodLog log : todayLogs) {
-                System.out.println("  • [" + log.getMeal() + "] " + log.getFood().getFoodName() +
+                System.out.println("  • [" + log.getMeal() + "] " + log.getFood().name +
                                  ": " + log.getActualServingSize() + log.getServingUnit() +
                                  " (" + log.getActualMacro().calories() + " kcal)");
             }

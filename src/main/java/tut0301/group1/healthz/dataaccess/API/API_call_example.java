@@ -108,29 +108,6 @@ public class API_call_example {
             }
 
 
-            // ===================== 7 Parse and output BasicFood (Clean Architecture) =====================
-            System.out.println("🔎 Creating BasicFood from search result using Mapper...\n");
-
-            try {
-                // Use FatSecretFoodMapper to convert JSON to BasicFood entity
-                FatSecretFoodMapper mapper = new FatSecretFoodMapper();
-                BasicFood basicFood = mapper.fromJson(foodJson, foodName);
-
-                // Display the entity data
-                System.out.println("=== BasicFood Details (Clean Architecture) ===");
-                System.out.println("Food ID: " + basicFood.getFoodId());
-                System.out.println("Food Name: " + basicFood.getFoodName());
-                System.out.println("Food Type: " + basicFood.getFoodType());
-                System.out.println("Food Description: " + basicFood.getFoodDescription());
-                System.out.println("Macro: " + basicFood.getMacro());
-                System.out.println("URL: " + basicFood.getFoodUrl());
-                System.out.println("===============================================\n");
-
-            } catch (Exception e) {
-                System.err.println("❌ Failed to create BasicFood: " + e.getMessage());
-                e.printStackTrace();
-            }
-
         } catch (Exception e) {
             System.err.println("❌ An error occurred: " + e.getMessage());
             e.printStackTrace();

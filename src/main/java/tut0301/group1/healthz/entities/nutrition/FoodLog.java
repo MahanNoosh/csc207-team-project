@@ -5,11 +5,12 @@ import tut0301.group1.healthz.dataaccess.API.FatSecretFoodGetClient;
 import java.time.LocalDateTime;
 
 /**
- * FoodLog: Entity representing a single food intake log entry.*
- * Updated to use DetailFood and FatSecretFoodGetClient.ServingInfo for more detailed tracking.
+ * FoodLog: Entity representing a single food intake log entry.
+ *
+ * Updated to use FatSecretFoodGetClient.FoodDetails and ServingInfo for more detailed tracking.
  */
 public class FoodLog {
-    private final DetailFood food;
+    private final FatSecretFoodGetClient.FoodDetails food;
     private final FatSecretFoodGetClient.ServingInfo servingInfo;  // The specific serving selected from API
     private double servingMultiplier;       // How many of the selected serving
     private Macro actualMacro;              // Calculated from servingInfo nutrition * servingMultiplier
@@ -17,9 +18,9 @@ public class FoodLog {
     private final String meal;              // Meal type ("Breakfast", "Lunch", "Dinner", "Snack")
 
     /**
-     * Constructor with DetailFood and FatSecretFoodGetClient.ServingInfo.
+     * Constructor with FatSecretFoodGetClient.FoodDetails and ServingInfo.
      */
-    public FoodLog(DetailFood food, FatSecretFoodGetClient.ServingInfo servingInfo,
+    public FoodLog(FatSecretFoodGetClient.FoodDetails food, FatSecretFoodGetClient.ServingInfo servingInfo,
                    double servingMultiplier, String meal, LocalDateTime loggedAt) {
 
         this.food = food;
@@ -74,7 +75,7 @@ public class FoodLog {
 
     // Getters
 
-    public DetailFood getFood() {
+    public FatSecretFoodGetClient.FoodDetails getFood() {
         return food;
     }
 
@@ -128,26 +129,9 @@ public class FoodLog {
     }
 
     public static void main(String[] args) {
-        System.out.println("=== Testing FoodLog Entity (Updated with FatSecretFoodGetClient.ServingInfo) ===\n");
+        System.out.println("=== Testing FoodLog Entity (Updated with FatSecretFoodGetClient.FoodDetails) ===\n");
 
         try {
-            // Create a test DetailFood (Apple)
-            Macro baseMacro = new Macro(52, 0.3, 0.2, 14);
-            DetailFood apple = new DetailFood(
-                    1,
-                    "Apple",
-                    "Fresh apple",
-                    "Generic",
-                    "https://example.com/apple",
-                    baseMacro,
-                    100.0,
-                    "g",
-                    null,  // foodImages
-                    null,  // foodAttributes
-                    null,  // preferences
-                    null   // servings
-            );
-
             // Create a FatSecretFoodGetClient.ServingInfo (100g serving)
             FatSecretFoodGetClient.ServingInfo serving100g = new FatSecretFoodGetClient.ServingInfo(
                     1001,           // servingId
@@ -163,8 +147,36 @@ public class FoodLog {
                     null            // sodium
             );
 
-            System.out.println("Food: " + apple.getFoodName());
-            System.out.println("Serving: " + serving100g.servingDescription +
+            FatSecretFoodGetClient.ServingInfo servingHalfLarge = new FatSecretFoodGetClient.ServingInfo(
+                    1002,
+                    "1/2 large (3-1/4\" dia)",
+                    0.5,
+                    "large",
+                    116.0,          // calories
+                    0.6,            // protein
+                    0.4,            // fat
+                    30.8,           // carbs
+                    null, null, null
+            );
+
+            // Create a test FoodDetails (Apple) with multiple servings
+            java.util.List<FatSecretFoodGetClient.ServingInfo> servings = java.util.Arrays.asList(
+                    serving100g,
+                    servingHalfLarge
+            );
+
+            FatSecretFoodGetClient.FoodDetails apple = new FatSecretFoodGetClient.FoodDetails(
+                    1,              // foodId
+                    "Apple",        // name
+                    "Generic",      // foodType
+                    null,           // brandName
+                    "https://example.com/apple",  // foodUrl
+                    servings        // servings
+            );
+
+            System.out.println("Food: " + apple.name);
+            System.out.println("Available servings: " + apple.servings.size());
+            System.out.println("Selected serving: " + serving100g.servingDescription +
                     " → " + serving100g.calories + " kcal\n");
 
             // Test 1: Create FoodLog with 1.5x the serving (150g) for Breakfast
@@ -192,17 +204,6 @@ public class FoodLog {
 
             // Test 3: Create with different serving (1/2 large)
             System.out.println("--- Test 3: Different serving (1/2 large) ---");
-            FatSecretFoodGetClient.ServingInfo servingHalfLarge = new FatSecretFoodGetClient.ServingInfo(
-                    1002,
-                    "1/2 large (3-1/4\" dia)",
-                    0.5,
-                    "large",
-                    116.0,          // calories
-                    0.6,            // protein
-                    0.4,            // fat
-                    30.8,           // carbs
-                    null, null, null
-            );
 
             FoodLog log2 = new FoodLog(apple, servingHalfLarge, 2.0, "Lunch", LocalDateTime.now());
             System.out.println("Meal: " + log2.getMeal());

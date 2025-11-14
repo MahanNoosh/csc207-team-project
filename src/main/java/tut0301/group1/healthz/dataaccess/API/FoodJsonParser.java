@@ -223,7 +223,7 @@ public class FoodJsonParser {
             }
 
             // Extract food details
-            String foodId = food.optString("food_id", "");
+            long foodId = food.optLong("food_id", 0L);
             String foodName = food.optString("food_name", "Unknown");
             String foodDescription = food.optString("food_description", "");
             String foodType = food.optString("food_type", "");
@@ -245,14 +245,14 @@ public class FoodJsonParser {
      * Data class to hold food search result details.
      */
     public static class FoodSearchResult {
-        public final String foodId;
+        public final long foodId;
         public final String foodName;
         public final String foodDescription;
         public final String foodType;
         public final String foodUrl;
         public final Macro macro;
 
-        public FoodSearchResult(String foodId, String foodName, String foodDescription,
+        public FoodSearchResult(long foodId, String foodName, String foodDescription,
                                 String foodType, String foodUrl, Macro macro) {
             this.foodId = foodId;
             this.foodName = foodName;
@@ -265,7 +265,7 @@ public class FoodJsonParser {
         @Override
         public String toString() {
             return "FoodSearchResult{" +
-                    "foodId='" + foodId + '\'' +
+                    "foodId=" + foodId +
                     ", foodName='" + foodName + '\'' +
                     ", foodDescription='" + foodDescription + '\'' +
                     ", foodType='" + foodType + '\'' +
