@@ -2,64 +2,35 @@ package tut0301.group1.healthz.app;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import tut0301.group1.healthz.view.macro.MacroSearchView;
-import tut0301.group1.healthz.view.auth.SignupView;
+import tut0301.group1.healthz.view.auth.LoginView;
 
 /**
- * Test launcher for MamcroSearchView
+ * Test launcher for LoginView
  */
 public class MainUI extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    //    @Override
-//    public void start(Stage primaryStage) {
-//        try {
-//            System.out.println("🔍 Launching Macro Search UI...");
-//
-//            MacroSearchView macroSearchView = new MacroSearchView();
-//
-//            primaryStage.setScene(macroSearchView.getScene());
-//            primaryStage.setTitle("HealthZ - Nutrition Lookup");
-//            primaryStage.setWidth(1200);
-//            primaryStage.setHeight(900);
-//            primaryStage.show();
-//
-//            System.out.println("✅ Macro Search UI launched successfully!");
-//
-//        } catch (Exception e) {
-//            System.err.println("❌ Error launching Macro Search UI:");
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public static void main(String[] args) {
-//        launch(args);
-//    }
     @Override
     public void start(Stage primaryStage) {
         try {
-            System.out.println("🎨 Launching Signup UI...");
+            System.out.println("🚀 Launching Login/Landing Page...");
 
-            // Create the signup view (CHANGED FROM SettingsView)
-            SignupView signupView = new SignupView();
+            LoginView loginView = new LoginView();
 
-            // Configure the window
-            primaryStage.setScene(signupView.getScene());
-            primaryStage.setTitle("HealthZ - Sign Up");
+            primaryStage.setScene(loginView.getScene());
+            primaryStage.setTitle("HealthZ - Welcome");
             primaryStage.setWidth(1200);
-            primaryStage.setHeight(900);
-
-            // Show the window
+            primaryStage.setHeight(800);
             primaryStage.show();
 
-            System.out.println("✅ Signup UI launched successfully!");
+            System.out.println("✅ Login page launched successfully!");
 
         } catch (Exception e) {
-            System.err.println("❌ Error launching UI:");
+            System.err.println("❌ Error launching Login page:");
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
