@@ -17,8 +17,6 @@ import tut0301.group1.healthz.entities.user.UserId;
 import tut0301.group1.healthz.presenter.AuthLoginPresenter;
 import tut0301.group1.healthz.presenter.SearchRecipesPresenter;
 
-import tut0301.group1.healthz.recipeapi.Recipe;
-import tut0301.group1.healthz.recipeapi.RecipeFetcher;
 import tut0301.group1.healthz.usecase.auth.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.LoginInteractor;
 
@@ -37,7 +35,7 @@ import java.util.Set;
  * Wires adapters to boundaries, then runs Login and Recipe search (with policy-aware healthy score).
  */
 public class Main {
-    public static void main(String[] args) throws Recipe.RecipeNotFoundException {
+    public static void main(String[] args) {
         // --- Right-side adapters (gateways) ---
         var users = new InMemoryUserRepo();
         var hasher = new PlainPasswordHasher();
@@ -106,15 +104,6 @@ public class Main {
         } else {
             // Fallback: just print the object
             System.out.println(vmObj);
-        }
-
-        // Recipe API call
-        try {
-            RecipeFetcher fetcher = new RecipeFetcher();
-            String name = fetcher.getRecipeName("Arrabiata");
-            System.out.println(name);
-        } catch (Recipe.RecipeNotFoundException e) {
-            System.out.println("Recipe not found!");
         }
     }
 }
