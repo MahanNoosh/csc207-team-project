@@ -2,32 +2,46 @@ package tut0301.group1.healthz.app;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import tut0301.group1.healthz.view.auth.LoginView;
+import tut0301.group1.healthz.navigation.Navigator;
 
 /**
- * Test launcher for LoginView
+ * Main Application Entry Point
+ * Initializes the app and starts with the Login page
  */
 public class MainUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
         try {
-            System.out.println("🚀 Launching Login/Landing Page...");
+            System.out.println("🚀 Starting HealthZ Application...");
 
-            LoginView loginView = new LoginView();
+            // initialize Navigator with the primary stage
+            Navigator navigator = Navigator.getInstance();
+            navigator.setStage(primaryStage);
 
-            primaryStage.setScene(loginView.getScene());
-            primaryStage.setTitle("HealthZ - Welcome");
+            // start with Login/Landing page
+            navigator.showLogin();
+
+            // configure window
             primaryStage.setWidth(1200);
             primaryStage.setHeight(800);
+            primaryStage.setResizable(true);
+
+            // show window
             primaryStage.show();
 
-            System.out.println("✅ Login page launched successfully!");
+            System.out.println("✅ HealthZ Application started successfully!");
 
         } catch (Exception e) {
-            System.err.println("❌ Error launching Login page:");
+            System.err.println("❌ Error starting application:");
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void stop() {
+        System.out.println("👋 Shutting down HealthZ Application...");
+        // Cleanup code here if needed
     }
 
     public static void main(String[] args) {

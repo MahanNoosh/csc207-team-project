@@ -206,7 +206,7 @@ public class LoginView {
 
         button.setOnAction(e -> {
             System.out.println("Sign Up clicked!");
-            // TODO: Navigate to SignupView
+            // TODO: navigate to SignupView
         });
 
         return button;
@@ -248,7 +248,7 @@ public class LoginView {
 
         button.setOnAction(e -> {
             System.out.println("Log In clicked!");
-            // TODO: Show login form or navigate to login page
+            // TODO: navigate to login page
         });
 
         return button;
