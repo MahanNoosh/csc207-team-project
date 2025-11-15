@@ -84,7 +84,7 @@ public class LoginView {
     }
 
     /**
-     * Create subtle white overlay for better text readability
+     * Create white overlay for background image
      */
     private Region createFadeOverlay() {
         Region overlay = new Region();
@@ -259,14 +259,14 @@ public class LoginView {
     }
 
     /**
-     * Get the Sign Up button (for attaching navigation logic)
+     * Get the Sign Up button (for navigation logic)
      */
     public Button getSignUpButton() {
         return signUpButton;
     }
 
     /**
-     * Get the Log In button (for attaching navigation logic)
+     * Get the Log In button (for navigation logic)
      */
     public Button getLogInButton() {
         return logInButton;

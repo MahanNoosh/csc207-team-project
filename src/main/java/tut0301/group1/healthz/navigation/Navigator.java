@@ -9,20 +9,16 @@ import tut0301.group1.healthz.view.settings.SettingsView;
 /**
  * Navigator - Handles all navigation between views
  * Part of the Presentation layer in Clean Architecture
- *
- * Singleton pattern to ensure one instance throughout the app
  */
+
 public class Navigator {
 
-    // Singleton instance
     private static Navigator instance;
 
-    // The main application stage
     private Stage primaryStage;
 
-    // Private constructor for singleton
     private Navigator() {
-        // Private to prevent direct instantiation
+        // private so we can prevent instantiation
     }
 
     /**
