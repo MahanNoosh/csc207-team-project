@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.view;
+package tut0301.group1.healthz.viewmodel;
 
 import tut0301.group1.healthz.usecase.recipes.model.SearchRecipesResponseModel;
 
