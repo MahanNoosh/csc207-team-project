@@ -43,7 +43,7 @@ public class SingleMacroPage {
         root.setStyle("-fx-background-color: #F5F5F5;");
         root.setPadding(new Insets(40, 60, 40, 60));
 
-        // Top: Food title + Add to Log button
+        // food title + Add to Log button
         HBox topContent = createTopContent();
         root.setTop(topContent);
 
