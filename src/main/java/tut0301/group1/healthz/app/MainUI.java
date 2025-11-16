@@ -2,64 +2,49 @@ package tut0301.group1.healthz.app;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import tut0301.group1.healthz.view.macro.MacroSearchView;
-import tut0301.group1.healthz.view.auth.SignupView;
+import tut0301.group1.healthz.navigation.Navigator;
 
 /**
- * Test launcher for MamcroSearchView
+ * Main Application Entry Point
+ * Initializes the app and starts with the Login page
  */
 public class MainUI extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    //    @Override
-//    public void start(Stage primaryStage) {
-//        try {
-//            System.out.println("🔍 Launching Macro Search UI...");
-//
-//            MacroSearchView macroSearchView = new MacroSearchView();
-//
-//            primaryStage.setScene(macroSearchView.getScene());
-//            primaryStage.setTitle("HealthZ - Nutrition Lookup");
-//            primaryStage.setWidth(1200);
-//            primaryStage.setHeight(900);
-//            primaryStage.show();
-//
-//            System.out.println("✅ Macro Search UI launched successfully!");
-//
-//        } catch (Exception e) {
-//            System.err.println("❌ Error launching Macro Search UI:");
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public static void main(String[] args) {
-//        launch(args);
-//    }
     @Override
     public void start(Stage primaryStage) {
         try {
-            System.out.println("🎨 Launching Signup UI...");
+            System.out.println("🚀 Starting HealthZ Application...");
 
-            // Create the signup view (CHANGED FROM SettingsView)
-            SignupView signupView = new SignupView();
+            // initialize Navigator with the primary stage
+            Navigator navigator = Navigator.getInstance();
+            navigator.setStage(primaryStage);
 
-            // Configure the window
-            primaryStage.setScene(signupView.getScene());
-            primaryStage.setTitle("HealthZ - Sign Up");
+            // start with Login/Landing page
+            navigator.showLogin();
+
+            // configure window
             primaryStage.setWidth(1200);
-            primaryStage.setHeight(900);
+            primaryStage.setHeight(800);
+            primaryStage.setResizable(true);
 
-            // Show the window
+            // show window
             primaryStage.show();
 
-            System.out.println("✅ Signup UI launched successfully!");
+            System.out.println("✅ HealthZ Application started successfully!");
 
         } catch (Exception e) {
-            System.err.println("❌ Error launching UI:");
+            System.err.println("❌ Error starting application:");
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void stop() {
+        System.out.println("👋 Shutting down HealthZ Application...");
+        // Cleanup code here if needed
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
