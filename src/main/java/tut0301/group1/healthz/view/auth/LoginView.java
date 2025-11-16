@@ -4,271 +4,171 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.TextAlignment;
 
-/**
- * Login/Landing page with background image and auth buttons
- */
 public class LoginView {
 
-    private Scene scene;
+    private final Scene scene;
+
+    private TextField emailField;
+    private PasswordField passwordField;
+    private Button loginButton;
     private Button signUpButton;
-    private Button logInButton;
 
     public LoginView() {
-        StackPane root = createMainLayout();
-        scene = new Scene(root, 1200, 800);
+        BorderPane root = createMainLayout();
+        this.scene = new Scene(root, 900, 700);
     }
 
-    /**
-     * Create main layout with background image and content overlay
-     */
-    private StackPane createMainLayout() {
-        StackPane root = new StackPane();
+    private BorderPane createMainLayout() {
+        BorderPane layout = new BorderPane();
+        layout.setStyle("-fx-background-color: #F8FBF5;");
 
-        // layer 1: bg image
-        ImageView backgroundImage = createBackgroundImage();
-        backgroundImage.fitWidthProperty().bind(root.widthProperty());
-        backgroundImage.fitHeightProperty().bind(root.heightProperty());
+        // Top logo (same as SignupView)
+        VBox topSection = createTopSection();
+        layout.setTop(topSection);
 
-        // layer 2: fade overlay
-        Region fadeOverlay = createFadeOverlay();
-        fadeOverlay.prefWidthProperty().bind(root.widthProperty());
-        fadeOverlay.prefHeightProperty().bind(root.heightProperty());
+        // Center card with login form
+        StackPane contentArea = new StackPane();
+        contentArea.setPadding(new Insets(20));
 
-        // layer 3: auth content
-        BorderPane contentLayout = new BorderPane();
+        VBox card = createCard();
+        contentArea.getChildren().add(card);
 
-        // logo at top-left
-        HBox logoContainer = new HBox();
-        logoContainer.setPadding(new Insets(30, 0, 0, 50)); // Top, Right, Bottom, Left
-        logoContainer.getChildren().add(createLogo());
-        contentLayout.setTop(logoContainer);
+        layout.setCenter(contentArea);
 
-        // title + subtitle + buttons in center
-        VBox centerContent = createCenterContent();
-        contentLayout.setCenter(centerContent);
-
-        // stack all layers
-        root.getChildren().addAll(backgroundImage, fadeOverlay, contentLayout);
-
-        return root;
+        return layout;
     }
 
-    /**
-     * Create background image with healthy food
-     */
-    private ImageView createBackgroundImage() {
-        ImageView backgroundImage = new ImageView();
+    private VBox createTopSection() {
+        VBox topBox = new VBox();
+        topBox.setPadding(new Insets(30, 40, 20, 40));
+        topBox.setAlignment(Pos.TOP_LEFT);
 
-        try {
-            Image image = new Image(getClass().getResourceAsStream("/images/healthyfoods.jpg"));
-            backgroundImage.setImage(image);
-            backgroundImage.setPreserveRatio(false);
-
-            backgroundImage.setFitWidth(1200);
-            backgroundImage.setFitHeight(800);
-
-        } catch (Exception e) {
-            System.err.println("Could not load background image. Using fallback color.");
-            // fallback: create a colored rectangle if image doesn't load
-        }
-
-        return backgroundImage;
-    }
-
-    /**
-     * Create white overlay for background image
-     */
-    private Region createFadeOverlay() {
-        Region overlay = new Region();
-        overlay.setStyle(
-                "-fx-background-color: linear-gradient(to bottom, " +
-                        "rgba(255, 255, 255, 0.0) 0%, " +
-                        "rgba(255, 255, 255, 0.3) 25%, " +
-                        "rgba(255, 255, 255, 0.7) 100%);"
-        );
-        overlay.setMouseTransparent(true);
-        return overlay;
-    }
-
-    /**
-     * Create content area with logo, title, subtitle, and buttons
-     */
-    private VBox createCenterContent() {
-        VBox content = new VBox(30);
-        content.setAlignment(Pos.CENTER);
-        content.setPadding(new Insets(50));
-
-        // Remove logo from here - it's now in top-left
-
-        // Center: Title and subtitle
-        VBox textSection = createTextSection();
-
-        // Bottom: Auth buttons
-        HBox authButtons = createAuthButtons();
-
-        content.getChildren().addAll(textSection, authButtons);
-
-        return content;
-    }
-
-    /**
-     * Create HealthZ logo at the top left
-     */
-    private Label createLogo() {
         Label logo = new Label("HealthZ");
-        logo.setFont(Font.font("Inter", FontWeight.BOLD, 40));
-        logo.setTextFill(Color.web("#1E4B27"));
-        return logo;
+        logo.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        logo.setTextFill(Color.web("#27692A"));
+
+        topBox.getChildren().add(logo);
+        return topBox;
     }
 
-    /**
-     * Create text section with main title and subtitle
-     */
-    private VBox createTextSection() {
-        VBox textSection = new VBox(15);
-        textSection.setAlignment(Pos.CENTER);
-        textSection.setMaxWidth(900);
+    private VBox createCard() {
+        VBox card = new VBox(25);
+        card.setMaxWidth(500);
+        card.setAlignment(Pos.TOP_CENTER);
+        card.setPadding(new Insets(40));
+        card.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-background-radius: 16px; " +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 4);"
+        );
 
-        Label title = new Label("Let's Build a\nHealthier You.");
-        title.setFont(Font.font("Inter", FontWeight.BOLD, 80));
+        // Title (similar style to Step7Panel)
+        Label title = new Label("Welcome back!\nLog in to your account");
+        title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
         title.setTextFill(Color.web("#111827"));
-        title.setTextAlignment(TextAlignment.CENTER);
-        title.setWrapText(true);
+        title.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-        Label subtitle = new Label("Personalized recipes and trackers to help you reach your goal.");
-        subtitle.setFont(Font.font("Inter", FontWeight.MEDIUM, 24));
-        subtitle.setTextFill(Color.web("#27692A"));
-        subtitle.setTextAlignment(TextAlignment.CENTER);
-        subtitle.setWrapText(true);
+        emailField = (TextField) createStyledField("Email address", false);
+        passwordField = (PasswordField) createStyledField("Password", true);
 
-        textSection.getChildren().addAll(title, subtitle);
-        return textSection;
-    }
-
-    /**
-     * Create Sign Up and Log In buttons
-     */
-    private HBox createAuthButtons() {
-        HBox buttonBox = new HBox(20);
-        buttonBox.setAlignment(Pos.CENTER);
-
-        // sign Up button (green)
-        signUpButton = createSignUpButton();
-
-        // log In button (light green)
-        logInButton = createLogInButton();
-
-        buttonBox.getChildren().addAll(signUpButton, logInButton);
-        return buttonBox;
-    }
-
-    /**
-     * Create Sign Up button (dark green)
-     */
-    private Button createSignUpButton() {
-        Button button = new Button("Sign Up");
-        button.setPrefWidth(300);
-        button.setPrefHeight(60);
-        button.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 20));
-        button.setStyle(
+        // Login button (full-width, like "Continue")
+        loginButton = new Button("Continue");
+        loginButton.setPrefHeight(50);
+        loginButton.setMaxWidth(Double.MAX_VALUE);
+        loginButton.setStyle(
                 "-fx-background-color: #27692A; " +
                         "-fx-text-fill: white; " +
-                        "-fx-background-radius: 12px; " +
+                        "-fx-font-size: 16px; " +
+                        "-fx-font-weight: 600; " +
+                        "-fx-background-radius: 10px; " +
                         "-fx-cursor: hand;"
         );
 
-        // hover effect
-        button.setOnMouseEntered(e ->
-                button.setStyle(
+        loginButton.setOnMouseEntered(e ->
+                loginButton.setStyle(
                         "-fx-background-color: #047857; " +
                                 "-fx-text-fill: white; " +
-                                "-fx-background-radius: 12px; " +
+                                "-fx-font-size: 16px; " +
+                                "-fx-font-weight: 600; " +
+                                "-fx-background-radius: 10px; " +
                                 "-fx-cursor: hand;"
                 )
         );
 
-        button.setOnMouseExited(e ->
-                button.setStyle(
-                        "-fx-background-color: #205425; " +
+        loginButton.setOnMouseExited(e ->
+                loginButton.setStyle(
+                        "-fx-background-color: #27692A; " +
                                 "-fx-text-fill: white; " +
-                                "-fx-background-radius: 12px; " +
+                                "-fx-font-size: 16px; " +
+                                "-fx-font-weight: 600; " +
+                                "-fx-background-radius: 10px; " +
                                 "-fx-cursor: hand;"
                 )
         );
 
-        button.setOnAction(e -> {
-            System.out.println("Sign Up clicked!");
-            // TODO: navigate to SignupView
-        });
+        // "Don't have an account? Sign up" row (Navigator can hook this)
+        HBox bottomRow = new HBox(5);
+        bottomRow.setAlignment(Pos.CENTER);
 
-        return button;
-    }
+        Label noAccountLabel = new Label("Don't have an account?");
+        noAccountLabel.setFont(Font.font("Inter", 13));
+        noAccountLabel.setTextFill(Color.web("#6B7280"));
 
-    /**
-     * Create Log In button (light green)
-     */
-    private Button createLogInButton() {
-        Button button = new Button("Log In");
-        button.setPrefWidth(300);
-        button.setPrefHeight(60);
-        button.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 20));
-        button.setStyle(
-                "-fx-background-color: #CFDFD5; " +
-                        "-fx-text-fill: #000000; " +
-                        "-fx-background-radius: 12px; " +
+        signUpButton = new Button("Sign up");
+        signUpButton.setFont(Font.font("Inter", FontWeight.BOLD, 13));
+        signUpButton.setStyle(
+                "-fx-background-color: transparent; " +
+                        "-fx-text-fill: #27692A; " +
+                        "-fx-underline: true; " +
                         "-fx-cursor: hand;"
         );
 
-        // hover effect
-        button.setOnMouseEntered(e ->
-                button.setStyle(
-                        "-fx-background-color: #B6CDBE; " +
-                                "-fx-text-fill: #1F2937; " +
-                                "-fx-background-radius: 12px; " +
-                                "-fx-cursor: hand;"
-                )
-        );
+        bottomRow.getChildren().addAll(noAccountLabel, signUpButton);
 
-        button.setOnMouseExited(e ->
-                button.setStyle(
-                        "-fx-background-color: #A7C4BC; " +
-                                "-fx-text-fill: #1F2937; " +
-                                "-fx-background-radius: 12px; " +
-                                "-fx-cursor: hand;"
-                )
-        );
-
-        button.setOnAction(e -> {
-            System.out.println("Log In clicked!");
-            // TODO: navigate to login page
-        });
-
-        return button;
+        card.getChildren().addAll(title, emailField, passwordField, loginButton, bottomRow);
+        return card;
     }
+
+    private Control createStyledField(String prompt, boolean isPassword) {
+        Control field = isPassword ? new PasswordField() : new TextField();
+        ((TextInputControl) field).setPromptText(prompt);
+        field.setPrefHeight(55);
+        field.setMaxWidth(Double.MAX_VALUE);
+        field.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-border-color: #D1D5DB; " +
+                        "-fx-border-radius: 8px; " +
+                        "-fx-background-radius: 8px; " +
+                        "-fx-font-size: 16px; " +
+                        "-fx-padding: 10px 15px;"
+        );
+        return field;
+    }
+
+    // ===== Public API for Navigator / Controllers =====
 
     public Scene getScene() {
         return scene;
     }
 
-    /**
-     * Get the Sign Up button (for navigation logic)
-     */
-    public Button getSignUpButton() {
-        return signUpButton;
+    public String getEmail() {
+        return emailField.getText().trim();
     }
 
-    /**
-     * Get the Log In button (for navigation logic)
-     */
-    public Button getLogInButton() {
-        return logInButton;
+    public String getPassword() {
+        return passwordField.getText();
+    }
+
+    public Button getLoginButton() {
+        return loginButton;
+    }
+
+    public Button getSignUpButton() {
+        return signUpButton;
     }
 }

@@ -8,8 +8,15 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import tut0301.group1.healthz.view.auth.signup.*;
-
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
+import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupPresenter;
+import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupViewModel;
+import tut0301.group1.healthz.usecase.auth.AuthGateway;
+import tut0301.group1.healthz.usecase.auth.signup.SignupInputBoundary;
+import tut0301.group1.healthz.usecase.auth.signup.SignupInteractor;
+import tut0301.group1.healthz.view.auth.signuppanels.*;
+import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupController;
 import java.util.List;
 
 
@@ -33,6 +40,8 @@ public class SignupView {
     private Step7Panel step7Panel;
 
     private SignupData signupData;
+
+    private Button loginLinkButton;
 
     public SignupView() {
         signupData = new SignupData();
@@ -152,6 +161,29 @@ public class SignupView {
         // Add navigation buttons
         HBox buttonBox = createNavigationButtons();
         card.getChildren().add(buttonBox);
+
+        HBox bottomRow = new HBox(5);
+        bottomRow.setAlignment(Pos.CENTER);
+
+        Label haveAccountLabel = new Label("Already have an account?");
+        haveAccountLabel.setFont(Font.font("Inter", 13));
+        haveAccountLabel.setTextFill(Color.web("#6B7280"));
+
+        // Create button once, reuse for each step
+        if (loginLinkButton == null) {
+            loginLinkButton = new Button("Log in");
+            loginLinkButton.setFont(Font.font("Inter", FontWeight.BOLD, 13));
+            loginLinkButton.setStyle(
+                    "-fx-background-color: transparent; " +
+                            "-fx-text-fill: #27692A; " +
+                            "-fx-underline: true; " +
+                            "-fx-cursor: hand;"
+            );
+        }
+
+        bottomRow.getChildren().addAll(haveAccountLabel, loginLinkButton);
+
+        card.getChildren().add(bottomRow);
 
         return card;
     }
@@ -277,6 +309,7 @@ public class SignupView {
             case 7:
                 signupData.email = step7Panel.getEmail();
                 signupData.password = step7Panel.getPassword();
+                signupData.confirmPassword = step7Panel.getConfirmPassword();
                 return !signupData.email.isEmpty() && !signupData.password.isEmpty();
             default:
                 return true;
@@ -292,7 +325,19 @@ public class SignupView {
         // ... etc
 
         // TODO: Call SignupController here
-        // signupController.signup(signupData);
+        var signupVM = new SignupViewModel();
+        var signupPresenter = new SignupPresenter(this, signupVM);
+        String url  = System.getenv("SUPABASE_URL");
+        String anon = System.getenv("SUPABASE_ANON_KEY");
+        if (url == null || anon == null) {
+            System.err.println("Set SUPABASE_URL and SUPABASE_ANON_KEY");
+            System.exit(1);
+        }
+        var client = new SupabaseClient(url, anon);
+        AuthGateway authGateway = new SupabaseAuthGateway(client);
+        SignupInputBoundary signupUC = new SignupInteractor(authGateway, signupPresenter);
+        SignupController signupController = new SignupController(signupUC, signupPresenter);
+        signupController.signup(signupData.email, signupData.password, signupData.confirmPassword);
 
         showSuccess("Account created successfully!");
     }
@@ -333,6 +378,7 @@ public class SignupView {
         double goalWeight;
         String email;
         String password;
+        String confirmPassword;
     }
 
 
@@ -342,5 +388,9 @@ public class SignupView {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public Button getLoginLinkButton() {
+        return loginLinkButton;
     }
 }

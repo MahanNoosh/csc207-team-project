@@ -16,7 +16,7 @@ import tut0301.group1.healthz.usecase.auth.signup.SignupInteractor;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupController;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupViewModel;
-import tut0301.group1.healthz.view.auth.LoginView;
+import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.SignupView;
 
 import tut0301.group1.healthz.usecase.dashboard.UserDataGateway;
@@ -47,7 +47,7 @@ public class Main {
         var loginPresenter = new LoginPresenter(loginVM);
         LoginInputBoundary loginUC = new LoginInteractor(authGateway, loginPresenter);
         var loginController = new LoginController(loginUC, loginPresenter);
-        var loginView = new LoginView();
+        var loginView = new LandingView();
 
         // ---- Signup stack ----
         var signupView = new SignupView();

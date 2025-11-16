@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.view.auth.signup;
+package tut0301.group1.healthz.view.auth.signuppanels;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.*;

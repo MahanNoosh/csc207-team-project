@@ -1,6 +1,15 @@
 package tut0301.group1.healthz.navigation;
 
 import javafx.stage.Stage;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
+import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
+import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
+import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
+import tut0301.group1.healthz.usecase.auth.AuthGateway;
+import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
+import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
+import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
 import tut0301.group1.healthz.view.auth.SignupView;
 import tut0301.group1.healthz.view.macro.MacroSearchView;
@@ -44,14 +53,14 @@ public class Navigator {
     /**
      * Navigate to Login/Landing page
      */
-    public void showLogin() {
-        LoginView loginView = new LoginView();
+    public void showLanding() {
+        LandingView landingView = new LandingView();
 
         // Connect navigation from login page
-        setupLoginNavigation(loginView);
+        setupLoginNavigation(landingView);
 
-        // Switch to login scene
-        primaryStage.setScene(loginView.getScene());
+        // Switch to landing scene
+        primaryStage.setScene(landingView.getScene());
         primaryStage.setTitle("HealthZ - Welcome");
     }
 
@@ -61,10 +70,16 @@ public class Navigator {
     public void showSignup() {
         SignupView signupView = new SignupView();
 
+        signupView.getLoginLinkButton().setOnAction(e -> {
+            System.out.println("Already have an account -> back to login");
+            showLogin();
+        });
+
         // Switch to signup scene
         primaryStage.setScene(signupView.getScene());
         primaryStage.setTitle("HealthZ - Sign Up");
     }
+
 
     /**
      * Navigate to Macro Search page
@@ -98,6 +113,47 @@ public class Navigator {
         showMacroSearch();
     }
 
+    public void showLogin() {
+        LoginView loginView = new LoginView();
+
+        // Sign up link -> go to signup
+        loginView.getSignUpButton().setOnAction(e -> {
+            System.out.println("📝 Navigating to Sign Up...");
+            showSignup();
+        });
+
+        // Continue button -> perform login, then go to main app
+        loginView.getLoginButton().setOnAction(e -> {
+            System.out.println("🔐 Logging in with " +
+                    loginView.getEmail());
+            // TODO: validate credentials with your Login use case
+            String url  = System.getenv("SUPABASE_URL");
+            String anon = System.getenv("SUPABASE_ANON_KEY");
+            if (url == null || anon == null) {
+                System.err.println("Set SUPABASE_URL and SUPABASE_ANON_KEY");
+                System.exit(1);
+            }
+
+            var client = new SupabaseClient(url, anon);
+            AuthGateway authGateway = new SupabaseAuthGateway(client);
+            var loginVM = new LoginViewModel();
+            var loginPresenter = new LoginPresenter(loginVM);
+            LoginInputBoundary loginUC = new LoginInteractor(authGateway, loginPresenter);
+            var loginController = new LoginController(loginUC, loginPresenter);
+            loginController.login(loginView.getEmail(), loginView.getPassword());
+            if (loginVM.isLoggedIn()){
+                showMainApp();
+            }
+            else {
+                showLogin();
+            }
+
+        });
+
+        primaryStage.setScene(loginView.getScene());
+        primaryStage.setTitle("HealthZ - Log In");
+    }
+
     /**
      * Go back to previous page
      * (Can implement navigation history stack later)
@@ -114,19 +170,19 @@ public class Navigator {
      * Setup navigation for Login page
      * Connects Sign Up and Log In buttons to navigation
      */
-    private void setupLoginNavigation(LoginView loginView) {
+    private void setupLoginNavigation(LandingView landingView) {
         // Connect Sign Up button
-        loginView.getSignUpButton().setOnAction(e -> {
+        landingView.getSignUpButton().setOnAction(e -> {
             System.out.println("📝 Navigating to Sign Up...");
             showSignup();
         });
 
         // Connect Log In button
-        loginView.getLogInButton().setOnAction(e -> {
+        landingView.getLogInButton().setOnAction(e -> {
             System.out.println("🔐 Logging in...");
             // TODO: show actual login form or validate credentials
             // For now, just go to main app
-            showMainApp();
+            showLogin();
         });
     }
 }

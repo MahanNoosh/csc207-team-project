@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.view.auth.signup;
+package tut0301.group1.healthz.view.auth.signuppanels;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -56,6 +56,10 @@ public class Step7Panel {
 
     public String getPassword() {
         return passwordField.getText();
+    }
+
+    public String getConfirmPassword() {
+        return confirmPasswordField.getText();
     }
 
     public VBox getPanel() {

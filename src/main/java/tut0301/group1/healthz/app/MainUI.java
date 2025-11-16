@@ -19,8 +19,8 @@ public class MainUI extends Application {
             Navigator navigator = Navigator.getInstance();
             navigator.setStage(primaryStage);
 
-            // start with Login/Landing page
-            navigator.showLogin();
+            // start with Landing page
+            navigator.showLanding();
 
             // configure window
             primaryStage.setWidth(1200);
