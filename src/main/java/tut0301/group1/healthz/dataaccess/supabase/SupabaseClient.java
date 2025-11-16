@@ -85,6 +85,25 @@ public class SupabaseClient {
         this.displayName = dn;
     }
 
+    public void resendSignupVerification(String email) throws Exception {
+        var uri = URI.create(supaUrl + "/auth/v1/resend");
+        var body = new JSONObject();
+        body.put("email", email);
+        body.put("type", "signup"); // tells Supabase this is a signup verification resend
+
+        var req = HttpRequest.newBuilder(uri)
+                .header("apikey", anonKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body.toString(), StandardCharsets.UTF_8))
+                .build();
+
+        var res = send(req);
+        if (res.statusCode() >= 400) {
+            throw new RuntimeException("Resend verification failed: " + res.body());
+        }
+    }
+
+
 
     public void requestPasswordReset(String email, String redirectUrl) throws Exception {
         var uri = URI.create(supaUrl + "/auth/v1/recover");

@@ -53,4 +53,10 @@ public class SupabaseAuthGateway implements AuthGateway {
     public String getCurrentUserName() {
         return client.getDisplayName();
     }
+
+    @Override
+    public void resendSignupVerification(String email) throws Exception{
+        client.resendSignupVerification(email);
+    }
+
 }

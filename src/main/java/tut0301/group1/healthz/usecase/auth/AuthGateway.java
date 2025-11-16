@@ -23,4 +23,6 @@ public interface AuthGateway {
     String getRefreshToken(); // Refresh token
 
     String getCurrentUserName();
+
+    void resendSignupVerification(String email) throws Exception;
 }
