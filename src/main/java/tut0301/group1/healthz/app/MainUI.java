@@ -2,46 +2,33 @@ package tut0301.group1.healthz.app;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import tut0301.group1.healthz.navigation.Navigator;
+import tut0301.group1.healthz.view.auth.SignupView;
 
-/**
- * Main Application Entry Point
- * Initializes the app and starts with the Login page
- */
 public class MainUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
         try {
-            System.out.println("🚀 Starting HealthZ Application...");
+            System.out.println("🎨 Launching Signup UI...");
 
-            // initialize Navigator with the primary stage
-            Navigator navigator = Navigator.getInstance();
-            navigator.setStage(primaryStage);
+            // Create the signup view (CHANGED FROM SettingsView)
+            SignupView signupView = new SignupView();
 
-            // start with Login/Landing page
-            navigator.showLogin();
+            // Configure the window
+            primaryStage.setScene(signupView.getScene());
+            primaryStage.setTitle("HealthZ - Sign Up");
+            primaryStage.setWidth(900);
+            primaryStage.setHeight(700);
 
-            // configure window
-            primaryStage.setWidth(1200);
-            primaryStage.setHeight(800);
-            primaryStage.setResizable(true);
-
-            // show window
+            // Show the window
             primaryStage.show();
 
-            System.out.println("✅ HealthZ Application started successfully!");
+            System.out.println("✅ Signup UI launched successfully!");
 
         } catch (Exception e) {
-            System.err.println("❌ Error starting application:");
+            System.err.println("❌ Error launching UI:");
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void stop() {
-        System.out.println("👋 Shutting down HealthZ Application...");
-        // Cleanup code here if needed
     }
 
     public static void main(String[] args) {

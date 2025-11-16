@@ -8,7 +8,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
+import javafx.scene.text.Font
 import javafx.scene.text.FontWeight;
 import tut0301.group1.healthz.entities.FoodItem;
 
@@ -43,7 +43,7 @@ public class SingleMacroPage {
         root.setStyle("-fx-background-color: #F5F5F5;");
         root.setPadding(new Insets(40, 60, 40, 60));
 
-        // food title + Add to Log button
+        // Top: Food title + Add to Log button
         HBox topContent = createTopContent();
         root.setTop(topContent);
 
@@ -384,25 +384,181 @@ public class SingleMacroPage {
      * Handle "Add to Log" button click
      */
     private void handleAddToLog() {
-        String servingSize = servingSizeField.getText();
-        String servingsCount = servingsCountField.getText();
-        String meal = mealComboBox.getValue();
+        try {
+            // 1. Parse user input
+            double servingsCount = Double.parseDouble(servingsCountField.getText());
+            String meal = mealComboBox.getValue();
 
-        System.out.println("Adding to log:");
-        System.out.println("  Food: " + foodItem.getName());
-        System.out.println("  Serving Size: " + servingSize);
-        System.out.println("  Servings: " + servingsCount);
-        System.out.println("  Meal: " + meal);
+            // 2. Validate input (basic UI validation)
+            if (servingsCount <= 0) {
+                showErrorMessage("Servings count must be greater than 0");
+                return;
+            }
 
-        // Show success message
+            if (meal == null || meal.isEmpty()) {
+                showErrorMessage("Please select a meal");
+                return;
+            }
+
+            // 3. Convert FoodItem to FatSecret format
+            FatSecretFoodGetClient.FoodDetails foodDetails = convertToFoodDetails();
+            FatSecretFoodGetClient.ServingInfo servingInfo = createServingInfo();
+
+            // 4. Get Use Case from Dependency Container
+            AddFoodToLogUseCase useCase = getAddFoodToLogUseCase();
+
+            // 5. Execute Use Case
+            AddFoodToLogUseCase.AddFoodToLogResult result = useCase.execute(
+                    foodDetails,
+                    servingInfo,
+                    servingsCount,
+                    meal,
+                    getCurrentUserId()
+            );
+
+            // 6. Handle result
+            if (result.isSuccess()) {
+                FoodLog foodLog = result.getFoodLog();
+                showSuccessMessage(foodLog);
+
+                // Optional: Navigate back
+                // Navigator.getInstance().showMacroSearch();
+            } else {
+                showErrorMessage(result.getErrorMessage());
+            }
+
+        } catch (NumberFormatException e) {
+            showErrorMessage("Please enter a valid number for servings");
+        } catch (Exception e) {
+            showErrorMessage("Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Get AddFoodToLogUseCase
+     * TODO: Replace with Dependency Injection Container
+     */
+    private AddFoodToLogUseCase getAddFoodToLogUseCase() {
+        // Option 1: From Dependency Container (recommended)
+        // return DependencyContainer.getInstance().getAddFoodToLogUseCase();
+
+        // Option 2: Create directly (temporary)
+        FoodLogRepository repository = new InMemoryFoodLogRepository(); // Placeholder
+        return new AddFoodToLogUseCase(repository);
+    }
+
+    /**
+     * Get current user ID
+     * TODO: Get from authentication service
+     */
+    private String getCurrentUserId() {
+        // TODO: Implement proper authentication
+        return "user123"; // Placeholder
+    }
+
+    /**
+     * Convert your FoodItem to FatSecretFoodGetClient.FoodDetails
+     */
+    private FatSecretFoodGetClient.FoodDetails convertToFoodDetails() {
+        FatSecretFoodGetClient.ServingInfo serving = createServingInfo();
+
+        java.util.List<FatSecretFoodGetClient.ServingInfo> servings =
+                java.util.Collections.singletonList(serving);
+
+        return new FatSecretFoodGetClient.FoodDetails(
+                getFoodIdAsLong(),
+                foodItem.getName(),
+                "Generic",
+                null,
+                "",
+                servings
+        );
+    }
+
+    /**
+     * Create ServingInfo from your FoodItem
+     */
+    private FatSecretFoodGetClient.ServingInfo createServingInfo() {
+        return new FatSecretFoodGetClient.ServingInfo(
+                1,
+                foodItem.getServingSize(),
+                extractServingAmount(),
+                extractServingUnit(),
+                (double) foodItem.getCalories(),
+                foodItem.getProtein(),
+                foodItem.getFat(),
+                foodItem.getCarbs(),
+                null, null, null
+        );
+    }
+
+    /**
+     * Extract serving amount from serving size string
+     */
+    private double extractServingAmount() {
+        String servingSize = foodItem.getServingSize();
+        if (servingSize == null) return 1.0;
+
+        String numbers = servingSize.replaceAll("[^0-9.]", "");
+
+        try {
+            return Double.parseDouble(numbers);
+        } catch (NumberFormatException e) {
+            return 1.0;
+        }
+    }
+
+    /**
+     * Extract serving unit from serving size string
+     */
+    private String extractServingUnit() {
+        String servingSize = foodItem.getServingSize();
+        if (servingSize == null) return "serving";
+
+        String unit = servingSize.replaceAll("[0-9\\s.]", "").trim();
+        return unit.isEmpty() ? "serving" : unit;
+    }
+
+    /**
+     * Get food ID as long
+     */
+    private long getFoodIdAsLong() {
+        if (foodItem.getId() == null) return 0;
+
+        try {
+            return Long.parseLong(foodItem.getId());
+        } catch (NumberFormatException e) {
+            return Math.abs(foodItem.getName().hashCode());
+        }
+    }
+
+    /**
+     * Show success message
+     */
+    private void showSuccessMessage(FoodLog foodLog) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Success");
         alert.setHeaderText("Added to Log!");
-        alert.setContentText(foodItem.getName() + " added to " + meal);
+        alert.setContentText(
+                foodLog.getFood().name + "\n" +
+                        foodLog.getActualServingSize() + foodLog.getServingUnit() +
+                        " (" + foodLog.getServingMultiplier() + "x servings)\n" +
+                        "Added to " + foodLog.getMeal() + "\n" +
+                        "Total: " + String.format("%.0f", foodLog.getActualMacro().calories()) + " calories"
+        );
         alert.showAndWait();
+    }
 
-        // TODO: Actually save to meal log
-        // Navigator.getInstance().goBack(); // Go back to macro search
+    /**
+     * Show error message
+     */
+    private void showErrorMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Unable to Add to Log");
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     public Scene getScene() {
