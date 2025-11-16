@@ -23,8 +23,8 @@ public class MainUI extends Application {
             navigator.showLanding();
 
             // configure window
-            primaryStage.setWidth(1200);
-            primaryStage.setHeight(800);
+            primaryStage.setWidth(1600);
+            primaryStage.setHeight(1000);
             primaryStage.setResizable(true);
 
             // show window

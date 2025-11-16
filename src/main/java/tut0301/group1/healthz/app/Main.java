@@ -72,7 +72,7 @@ public class Main {
                     String email = prompt(sc, "Email: ");
                     String pw1   = prompt(sc, "Password: ");
                     String pw2   = prompt(sc, "Repeat password: ");
-                    signupController.signup(email, pw1, pw2);
+                    //signupController.signup(email, pw1, , signupData.fullName);
                 }
                 case "2" -> {
                     String email = prompt(sc, "Email: ");

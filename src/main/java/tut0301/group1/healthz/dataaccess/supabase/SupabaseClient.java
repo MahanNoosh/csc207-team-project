@@ -25,6 +25,7 @@ public class SupabaseClient {
     private String accessToken;
     private String refreshToken;
     private Instant accessExpiry;
+    private String displayName;
 
     public SupabaseClient(String supaUrl, String anonKey) {
         this.supaUrl = supaUrl.replaceAll("/+$", "");
@@ -32,11 +33,15 @@ public class SupabaseClient {
     }
 
     // ---------- AUTH ----------
-    public void signUpEmail(String email, String password) throws Exception {
+    public void signUpEmail(String email, String password, String displayName) throws Exception {
         var uri = URI.create(supaUrl + "/auth/v1/signup");
         var body = new JSONObject();
         body.put("email", email);
         body.put("password", password);
+
+        JSONObject data = new JSONObject();
+        data.put("displayName", displayName);
+        body.put("data", data);
 
         var req = HttpRequest.newBuilder(uri)
                 .header("apikey", anonKey).header("Content-Type", "application/json")
@@ -53,18 +58,33 @@ public class SupabaseClient {
         body.put("password", password);
 
         var req = HttpRequest.newBuilder(uri)
-                .header("apikey", anonKey).header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(body.toString())).build();
+                .header("apikey", anonKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
+                .build();
 
         var res = send(req);
-        if (res.statusCode() >= 400) throw new RuntimeException("Sign in failed: " + res.body());
+        if (res.statusCode() >= 400) {
+            throw new RuntimeException("Sign in failed: " + res.body());
+        }
 
         JSONObject data = new JSONObject(res.body());
         this.accessToken = data.getString("access_token");
         this.refreshToken = data.getString("refresh_token");
         long expiresIn = data.optLong("expires_in", 3600L);
         this.accessExpiry = Instant.now().plusSeconds(Math.max(0, expiresIn - 30));
+
+        String dn = null;
+        JSONObject user = data.optJSONObject("user");
+        if (user != null) {
+            JSONObject meta = user.optJSONObject("user_metadata");
+            if (meta != null) {
+                dn = meta.optString("displayName", null);
+            }
+        }
+        this.displayName = dn;
     }
+
 
     public void requestPasswordReset(String email, String redirectUrl) throws Exception {
         var uri = URI.create(supaUrl + "/auth/v1/recover");
@@ -100,6 +120,11 @@ public class SupabaseClient {
         var u = getUserRaw();
         return u.getString("id");
     }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
 
     public String getUserEmail() throws Exception {
         var u = getUserRaw();

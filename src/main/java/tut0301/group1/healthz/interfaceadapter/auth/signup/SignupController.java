@@ -12,8 +12,8 @@ public class SignupController {
         this.presenter = presenter;
     }
 
-    public void signup(String email, String password1, String password2) {
-        SignupInputData inputData = new SignupInputData(email, password1, password2);
+    public void signup(String email, String password1, String password2, String displayName) {
+        SignupInputData inputData = new SignupInputData(email, password1, password2, displayName);
         signupUseCase.execute(inputData);
     }
 
