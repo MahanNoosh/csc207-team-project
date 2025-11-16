@@ -79,9 +79,9 @@ public class Main {
                     String pw    = prompt(sc, "Password: ");
                     loginController.login(email, pw);
 
-                    if (loginVM.getMessage() != null && !loginVM.getMessage().isBlank()) {
-                        loginView.display(loginVM.getMessage());
-                    }
+                    // if (loginVM.getMessage() != null && !loginVM.getMessage().isBlank()) {
+                        // loginView.display(loginVM.getMessage());
+                    // }
 
                     boolean success = loginVM.getAccessToken() != null && loginVM.getUserId() != null;
                     if (success) {
