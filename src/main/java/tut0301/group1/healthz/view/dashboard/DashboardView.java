@@ -12,6 +12,6 @@ import javafx.scene.text.FontWeight;
 
 public class DashboardView {
         private Scene scene;
-        private
+
 
 }

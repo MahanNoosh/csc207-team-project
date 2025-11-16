@@ -14,6 +14,8 @@ import javafx.scene.text.FontWeight;
 /**
  * Single Macro Page - Detailed view of a food item
  * Shows nutrition info, donut chart, and options to add to log
+ *
+ * Hardcoded version using FoodItem data class
  */
 public class SingleMacroPage {
 
@@ -24,6 +26,9 @@ public class SingleMacroPage {
     private TextField servingSizeField;
     private TextField servingsCountField;
     private ComboBox<String> mealComboBox;
+
+    // Chart components (for dynamic updates)
+    private VBox chartSection;
 
     /**
      * Constructor with food item
@@ -128,7 +133,7 @@ public class SingleMacroPage {
         VBox inputSection = createInputSection();
 
         // Right side: Nutrition chart
-        VBox chartSection = createChartSection();
+        chartSection = createChartSection();
 
         centerBox.getChildren().addAll(inputSection, chartSection);
         return centerBox;
@@ -151,14 +156,13 @@ public class SingleMacroPage {
         // Number of Servings
         VBox servingsCountBox = createInputField(
                 "Number of Servings",
-                "1"
+                "1.0"
         );
         servingsCountField = (TextField) ((HBox) servingsCountBox.getChildren().get(1)).getChildren().get(0);
 
         // Add listener to update chart when servings change
         servingsCountField.textProperty().addListener((obs, oldVal, newVal) -> {
-            // TODO: Update chart with new serving count
-            System.out.println("Servings changed to: " + newVal);
+            updateChartDisplay();
         });
 
         // Meal dropdown
@@ -249,19 +253,51 @@ public class SingleMacroPage {
         chartBox.setPrefWidth(500);
 
         // Donut chart with calorie center
-        StackPane chartStack = createDonutChart();
+        StackPane chartStack = createDonutChart(1.0);
 
         // Macro breakdown
-        VBox macroBreakdown = createMacroBreakdown();
+        VBox macroBreakdown = createMacroBreakdown(1.0);
 
         chartBox.getChildren().addAll(chartStack, macroBreakdown);
         return chartBox;
     }
 
     /**
+     * Update chart display based on current serving multiplier
+     */
+    private void updateChartDisplay() {
+        try {
+            double multiplier = Double.parseDouble(servingsCountField.getText());
+            if (multiplier <= 0) {
+                multiplier = 1.0;
+            }
+
+            // Recreate chart section
+            VBox newChartSection = new VBox(30);
+            newChartSection.setAlignment(Pos.TOP_CENTER);
+            newChartSection.setPrefWidth(500);
+
+            StackPane chartStack = createDonutChart(multiplier);
+            VBox macroBreakdown = createMacroBreakdown(multiplier);
+
+            newChartSection.getChildren().addAll(chartStack, macroBreakdown);
+
+            // Replace old chart section
+            HBox parent = (HBox) chartSection.getParent();
+            int index = parent.getChildren().indexOf(chartSection);
+            parent.getChildren().set(index, newChartSection);
+            chartSection = newChartSection;
+
+        } catch (NumberFormatException e) {
+            // Invalid number, ignore update
+            System.out.println("Invalid serving count: " + servingsCountField.getText());
+        }
+    }
+
+    /**
      * Create donut chart with calorie count in center
      */
-    private StackPane createDonutChart() {
+    private StackPane createDonutChart(double multiplier) {
         StackPane chartStack = new StackPane();
         chartStack.setPrefSize(300, 300);
 
@@ -269,11 +305,17 @@ public class SingleMacroPage {
         Canvas canvas = new Canvas(300, 300);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
+        // Get values and apply multiplier
+        double protein = foodItem.getProtein() * multiplier;
+        double fat = foodItem.getFat() * multiplier;
+        double carbs = foodItem.getCarbs() * multiplier;
+        double calories = foodItem.getCalories() * multiplier;
+
         // Calculate percentages
-        double totalMacros = foodItem.getProtein() + foodItem.getFat() + foodItem.getCarbs();
-        double proteinPercent = (foodItem.getProtein() / totalMacros) * 360;
-        double fatPercent = (foodItem.getFat() / totalMacros) * 360;
-        double carbsPercent = (foodItem.getCarbs() / totalMacros) * 360;
+        double totalMacros = protein + fat + carbs;
+        double proteinPercent = totalMacros > 0 ? (protein / totalMacros) * 360 : 0;
+        double fatPercent = totalMacros > 0 ? (fat / totalMacros) * 360 : 0;
+        double carbsPercent = totalMacros > 0 ? (carbs / totalMacros) * 360 : 0;
 
         // Draw donut segments
         double centerX = 150;
@@ -282,17 +324,24 @@ public class SingleMacroPage {
         double thickness = 40;
 
         // Protein segment (cyan/blue)
-        gc.setFill(Color.web("#0891B2"));
-        gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2, 90, proteinPercent, javafx.scene.shape.ArcType.ROUND);
+        if (proteinPercent > 0) {
+            gc.setFill(Color.web("#0891B2"));
+            gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2,
+                    90, proteinPercent, javafx.scene.shape.ArcType.ROUND);
+        }
 
         // Fat segment (orange)
-        gc.setFill(Color.web("#F59E0B"));
-        gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2, 90 + proteinPercent, fatPercent, javafx.scene.shape.ArcType.ROUND);
+        if (fatPercent > 0) {
+            gc.setFill(Color.web("#F59E0B"));
+            gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2,
+                    90 + proteinPercent, fatPercent, javafx.scene.shape.ArcType.ROUND);
+        }
 
-        // Carbs segment (red) - if any
+        // Carbs segment (red)
         if (carbsPercent > 0) {
             gc.setFill(Color.web("#DC2626"));
-            gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2, 90 + proteinPercent + fatPercent, carbsPercent, javafx.scene.shape.ArcType.ROUND);
+            gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2,
+                    90 + proteinPercent + fatPercent, carbsPercent, javafx.scene.shape.ArcType.ROUND);
         }
 
         // Cut out center (make it a donut)
@@ -304,7 +353,7 @@ public class SingleMacroPage {
         VBox centerText = new VBox(5);
         centerText.setAlignment(Pos.CENTER);
 
-        Label calorieValue = new Label(String.valueOf(foodItem.getCalories()));
+        Label calorieValue = new Label(String.format("%.0f", calories));
         calorieValue.setFont(Font.font("Inter", FontWeight.BOLD, 48));
         calorieValue.setTextFill(Color.web("#111827"));
 
@@ -321,35 +370,40 @@ public class SingleMacroPage {
     /**
      * Create macro breakdown text
      */
-    private VBox createMacroBreakdown() {
+    private VBox createMacroBreakdown(double multiplier) {
         VBox macroBox = new VBox(15);
         macroBox.setAlignment(Pos.CENTER_LEFT);
         macroBox.setPadding(new Insets(0, 0, 0, 50));
 
+        // Get values and apply multiplier
+        double protein = foodItem.getProtein() * multiplier;
+        double fat = foodItem.getFat() * multiplier;
+        double carbs = foodItem.getCarbs() * multiplier;
+
         // Calculate percentages
-        double totalMacros = foodItem.getProtein() + foodItem.getFat() + foodItem.getCarbs();
-        int carbsPercent = (int) ((foodItem.getCarbs() / totalMacros) * 100);
-        int fatPercent = (int) ((foodItem.getFat() / totalMacros) * 100);
-        int proteinPercent = (int) ((foodItem.getProtein() / totalMacros) * 100);
+        double totalMacros = protein + fat + carbs;
+        int carbsPercent = totalMacros > 0 ? (int) ((carbs / totalMacros) * 100) : 0;
+        int fatPercent = totalMacros > 0 ? (int) ((fat / totalMacros) * 100) : 0;
+        int proteinPercent = totalMacros > 0 ? (int) ((protein / totalMacros) * 100) : 0;
 
         // Carbs
         HBox carbsRow = createMacroRow(
                 carbsPercent + "%",
-                foodItem.getCarbs() + " g Carbs",
+                String.format("%.1f g Carbs", carbs),
                 "#DC2626"
         );
 
         // Fats
         HBox fatsRow = createMacroRow(
                 fatPercent + "%",
-                foodItem.getFat() + " g Fats",
+                String.format("%.1f g Fats", fat),
                 "#F59E0B"
         );
 
         // Protein
         HBox proteinRow = createMacroRow(
                 proteinPercent + "%",
-                foodItem.getProtein() + " g Protein",
+                String.format("%.1f g Protein", protein),
                 "#0891B2"
         );
 
@@ -383,36 +437,156 @@ public class SingleMacroPage {
      * Handle "Add to Log" button click
      */
     private void handleAddToLog() {
-        String servingSize = servingSizeField.getText();
-        String servingsCount = servingsCountField.getText();
-        String meal = mealComboBox.getValue();
+        try {
+            String servingSize = servingSizeField.getText();
+            String servingsCount = servingsCountField.getText();
+            String meal = mealComboBox.getValue();
 
-        System.out.println("Adding to log:");
-        System.out.println("  Food: " + foodItem.getName());
-        System.out.println("  Serving Size: " + servingSize);
-        System.out.println("  Servings: " + servingsCount);
-        System.out.println("  Meal: " + meal);
+            // Validate inputs
+            if (meal == null || meal.isEmpty()) {
+                showErrorMessage("Please select a meal");
+                return;
+            }
 
-        // Show success message
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Success");
-        alert.setHeaderText("Added to Log!");
-        alert.setContentText(foodItem.getName() + " added to " + meal);
+            double multiplier = Double.parseDouble(servingsCount);
+            if (multiplier <= 0) {
+                showErrorMessage("Servings must be greater than 0");
+                return;
+            }
+
+            // Calculate total calories
+            double totalCalories = foodItem.getCalories() * multiplier;
+
+            System.out.println("Adding to log:");
+            System.out.println("  Food: " + foodItem.getName());
+            System.out.println("  Serving Size: " + servingSize);
+            System.out.println("  Servings: " + servingsCount + "x");
+            System.out.println("  Meal: " + meal);
+            System.out.println("  Total Calories: " + String.format("%.0f", totalCalories));
+
+            // Show success message
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText("Added to Log!");
+            alert.setContentText(
+                    foodItem.getName() + "\n" +
+                            servingSize + " (" + servingsCount + "x servings)\n" +
+                            "Added to " + meal + "\n" +
+                            "Total: " + String.format("%.0f", totalCalories) + " calories"
+            );
+            alert.showAndWait();
+
+            // TODO: Actually save to meal log
+            // Navigator.getInstance().goBack(); // Go back to macro search
+
+        } catch (NumberFormatException e) {
+            showErrorMessage("Please enter a valid number for servings");
+        }
+    }
+
+    /**
+     * Show error message
+     */
+    private void showErrorMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Unable to Add to Log");
+        alert.setContentText(message);
         alert.showAndWait();
-
-        // TODO: Actually save to meal log
-        // Navigator.getInstance().goBack(); // Go back to macro search
     }
 
     public Scene getScene() {
         return scene;
     }
 
-    // TODO: get rid of this and use actual food use case
-
-    // data class for storing food log info
+    /**
+     * Data class for storing food item info (temporary, for hardcoding)
+     *
+     * TODO: Replace with actual BasicFood entity and FatSecretFoodGetClient.FoodDetails
+     */
     public static class FoodItem {
-        String
+        private String foodName;
+        private String mealType;
+        private String foodUrl;
+        private double calories;
+        private double carbs;
+        private double fat;
+        private double protein;
+        private String servingSize;
 
+        public FoodItem(String foodName, double calories, double protein,
+                        double fat, double carbs, String servingSize) {
+            this.foodName = foodName;
+            this.calories = calories;
+            this.protein = protein;
+            this.fat = fat;
+            this.carbs = carbs;
+            this.servingSize = servingSize;
+        }
+
+        // Getters
+        public String getName() {
+            return foodName;
+        }
+
+        public String getMealType() {
+            return mealType;
+        }
+
+        public String getFoodUrl() {
+            return foodUrl;
+        }
+
+        public double getCalories() {
+            return calories;
+        }
+
+        public double getCarbs() {
+            return carbs;
+        }
+
+        public double getFat() {
+            return fat;
+        }
+
+        public double getProtein() {
+            return protein;
+        }
+
+        public String getServingSize() {
+            return servingSize;
+        }
+
+        // Setters (optional, for testing)
+        public void setMealType(String mealType) {
+            this.mealType = mealType;
+        }
+
+        public void setFoodUrl(String foodUrl) {
+            this.foodUrl = foodUrl;
+        }
+
+        /**
+         * Create sample food items for testing
+         */
+        public static FoodItem createApple() {
+            return new FoodItem("Apple", 95, 0.5, 0.3, 25.0, "1 medium (182g)");
+        }
+
+        public static FoodItem createChickenBreast() {
+            return new FoodItem("Chicken Breast", 165, 31.0, 3.6, 0.0, "100g");
+        }
+
+        public static FoodItem createBroccoli() {
+            return new FoodItem("Broccoli", 55, 3.7, 0.6, 11.2, "1 cup (156g)");
+        }
+
+        public static FoodItem createOatmeal() {
+            return new FoodItem("Oatmeal", 150, 5.0, 3.0, 27.0, "1/2 cup dry (40g)");
+        }
+
+        public static FoodItem createGreekYogurt() {
+            return new FoodItem("Greek Yogurt", 100, 17.0, 0.7, 6.0, "170g container");
+        }
     }
 }
