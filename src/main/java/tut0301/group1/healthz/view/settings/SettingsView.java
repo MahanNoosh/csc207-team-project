@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.view.components.SidebarComponent;
 
 /**
  * Settings View includes:
@@ -44,7 +45,7 @@ public class SettingsView {
     private TextField dailyActivityField;
 
     // for navigation logic
-    private Button dashboardBtn;
+    private SidebarComponent sidebar;
 
     public SettingsView() {
         BorderPane root = createMainLayout();
@@ -61,8 +62,12 @@ public class SettingsView {
         root.getStylesheets().add("root");
 
         // left sidebar
-        VBox sidebar = createSidebar();
-        root.setLeft(sidebar);
+        sidebar = new SidebarComponent();
+        sidebar.setActiveTab("Settings")
+                .setUserProfile("Bob Dylan", "bob.dylan@gmail.com");
+
+        VBox sidebarVBox = sidebar.createSidebar();
+        root.setLeft(sidebarVBox);
 
         // main content area
         ScrollPane contentScroll = new ScrollPane(createContentArea());
@@ -73,89 +78,6 @@ public class SettingsView {
         return root;
     }
 
-    // left sidebar
-    private VBox createSidebar() {
-        VBox sidebar = new VBox(0);
-        sidebar.getStyleClass().add("sidebar");
-        sidebar.setPrefWidth(220);
-
-        // Profile section at top
-        VBox profileSection = createProfileSection();
-
-        // Navigation menu
-        VBox navigation = createNavigation();
-
-        // Log out button at bottom
-        Button logoutButton = new Button("Log Out");
-        logoutButton.getStyleClass().addAll("nav-item", "logout-button");
-        logoutButton.setMaxWidth(Double.MAX_VALUE);
-        logoutButton.setOnAction(e -> handleLogout());
-
-        // Spacer to push logout to bottom
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
-
-        sidebar.getChildren().addAll(profileSection, navigation, spacer, logoutButton);
-        return sidebar;
-    }
-
-    // profile section at the top of the left sidebar
-    private VBox createProfileSection() {
-        VBox profileBox = new VBox(8);
-        profileBox.getStyleClass().add("profile-section");
-        profileBox.setAlignment(Pos.CENTER);
-        profileBox.setPadding(new Insets(30, 20, 20, 20));
-
-        // Profile picture (circle with initials)
-        Circle profilePic = new Circle(30);
-        profilePic.setFill(Color.web("#CCCCCC"));
-        profilePic.getStyleClass().add("profile-picture");
-
-        // Name
-        Label nameLabel = new Label("Bob Dylan");
-        nameLabel.getStyleClass().add("profile-name");
-
-        // Email
-        Label emailLabel = new Label("bob.dylan@gmail.com");
-        emailLabel.getStyleClass().add("profile-email");
-
-        profileBox.getChildren().addAll(profilePic, nameLabel, emailLabel);
-        return profileBox;
-    }
-
-    // navigation menu
-    private VBox createNavigation() {
-        VBox navBox = new VBox(0);
-        navBox.getStyleClass().add("navigation");
-
-        dashboardBtn = createNavButton("Dashboard", "📊", false);
-        Button mealTrackerBtn = createNavButton("Meal Tracker", "🍴", false);
-        Button activityTrackerBtn = createNavButton("Activity Tracker", "🏃", false);
-        Button settingsBtn = createNavButton("Settings", "⚙", true);  // Active
-        Button notificationsBtn = createNavButton("Notifications", "🔔", false);
-
-        navBox.getChildren().addAll(
-                dashboardBtn,
-                mealTrackerBtn,
-                activityTrackerBtn,
-                settingsBtn,
-                notificationsBtn
-        );
-
-        return navBox;
-    }
-
-    // navigation button
-    private Button createNavButton(String text, String icon, boolean isActive) {
-        Button button = new Button(icon + "  " + text);
-        button.getStyleClass().add("nav-item");
-        if (isActive) {
-            button.getStyleClass().add("nav-item-active");
-        }
-        button.setMaxWidth(Double.MAX_VALUE);
-        button.setAlignment(Pos.CENTER_LEFT);
-        return button;
-    }
 
     // content area = header + 3 sections + delete account button
     private VBox createContentArea() {
@@ -471,7 +393,9 @@ public class SettingsView {
     }
 
     /**
-     * Get the dashboard button (for navigation logic)
+     * Get the sidebar component (for navigation logic)
      */
-    public Button getDashboardButton() { return dashboardBtn; }
+    public SidebarComponent getSidebar() {
+        return sidebar;
+    }
 }

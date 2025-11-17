@@ -13,9 +13,6 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.materialdesign2.MaterialDesignS;
-import org.kordamp.ikonli.materialdesign2.MaterialDesignB;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

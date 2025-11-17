@@ -226,7 +226,7 @@ public class SidebarComponent {
         return this;
     }
 
-    // ========== GETTERS FOR BUTTONS (Alternative Approach) ==========
+    // ========== GETTERS FOR BUTTONS ==========
 
     public Button getDashboardButton() {
         return dashboardBtn;
