@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.presentation.view.macro;
+package tut0301.group1.healthz.view.macro;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,10 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 /**
- * Single Macro Page - Detailed view of a food item
- * Shows nutrition info, donut chart, and options to add to log
- *
- * Hardcoded version using FoodItem data class
+ * Single Macro Page - Shows nutrition info, donut chart, and options to add to log
  */
 public class SingleMacroPage {
 
@@ -47,11 +44,11 @@ public class SingleMacroPage {
         root.setStyle("-fx-background-color: #F5F5F5;");
         root.setPadding(new Insets(40, 60, 40, 60));
 
-        // Top: Food title + Add to Log button
+        // Food title + Add to Log button
         HBox topContent = createTopContent();
         root.setTop(topContent);
 
-        // Center: Input fields + Nutrition chart
+        // Input fields + Nutrition chart
         HBox centerContent = createCenterContent();
         root.setCenter(centerContent);
         BorderPane.setMargin(centerContent, new Insets(40, 0, 0, 0));
@@ -67,12 +64,11 @@ public class SingleMacroPage {
         topBox.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(topBox, Priority.ALWAYS);
 
-        // Food name/title
+        // Food name
         Label foodTitle = new Label(foodItem.getName());
         foodTitle.setFont(Font.font("Inter", FontWeight.BOLD, 48));
         foodTitle.setTextFill(Color.web("#111827"));
 
-        // Spacer to push button to the right
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
@@ -92,17 +88,16 @@ public class SingleMacroPage {
         button.setPrefHeight(60);
         button.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 18));
         button.setStyle(
-                "-fx-background-color: #A7C4BC; " +
-                        "-fx-text-fill: #1F2937; " +
+                "-fx-background-color: #27692A; " +
+                        "-fx-text-fill: white; " +
                         "-fx-background-radius: 12px; " +
                         "-fx-cursor: hand;"
         );
 
-        // Hover effect
         button.setOnMouseEntered(e ->
                 button.setStyle(
-                        "-fx-background-color: #8FB3A9; " +
-                                "-fx-text-fill: #1F2937; " +
+                        "-fx-background-color: #205425; " +
+                                "-fx-text-fill: white; " +
                                 "-fx-background-radius: 12px; " +
                                 "-fx-cursor: hand;"
                 )
@@ -110,8 +105,8 @@ public class SingleMacroPage {
 
         button.setOnMouseExited(e ->
                 button.setStyle(
-                        "-fx-background-color: #A7C4BC; " +
-                                "-fx-text-fill: #1F2937; " +
+                        "-fx-background-color: #27692A; " +
+                                "-fx-text-fill: white; " +
                                 "-fx-background-radius: 12px; " +
                                 "-fx-cursor: hand;"
                 )
@@ -323,23 +318,23 @@ public class SingleMacroPage {
         double radius = 100;
         double thickness = 40;
 
-        // Protein segment (cyan/blue)
+        // Protein segment (blue)
         if (proteinPercent > 0) {
-            gc.setFill(Color.web("#0891B2"));
+            gc.setFill(Color.web("#1B9DBB"));
             gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2,
                     90, proteinPercent, javafx.scene.shape.ArcType.ROUND);
         }
 
         // Fat segment (orange)
         if (fatPercent > 0) {
-            gc.setFill(Color.web("#F59E0B"));
+            gc.setFill(Color.web("#E5A336"));
             gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2,
                     90 + proteinPercent, fatPercent, javafx.scene.shape.ArcType.ROUND);
         }
 
         // Carbs segment (red)
         if (carbsPercent > 0) {
-            gc.setFill(Color.web("#DC2626"));
+            gc.setFill(Color.web("#B91C1C"));
             gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2,
                     90 + proteinPercent + fatPercent, carbsPercent, javafx.scene.shape.ArcType.ROUND);
         }
