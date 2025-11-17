@@ -2,7 +2,10 @@ package tut0301.group1.healthz.dataaccess.API;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import tut0301.group1.healthz.entities.nutrition.FoodNutritionDetails;
 import tut0301.group1.healthz.entities.nutrition.Macro;
+import tut0301.group1.healthz.entities.nutrition.MacroSearchResult;
+import tut0301.group1.healthz.entities.nutrition.NutritionFacts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +16,10 @@ import java.util.List;
 public class FoodJsonParser {
 
     /**
-     * Parses the JSON response from FatSecret foods.search API and extracts
+     * Pa the
+    API .
+     *
+    raw servinges the JSON response from FatSecret foods.search API and extracts
      * all food_id and food_name pairs.
      *
      * @param jsonResponse the JSON string returned from API
@@ -56,7 +62,7 @@ public class FoodJsonParser {
      * Extracts Macro information (calories, protein, fat, carbs) for a given food name.
      * This assumes the JSON structure follows FatSecret's standard format.
      *
-     * @param jsonResponse the JSON string returned from API
+     * @param jsonResponse   the JSON string returned from API
      * @param targetFoodName the food name to search for
      * @return a Macro object with nutritional data (or null if not found)
      */
@@ -122,10 +128,44 @@ public class FoodJsonParser {
     }
 
     /**
+     * Extracts macro results for the list of foods returned by the search API.
+     * Each result includes the food name, the raw serving description, and parsed macros.
+     */
+    public static List<MacroSearchResult> parseMacroResults(String jsonResponse) {
+        List<MacroSearchResult> results = new ArrayList<>();
+
+        try {
+            JSONObject root = new JSONObject(jsonResponse);
+            if (!root.has("foods")) {
+                return results;
+            }
+
+            JSONObject foodsObj = root.getJSONObject("foods");
+            JSONArray foodArray = foodsObj.optJSONArray("food");
+            if (foodArray == null) {
+                return results;
+            }
+
+            for (int i = 0; i < foodArray.length(); i++) {
+                JSONObject food = foodArray.getJSONObject(i);
+                long foodId = food.optLong("food_id", -1);
+                String foodName = food.optString("food_name", "");
+                String description = food.optString("food_description", "");
+                Macro macro = parseMacroFromDescription(description);
+                results.add(new MacroSearchResult(foodId, foodName, description, macro));
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Failed to parse macro results: " + e.getMessage());
+        }
+
+        return results;
+    }
+
+    /**
      * Extracts the first numeric value after the colon (or after "Calories", "Fat", etc.).
      * Example:
-     *  - "Per 1 apple - Calories: 100kcal" → 100.0
-     *  - "Calories: 52kcal" → 52.0
+     * - "Per 1 apple - Calories: 100kcal" → 100.0
+     * - "Calories: 52kcal" → 52.0
      */
     private static double extractNumberAfterColonStrict(String text) {
         try {
@@ -143,5 +183,60 @@ public class FoodJsonParser {
         }
         return 0;
     }
+
+    /**
+     * Parse a full food detail response from FatSecret into a rich nutrition model.
+     */
+    public static FoodNutritionDetails parseFoodDetails(String jsonResponse) {
+        try {
+            JSONObject root = new JSONObject(jsonResponse);
+            JSONObject food = root.optJSONObject("food");
+            if (food == null) {
+                return null;
+            }
+
+            long foodId = food.optLong("food_id", -1);
+            String foodName = food.optString("food_name", "");
+            String description = food.optString("food_description", "");
+
+            JSONObject servings = food.optJSONObject("servings");
+            JSONObject servingObj = null;
+            if (servings != null) {
+                JSONArray servingArray = servings.optJSONArray("serving");
+                if (servingArray != null && !servingArray.isEmpty()) {
+                    servingObj = servingArray.getJSONObject(0);
+                } else {
+                    servingObj = servings.optJSONObject("serving");
+                }
+            }
+
+            if (servingObj == null) {
+                return new FoodNutritionDetails(foodId, foodName, description, null, null);
+            }
+
+            double calories = servingObj.optDouble("calories", 0);
+            double protein = servingObj.optDouble("protein", 0);
+            double fat = servingObj.optDouble("fat", 0);
+            double carbs = servingObj.optDouble("carbohydrate", 0);
+            Macro macro = new Macro(calories, protein, fat, carbs);
+
+            NutritionFacts facts = new NutritionFacts(
+                    servingObj.optDouble("fiber", 0),
+                    servingObj.optDouble("sugar", 0),
+                    servingObj.optDouble("sodium", 0),
+                    servingObj.optDouble("potassium", 0),
+                    servingObj.optDouble("vitamin_a", 0),
+                    servingObj.optDouble("vitamin_c", 0),
+                    servingObj.optDouble("calcium", 0),
+                    servingObj.optDouble("iron", 0)
+            );
+
+            return new FoodNutritionDetails(foodId, foodName, description, macro, facts);
+        } catch (Exception e) {
+            System.err.println("❌ Failed to parse food detail: " + e.getMessage());
+            return null;
+        }
+    }
+
 
 }
