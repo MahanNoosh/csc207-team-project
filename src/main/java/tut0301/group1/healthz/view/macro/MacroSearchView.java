@@ -18,6 +18,9 @@ public class MacroSearchView {
     private TextField searchField;
     private VBox resultsContainer;
 
+    // for navigation to dashboard
+    private Button healthzBtn;
+
     // Sample data
     private static final FoodItem[] SAMPLE_HISTORY = {
             new FoodItem("Grilled Chicken Breast", "100g", 165, 31, 3.6, 0),
@@ -65,7 +68,7 @@ public class MacroSearchView {
 
         Label macroSubTitle = new Label("Search for a food to see its nutritional information.");
         macroSubTitle.setFont(Font.font("Inter", FontWeight.NORMAL, 18));
-        macroSubTitle.setTextFill(Color.web("#059669"));
+        macroSubTitle.setTextFill(Color.web("#27692A"));
 
         HBox searchBar = createSearchBar();
 
@@ -82,9 +85,15 @@ public class MacroSearchView {
         HBox.setHgrow(profileSection, Priority.ALWAYS);
 
         // HealthZ logo on the left
-        Label healthzLogo = new Label("HealthZ");
-        healthzLogo.setFont(Font.font("Inter", FontWeight.BOLD, 32));
-        healthzLogo.setTextFill(Color.web("#059669"));
+        healthzBtn = new Button("Health Z");
+        healthzBtn.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        healthzBtn.setTextFill(Color.web("#27692A"));
+        healthzBtn.setStyle(
+                "-fx-background-color: transparent; " +
+                        "-fx-border-color: transparent; " +
+                        "-fx-padding: 0; " +
+                        "-fx-cursor: hand;"
+        );
 
         // Spacer to push profile to the right
         Region spacer = new Region();
@@ -96,7 +105,7 @@ public class MacroSearchView {
         profilePic.setStroke(Color.web("#9CA3AF"));
         profilePic.setStrokeWidth(2);
 
-        profileSection.getChildren().addAll(healthzLogo, spacer, profilePic);
+        profileSection.getChildren().addAll(healthzBtn, spacer, profilePic);
         return profileSection;
     }
 
@@ -146,7 +155,7 @@ public class MacroSearchView {
         // history title
         Label historyTitle = new Label("History");
         historyTitle.setFont(Font.font("Inter", FontWeight.BOLD, 24));
-        historyTitle.setStyle("-fx-text-fill: #059669;");
+        historyTitle.setStyle("-fx-text-fill: #27692A;");
 
         resultsContainer = new VBox(15);
         resultsContainer.setAlignment(Pos.TOP_CENTER);
@@ -313,4 +322,11 @@ public class MacroSearchView {
             this.carbs = carbs;
         }
     }
+
+    /**
+     * Get the Healthz button (for navigation logic)
+     */
+    public Button gethealthzBtn() { return healthzBtn; }
+
+    // TODO: figure out how to navigate to single macro page
 }

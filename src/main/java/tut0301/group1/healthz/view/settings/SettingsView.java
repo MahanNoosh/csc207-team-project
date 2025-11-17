@@ -43,6 +43,9 @@ public class SettingsView {
     private ComboBox<String> goalCombo;
     private TextField dailyActivityField;
 
+    // for navigation logic
+    private Button dashboardBtn;
+
     public SettingsView() {
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1200, 800);
@@ -125,7 +128,7 @@ public class SettingsView {
         VBox navBox = new VBox(0);
         navBox.getStyleClass().add("navigation");
 
-        Button dashboardBtn = createNavButton("Dashboard", "📊", false);
+        dashboardBtn = createNavButton("Dashboard", "📊", false);
         Button mealTrackerBtn = createNavButton("Meal Tracker", "🍴", false);
         Button activityTrackerBtn = createNavButton("Activity Tracker", "🏃", false);
         Button settingsBtn = createNavButton("Settings", "⚙", true);  // Active
@@ -466,4 +469,9 @@ public class SettingsView {
         System.out.println("Saving settings...");
         // updateSettingsUseCase.execute(new UpdateSettingsRequest(...));
     }
+
+    /**
+     * Get the dashboard button (for navigation logic)
+     */
+    public Button getDashboardButton() { return dashboardBtn; }
 }

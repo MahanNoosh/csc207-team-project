@@ -41,7 +41,7 @@ public class SingleMacroPage {
      */
     private BorderPane createMainLayout() {
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: #F5F5F5;");
+        root.setStyle("-fx-background-color: #F8FBF5;");
         root.setPadding(new Insets(40, 60, 40, 60));
 
         // Food title + Add to Log button
