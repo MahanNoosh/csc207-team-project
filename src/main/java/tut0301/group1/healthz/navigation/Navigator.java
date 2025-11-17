@@ -2,6 +2,7 @@ package tut0301.group1.healthz.navigation;
 
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
@@ -9,9 +10,15 @@ import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
 import tut0301.group1.healthz.interfaceadapter.auth.mapping.SignupProfileMapper;
+import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
+import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchPresenter;
+import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
+import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
+import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
+import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
 import tut0301.group1.healthz.view.auth.SignupView;
@@ -95,7 +102,13 @@ public class Navigator {
      * Navigate to Macro Search page
      */
     public void showMacroSearch() {
-        MacroSearchView macroSearchView = new MacroSearchView();
+        MacroSearchViewModel macroSearchViewModel = new MacroSearchViewModel();
+        MacroSearchPresenter presenter = new MacroSearchPresenter(macroSearchViewModel);
+        MacroSearchGateway gateway = new FatSecretMacroSearchGateway();
+        MacroSearchInputBoundary interactor = new MacroSearchInteractor(gateway, presenter);
+        MacroSearchController controller = new MacroSearchController(interactor, presenter);
+
+        MacroSearchView macroSearchView = new MacroSearchView(controller, macroSearchViewModel);
 
         // Switch to macro search scene
         primaryStage.setScene(macroSearchView.getScene());

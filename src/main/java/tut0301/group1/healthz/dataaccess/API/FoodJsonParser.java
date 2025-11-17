@@ -3,6 +3,7 @@ package tut0301.group1.healthz.dataaccess.API;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import tut0301.group1.healthz.entities.nutrition.Macro;
+import tut0301.group1.healthz.entities.nutrition.MacroSearchResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,10 @@ import java.util.List;
 public class FoodJsonParser {
 
     /**
-     * Parses the JSON response from FatSecret foods.search API and extracts
+     * Pa the
+    API .
+     *
+    raw servinges the JSON response from FatSecret foods.search API and extracts
      * all food_id and food_name pairs.
      *
      * @param jsonResponse the JSON string returned from API
@@ -56,7 +60,7 @@ public class FoodJsonParser {
      * Extracts Macro information (calories, protein, fat, carbs) for a given food name.
      * This assumes the JSON structure follows FatSecret's standard format.
      *
-     * @param jsonResponse the JSON string returned from API
+     * @param jsonResponse   the JSON string returned from API
      * @param targetFoodName the food name to search for
      * @return a Macro object with nutritional data (or null if not found)
      */
@@ -121,11 +125,40 @@ public class FoodJsonParser {
         }
     }
 
+    public static List<MacroSearchResult> parseMacroResults(String jsonResponse) {
+        List<MacroSearchResult> results = new ArrayList<>();
+
+        try {
+            JSONObject root = new JSONObject(jsonResponse);
+            if (!root.has("foods")) {
+                return results;
+            }
+
+            JSONObject foodsObj = root.getJSONObject("foods");
+            JSONArray foodArray = foodsObj.optJSONArray("food");
+            if (foodArray == null) {
+                return results;
+            }
+
+            for (int i = 0; i < foodArray.length(); i++) {
+                JSONObject food = foodArray.getJSONObject(i);
+                String foodName = food.optString("food_name", "");
+                String description = food.optString("food_description", "");
+                Macro macro = parseMacroFromDescription(description);
+                results.add(new MacroSearchResult(foodName, description, macro));
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Failed to parse macro results: " + e.getMessage());
+        }
+
+        return results;
+    }
+
     /**
      * Extracts the first numeric value after the colon (or after "Calories", "Fat", etc.).
      * Example:
-     *  - "Per 1 apple - Calories: 100kcal" → 100.0
-     *  - "Calories: 52kcal" → 52.0
+     * - "Per 1 apple - Calories: 100kcal" → 100.0
+     * - "Calories: 52kcal" → 52.0
      */
     private static double extractNumberAfterColonStrict(String text) {
         try {
