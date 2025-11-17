@@ -115,7 +115,7 @@ public class Navigator {
         MacroSearchInputBoundary interactor = new MacroSearchInteractor(gateway, presenter);
         MacroSearchController controller = new MacroSearchController(interactor, presenter);
 
-        MacroSearchView macroSearchView = new MacroSearchView(controller, macroSearchViewModel);
+        MacroSearchView macroSearchView = new MacroSearchView(controller, macroSearchViewModel, this);
 
         // Switch to macro search scene
         primaryStage.setScene(macroSearchView.getScene());
