@@ -14,8 +14,8 @@ public class SupabaseAuthGateway implements AuthGateway {
 
     // Implementing signUpEmail
     @Override
-    public void signUpEmail(String email, String password) throws Exception {
-        client.signUpEmail(email, password); // Calls the method from SupabaseClient
+    public void signUpEmail(String email, String password, String displayName) throws Exception {
+        client.signUpEmail(email, password, displayName); // Calls the method from SupabaseClient
     }
 
     @Override
@@ -48,4 +48,15 @@ public class SupabaseAuthGateway implements AuthGateway {
     public void requestPasswordReset(String email, String redirectUrl) throws Exception {
         client.requestPasswordReset(email, redirectUrl); // Calls the method from SupabaseClient
     }
+
+    @Override
+    public String getCurrentUserName() {
+        return client.getDisplayName();
+    }
+
+    @Override
+    public void resendSignupVerification(String email) throws Exception{
+        client.resendSignupVerification(email);
+    }
+
 }

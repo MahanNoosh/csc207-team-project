@@ -22,7 +22,7 @@ public class SignupInteractor implements SignupInputBoundary {
             }
 
             // 2. Perform signup via gateway
-            auth.signUpEmail(input.getEmail(), input.getPassword1());
+            auth.signUpEmail(input.getEmail(), input.getPassword1(), input.getDisplayName());
 
             // 3. On success, return minimal output data
             SignupOutputData output = new SignupOutputData(input.getEmail());
