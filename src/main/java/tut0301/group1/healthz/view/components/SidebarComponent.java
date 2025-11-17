@@ -11,6 +11,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +49,9 @@ public class SidebarComponent {
      */
     public VBox createSidebar() {
         VBox sidebar = new VBox(0);
+        sidebar.setStyle("-fx-background-color: white;" +
+                        "-fx-padding: 10;"
+        );
         sidebar.getStyleClass().add("sidebar");
         sidebar.setPrefWidth(220);
 
@@ -57,9 +62,9 @@ public class SidebarComponent {
         VBox navigation = createNavigation();
 
         // Log out button at bottom
-        logoutBtn = new Button("Log Out");
-        logoutBtn.getStyleClass().addAll("nav-item", "logout-button");
+        logoutBtn = createNavButton("Log Out", "↗", false);
         logoutBtn.setMaxWidth(Double.MAX_VALUE);
+        logoutBtn.setPadding(new Insets(15, 20, 15, 20));
         logoutBtn.setOnAction(e -> handleLogout());
 
         // Spacer to push logout to bottom
@@ -75,22 +80,24 @@ public class SidebarComponent {
      */
     private VBox createProfileSection() {
         VBox profileBox = new VBox(8);
-        profileBox.getStyleClass().add("profile-section");
+        profileBox.setStyle("-fx-background-color: white; " +
+                "-fx-padding: 10; ");
         profileBox.setAlignment(Pos.CENTER);
         profileBox.setPadding(new Insets(30, 20, 20, 20));
 
         // Profile picture (circle with initials)
         Circle profilePic = new Circle(30);
         profilePic.setFill(Color.web("#CCCCCC"));
-        profilePic.getStyleClass().add("profile-picture");
 
         // Name
         Label nameLabel = new Label(userName);
-        nameLabel.getStyleClass().add("profile-name");
+        nameLabel.setFont(Font.font("Inter", FontWeight.MEDIUM, 20));
+        nameLabel.setTextFill(Color.web("black"));
 
         // Email
         Label emailLabel = new Label(userEmail);
-        emailLabel.getStyleClass().add("profile-email");
+        emailLabel.setFont(Font.font("Inter", FontWeight.MEDIUM, 11));
+        emailLabel.setTextFill(Color.web("#2E7D32"));
 
         profileBox.getChildren().addAll(profilePic, nameLabel, emailLabel);
         return profileBox;
@@ -101,6 +108,8 @@ public class SidebarComponent {
      */
     private VBox createNavigation() {
         VBox navBox = new VBox(0);
+        navBox.setStyle("-fx-background-color: white; " +
+                        "-fx-padding: 10; ");
         navBox.getStyleClass().add("navigation");
 
         dashboardBtn = createNavButton("Dashboard", "📊", "Dashboard".equals(activeTab));
@@ -146,9 +155,21 @@ public class SidebarComponent {
      */
     private Button createNavButton(String text, String icon, boolean isActive) {
         Button button = new Button(icon + "  " + text);
+        button.setStyle("-fx-background-color: transparent; " +
+                        "-fx-text-fill: black; " +
+                        "-fx-border-color: transparent; " +
+                        "-fx-padding: 0; " +
+                        "-fx-cursor: hand;"
+        );
+
         button.getStyleClass().add("nav-item");
         if (isActive) {
-            button.getStyleClass().add("nav-item-active");
+            button.setStyle("-fx-background-color: #27692A; " +
+                            "-fx-text-fill: white; " +
+                            "-fx-padding: 5; " +
+                            "-fx-background-radius: 15px; " +
+                            "-fx-cursor: hand;"
+            );
         }
         button.setMaxWidth(Double.MAX_VALUE);
         button.setAlignment(Pos.CENTER_LEFT);

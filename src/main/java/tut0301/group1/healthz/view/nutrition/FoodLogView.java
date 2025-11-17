@@ -107,7 +107,7 @@ public class FoodLogView {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, d MMMM");
         Label dateLabel = new Label(currentDate.format(formatter));
         dateLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 24));
-        dateLabel.setTextFill(Color.web("#059669"));
+        dateLabel.setTextFill(Color.web("#2E7D32"));
 
         titleBox.getChildren().addAll(title, dateLabel);
 
@@ -131,7 +131,7 @@ public class FoodLogView {
         // HealthZ logo (top right)
         Label healthzLabel = new Label("HealthZ");
         healthzLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
-        healthzLabel.setTextFill(Color.web("#059669"));
+        healthzLabel.setTextFill(Color.web("#2E7D32"));
 
         header.getChildren().addAll(titleBox, spacer, dateNav, healthzLabel);
         return header;
@@ -173,7 +173,7 @@ public class FoodLogView {
         btn.setFont(Font.font(24));
         btn.setPrefSize(50, 50);
         btn.setStyle(
-                "-fx-background-color: #059669; " +
+                "-fx-background-color: #2E7D32; " +
                         "-fx-background-radius: 10px; " +
                         "-fx-cursor: hand;"
         );
@@ -222,7 +222,7 @@ public class FoodLogView {
         addFoodBtn.setPrefHeight(45);
         addFoodBtn.setPrefWidth(140);
         addFoodBtn.setStyle(
-                "-fx-background-color: #059669; " +
+                "-fx-background-color: #2E7D32; " +
                         "-fx-background-radius: 10px; " +
                         "-fx-cursor: hand;"
         );
@@ -329,7 +329,7 @@ public class FoodLogView {
         VBox servingSizeBox = createInputField("Serving Size", "100g");
 
         // Number of Servings
-        VBox servingsCountBox = createInputField("Number of Servings", "1.0");
+        VBox servingsCountBox = createInputField("Number of Servings", "1");
 
         HBox.setHgrow(servingSizeBox, Priority.ALWAYS);
         HBox.setHgrow(servingsCountBox, Priority.ALWAYS);
@@ -343,7 +343,7 @@ public class FoodLogView {
         addToLogBtn.setPrefHeight(50);
         addToLogBtn.setMaxWidth(Double.MAX_VALUE);
         addToLogBtn.setStyle(
-                "-fx-background-color: #059669; " +
+                "-fx-background-color: #2E7D32; " +
                         "-fx-background-radius: 10px; " +
                         "-fx-cursor: hand;"
         );
@@ -360,7 +360,7 @@ public class FoodLogView {
         return inputSection;
     }
 
-    private VBox createInputField(String labelText, String defaultValue) {
+    private VBox createInputField(String labelText, String promptText) {
         VBox fieldBox = new VBox(8);
 
         Label label = new Label(labelText);
@@ -378,7 +378,8 @@ public class FoodLogView {
                         "-fx-padding: 10px 15px;"
         );
 
-        TextField textField = new TextField(defaultValue);
+        TextField textField = new TextField();
+        textField.setPromptText(promptText);
         textField.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
         textField.setStyle(
                 "-fx-background-color: transparent; " +
@@ -420,7 +421,7 @@ public class FoodLogView {
         addWaterBtn.setPrefHeight(45);
         addWaterBtn.setPrefWidth(140);
         addWaterBtn.setStyle(
-                "-fx-background-color: #059669; " +
+                "-fx-background-color: #2E7D32; " +
                         "-fx-background-radius: 10px; " +
                         "-fx-cursor: hand;"
         );

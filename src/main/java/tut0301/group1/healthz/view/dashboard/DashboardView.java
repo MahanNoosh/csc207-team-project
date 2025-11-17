@@ -40,6 +40,8 @@ public class DashboardView {
     private Button homeButton;
     private Button recipesButton;
     private Button macrosButton;
+    private Button foodLogButton;
+    private Button activityLogButton;
 
     public DashboardView() {
         BorderPane root = createMainLayout();
@@ -581,14 +583,13 @@ public class DashboardView {
         title.setPadding(new Insets(0, 0, 20, 0));
 
         // Log Meal button
-        Button logMealBtn = createQuickAddButton("+ Log Meal");
-        logMealBtn.setOnAction(e -> System.out.println("Log Meal clicked"));
+        foodLogButton = createQuickAddButton("+ Log Meal");
 
         // Log Activity button
-        Button logActivityBtn = createQuickAddButton("+ Log Activity");
-        logActivityBtn.setOnAction(e -> System.out.println("Log Activity clicked"));
+        activityLogButton = createQuickAddButton("+ Log Activity");
+        activityLogButton.setOnAction(e -> System.out.println("Log Activity clicked"));
 
-        widget.getChildren().addAll(title, logMealBtn, logActivityBtn);
+        widget.getChildren().addAll(title, foodLogButton, activityLogButton);
         return widget;
     }
 
@@ -664,6 +665,16 @@ public class DashboardView {
      * Get the Macros button (for navigation logic)
      */
     public Button getMacrosButton() { return macrosButton; }
+
+    /**
+     * Get the Food Log button (for navigation logic)
+     */
+    public Button getFoodLogButton() { return foodLogButton; }
+
+    /**
+     * Get the Activity Log button (for navigation logic)
+     */
+    public Button getActivityLogButton() { return activityLogButton; }
 
 
 
