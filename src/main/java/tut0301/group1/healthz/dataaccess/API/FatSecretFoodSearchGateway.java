@@ -93,14 +93,14 @@ public class FatSecretFoodSearchGateway {
                 .addQueryParameter("format", "json")
                 .addQueryParameter("max_results", "5");
 
-        // ✅ Create HTTP GET request
+
         Request request = new Request.Builder()
                 .url(urlBuilder.build())
                 .addHeader("Authorization", "Bearer " + token)
                 .get()
                 .build();
 
-        // ✅ Send request
+
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 throw new IOException("Unexpected response: " + response.code() + " - " + response.message());
@@ -119,6 +119,30 @@ public class FatSecretFoodSearchGateway {
             JSONObject formatted = new JSONObject(jsonBody);
 
             return formatted;
+        }
+    }
+
+    /**
+     * Retrieves a single food's detailed nutrient profile by id.
+     */
+    public String getFoodDetailsById(String token, long foodId) throws IOException {
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(SEARCH_URL).newBuilder()
+                .addQueryParameter("method", "food.get.v3")
+                .addQueryParameter("food_id", String.valueOf(foodId))
+                .addQueryParameter("format", "json");
+
+        Request request = new Request.Builder()
+                .url(urlBuilder.build())
+                .addHeader("Authorization", "Bearer " + token)
+                .get()
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected response: " + response.code() + " - " + response.message());
+            }
+
+            return response.body() != null ? response.body().string() : "{}";
         }
     }
 }
