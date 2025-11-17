@@ -2,6 +2,7 @@ package tut0301.group1.healthz.view.macro;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -13,6 +14,7 @@ import tut0301.group1.healthz.entities.nutrition.Macro;
 import tut0301.group1.healthz.entities.nutrition.MacroSearchResult;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
+import tut0301.group1.healthz.navigation.Navigator;
 
 /**
  * Macro Search page that allows user to search macro of food by name.
@@ -31,9 +33,12 @@ public class MacroSearchView {
 //            new FoodItem("Nutella", "2 tablespoon", 200, 2, 11, 21)
 //    };
 
-    public MacroSearchView(MacroSearchController controller, MacroSearchViewModel viewModel) {
+    private final Navigator navigator;
+
+    public MacroSearchView(MacroSearchController controller, MacroSearchViewModel viewModel, Navigator navigator) {
         this.controller = controller;
         this.viewModel = viewModel;
+        this.navigator = navigator;
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1200, 800);
     }
@@ -178,7 +183,7 @@ public class MacroSearchView {
         title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
         title.setStyle("-fx-text-fill: #059669;");
 
-        Label helper = new Label("Showing the first 5 matches from FatSecret");
+        Label helper = new Label("Showing the first 20 matches from FatSecret");
         helper.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
         helper.setStyle("-fx-text-fill: #6B7280;");
 
@@ -203,7 +208,8 @@ public class MacroSearchView {
                         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);"
         );
         card.setMaxWidth(1080);
-
+        card.setCursor(Cursor.HAND);
+        card.setOnMouseClicked(e -> navigator.showMacroDetails(food.foodId()));
         // left side - Food info
         VBox foodInfo = new VBox(8);
         HBox.setHgrow(foodInfo, Priority.ALWAYS);

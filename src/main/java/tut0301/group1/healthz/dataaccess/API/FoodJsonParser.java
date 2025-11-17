@@ -127,6 +127,10 @@ public class FoodJsonParser {
         }
     }
 
+    /**
+     * Extracts macro results for the list of foods returned by the search API.
+     * Each result includes the food name, the raw serving description, and parsed macros.
+     */
     public static List<MacroSearchResult> parseMacroResults(String jsonResponse) {
         List<MacroSearchResult> results = new ArrayList<>();
 
@@ -144,10 +148,11 @@ public class FoodJsonParser {
 
             for (int i = 0; i < foodArray.length(); i++) {
                 JSONObject food = foodArray.getJSONObject(i);
+                long foodId = food.optLong("food_id", -1);
                 String foodName = food.optString("food_name", "");
                 String description = food.optString("food_description", "");
                 Macro macro = parseMacroFromDescription(description);
-                results.add(new MacroSearchResult(foodName, description, macro));
+                results.add(new MacroSearchResult(foodId, foodName, description, macro));
             }
         } catch (Exception e) {
             System.err.println("❌ Failed to parse macro results: " + e.getMessage());

@@ -33,7 +33,7 @@ public class FatSecretFoodSearchGateway {
                 .addQueryParameter("method", "foods.search")
                 .addQueryParameter("search_expression", foodName)
                 .addQueryParameter("format", "json")
-                .addQueryParameter("max_results", "5");
+                .addQueryParameter("max_results", "20");
 
         // ✅ Create HTTP GET request
         Request request = new Request.Builder()
@@ -60,7 +60,7 @@ public class FatSecretFoodSearchGateway {
                 .addQueryParameter("method", "foods.search")
                 .addQueryParameter("search_expression", foodName)
                 .addQueryParameter("format", "json")
-                .addQueryParameter("max_results", "5");
+                .addQueryParameter("max_results", "20");
 
         // ✅ Create HTTP GET request
         Request request = new Request.Builder()
