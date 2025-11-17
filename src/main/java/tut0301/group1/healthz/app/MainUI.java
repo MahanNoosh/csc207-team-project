@@ -2,7 +2,8 @@ package tut0301.group1.healthz.app;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import tut0301.group1.healthz.navigation.Navigator;
+import tut0301.group1.healthz.presentation.view.macro.SingleMacroPage;
+import tut0301.group1.healthz.presentation.view.macro.SingleMacroPage.FoodItem;
 
 /**
  * Main Application Entry Point
@@ -26,11 +27,22 @@ public class MainUI extends Application {
             primaryStage.setWidth(1600);
             primaryStage.setHeight(1000);
             primaryStage.setResizable(true);
+            // Create the SingleMacroPage
+            SingleMacroPage macroPage = new SingleMacroPage(apple);
+
+            // Configure the window
+            primaryStage.setScene(macroPage.getScene());
+            primaryStage.setTitle("HealthZ - " + apple.getName());
+            primaryStage.setWidth(1200);
+            primaryStage.setHeight(800);
 
             // show window
             primaryStage.show();
 
-            System.out.println("✅ HealthZ Application started successfully!");
+            System.out.println("✅ SingleMacroPage launched successfully!");
+            System.out.println("   Food: " + apple.getName());
+            System.out.println("   Calories: " + apple.getCalories());
+            System.out.println("   Try changing the number of servings!");
 
         } catch (Exception e) {
             System.err.println("❌ Error starting application:");
