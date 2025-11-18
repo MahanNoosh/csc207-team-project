@@ -13,11 +13,12 @@ public class Profile {
     private Double targetWeightKg;
     private Optional<Double> dailyCalorieTarget;
     private UserDashboardPort.HealthCondition healthCondition;
+    private int targetWeeks;
 
     public Profile(String userId, Double weightKg, Double heightCm, Integer ageYears,
                        UserDashboardPort.Sex sex, UserDashboardPort.Goal goal, Double activityLevelMET,
                        Double targetWeightKg, Optional<Double> dailyCalorieTarget,
-                       UserDashboardPort.HealthCondition healthCondition) {
+                       UserDashboardPort.HealthCondition healthCondition, int targetWeeks) {
         this.userId = userId;
         this.weightKg = weightKg;
         this.heightCm = heightCm;
@@ -28,6 +29,8 @@ public class Profile {
         this.targetWeightKg = targetWeightKg;
         this.dailyCalorieTarget = dailyCalorieTarget;
         this.healthCondition = healthCondition;
+        this.targetWeeks = targetWeeks;
+
     }
 
     public String getUserId() {
@@ -68,6 +71,9 @@ public class Profile {
     public UserDashboardPort.HealthCondition getHealthCondition() {
         return healthCondition;
     }
+    public int getTargetWeeks() {
+        return targetWeeks;
+    }
 
     public void setWeightKg(Double weightKg) { this.weightKg = weightKg; }
     public void setHeightCm(Double heightCm) { this.heightCm = heightCm; }
@@ -78,4 +84,5 @@ public class Profile {
     public void setTargetWeightKg(Double targetWeightKg) { this.targetWeightKg = targetWeightKg; }
     public void setDailyCalorieTarget(Optional<Double> dailyCalorieTarget) { this.dailyCalorieTarget = dailyCalorieTarget; }
     public void setHealthCondition(UserDashboardPort.HealthCondition healthCondition) { this.healthCondition = healthCondition; }
+    public void setTargetWeeks(int targetWeeks) { this.targetWeeks = targetWeeks; }
 }
