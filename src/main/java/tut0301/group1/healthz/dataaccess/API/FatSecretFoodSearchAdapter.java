@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import tut0301.group1.healthz.entities.nutrition.BasicFood;
 import tut0301.group1.healthz.entities.nutrition.Macro;
-import tut0301.group1.healthz.usecase.dashboard.FoodSearchPort;
+import tut0301.group1.healthz.usecase.food.search.FoodSearchGateway;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Adapter that implements FoodSearchPort using FatSecret API.
+ * Gateway implementation for FoodSearchGateway using FatSecret API.
  *
  * This class is in the Infrastructure layer (Data Access).
  * It implements the interface defined by the Use Case layer,
@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * - Parsing JSON responses
  * - Converting API data to domain entities (BasicFood)
  */
-public class FatSecretFoodSearchAdapter implements FoodSearchPort {
+public class FatSecretFoodSearchAdapter implements FoodSearchGateway {
 
     private final FatSecretFoodSearchGateway searchGateway;
     private final FatSecretOAuthTokenFetcher tokenFetcher;
@@ -55,7 +55,7 @@ public class FatSecretFoodSearchAdapter implements FoodSearchPort {
     }
 
     /**
-     * Implementation of the FoodSearchPort interface.
+     * Implementation of the FoodSearchGateway interface.
      * Searches for foods by name using the FatSecret API.
      *
      * @param foodName The name of the food to search for
