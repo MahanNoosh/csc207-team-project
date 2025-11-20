@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20231013</version>
+            <version>20210307</version>
         </dependency>
 
         <dependency>
@@ -40,7 +40,7 @@
             <version>21.0.1</version>
         </dependency>
 
-        <!-- JavaFX FXML -->
+        <!-- JavaFX FXML (optional, for XML-based layouts) -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
