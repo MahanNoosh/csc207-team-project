@@ -91,20 +91,4 @@ public class FatSecretOAuthTokenFetcher {
             }
         }
     }
-
-    public static void main(String[] args) {
-        // Replace with your actual credentials
-        String clientId = "9ef37d375ad34d71a2e1f0703d79c93c";
-        String clientSecret = "c1d1657075174b2e93a8f4dc270a3aa5";
-        String scope = "basic";
-
-        FatSecretOAuthTokenFetcher fetcher = new FatSecretOAuthTokenFetcher(clientId, clientSecret);
-        try {
-            String rawResponse = fetcher.getAccessTokenRaw(scope);
-            System.out.println("\n=== RAW RESPONSE BODY ===");
-            System.out.println(rawResponse);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

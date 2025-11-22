@@ -179,6 +179,10 @@ public class FatSecretFoodGetClient {
                 long servingId = s.optLong("serving_id", -1);
                 String desc = s.optString("serving_description", null);
                 String measurementDesc = s.optString("measurement_description", null);
+
+                // Parse serving amount and unit from description
+                ServingAmountUnit parsed = parseServingDescription(desc, measurementDesc);
+
                 Double calories = parseDoubleOrNull(s.optString("calories", null));
                 Double protein = parseDoubleOrNull(s.optString("protein", null));
                 Double fat = parseDoubleOrNull(s.optString("fat", null));
@@ -189,8 +193,9 @@ public class FatSecretFoodGetClient {
 
                 servings.add(new ServingInfo(
                         servingId,
-                        desc,
-                        measurementDesc,
+                        desc,              // Keep original description
+                        parsed.amount,     // Parsed amount
+                        parsed.unit,       // Parsed unit
                         calories,
                         protein,
                         fat,
@@ -211,6 +216,66 @@ public class FatSecretFoodGetClient {
             return Double.parseDouble(s);
         } catch (NumberFormatException e) {
             return null;
+        }
+    }
+
+    /**
+     * Parse serving description to extract amount and unit.
+     * Examples:
+     *   "100 g" → amount=100.0, unit="g"
+     *   "1 small (2-1/2\" dia)" → amount=1.0, unit="small"
+     *   "1/2 large (yield after cooking)" → amount=0.5, unit="large"
+     *   "1 cup" → amount=1.0, unit="cup"
+     *   "2.5 oz" → amount=2.5, unit="oz"
+     */
+    private ServingAmountUnit parseServingDescription(String description, String measurementDescription) {
+        double amount = 1.0;
+        String unit = measurementDescription != null ? measurementDescription : "";
+
+        if (description != null && !description.isBlank()) {
+            // Try to extract leading number from description
+            String trimmed = description.trim();
+            String[] parts = trimmed.split("\\s+", 2);
+
+            if (parts.length > 0) {
+                try {
+                    // Try to parse as fraction (e.g., "1/2")
+                    if (parts[0].contains("/")) {
+                        String[] fractionParts = parts[0].split("/");
+                        if (fractionParts.length == 2) {
+                            double numerator = Double.parseDouble(fractionParts[0]);
+                            double denominator = Double.parseDouble(fractionParts[1]);
+                            amount = numerator / denominator;
+                        }
+                    } else {
+                        // Parse as regular number
+                        amount = Double.parseDouble(parts[0]);
+                    }
+
+                    // If successfully parsed, use rest as unit if measurementDescription is empty
+                    if (parts.length > 1 && (unit == null || unit.isBlank())) {
+                        unit = parts[1];
+                    }
+                } catch (NumberFormatException e) {
+                    // If first part is not a number, amount defaults to 1.0
+                    amount = 1.0;
+                }
+            }
+        }
+
+        return new ServingAmountUnit(amount, unit);
+    }
+
+    /**
+     * Helper class to hold parsed serving amount and unit.
+     */
+    private static class ServingAmountUnit {
+        final double amount;
+        final String unit;
+
+        ServingAmountUnit(double amount, String unit) {
+            this.amount = amount;
+            this.unit = unit;
         }
     }
 
@@ -264,8 +329,9 @@ public class FatSecretFoodGetClient {
      */
     public static class ServingInfo {
         public final long servingId;
-        public final String description;
-        public final String measurementDescription;
+        public final String servingDescription;  // Original full description: "100 g", "1/2 large (yield after cooking, bone removed)"
+        public final double servingAmount;       // Parsed amount: 100.0, 0.5, 1.0
+        public final String servingUnit;         // Parsed unit: "g", "cup", "large"
 
         public final Double calories;
         public final Double protein;
@@ -276,8 +342,9 @@ public class FatSecretFoodGetClient {
         public final Double sodium;
 
         public ServingInfo(long servingId,
-                           String description,
-                           String measurementDescription,
+                           String servingDescription,
+                           double servingAmount,
+                           String servingUnit,
                            Double calories,
                            Double protein,
                            Double fat,
@@ -286,8 +353,9 @@ public class FatSecretFoodGetClient {
                            Double sugar,
                            Double sodium) {
             this.servingId = servingId;
-            this.description = description;
-            this.measurementDescription = measurementDescription;
+            this.servingDescription = servingDescription;
+            this.servingAmount = servingAmount;
+            this.servingUnit = servingUnit;
             this.calories = calories;
             this.protein = protein;
             this.fat = fat;
@@ -301,11 +369,12 @@ public class FatSecretFoodGetClient {
         public String toString() {
             StringBuilder sb = new StringBuilder("ServingInfo{");
             sb.append("servingId=").append(servingId);
-            if (description != null) {
-                sb.append(", desc='").append(description).append('\'');
+            if (servingDescription != null && !servingDescription.isBlank()) {
+                sb.append(", desc='").append(servingDescription).append('\'');
             }
-            if (measurementDescription != null) {
-                sb.append(", unit='").append(measurementDescription).append('\'');
+            sb.append(", amount=").append(servingAmount);
+            if (servingUnit != null && !servingUnit.isBlank()) {
+                sb.append(", unit='").append(servingUnit).append('\'');
             }
             if (calories != null) sb.append(", kcal=").append(calories);
             if (protein != null) sb.append(", protein=").append(protein).append(" g");
