@@ -145,4 +145,38 @@ public class FatSecretFoodSearchGateway {
             return response.body() != null ? response.body().string() : "{}";
         }
     }
+
+    /**
+     * Gets detailed food information by food ID from FatSecret API.
+     *
+     * @param token    OAuth access token (Bearer)
+     * @param foodId   The food ID to look up
+     * @return JSON response as String
+     * @throws IOException if network or API error occurs
+     */
+    public String getFoodById(String token, long foodId) throws IOException {
+        // ✅ Build query URL using food.get.v5 API
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(SEARCH_URL).newBuilder()
+                .addQueryParameter("method", "food.get.v5")
+                .addQueryParameter("food_id", String.valueOf(foodId))
+                .addQueryParameter("format", "json");
+
+        // ✅ Create HTTP GET request
+        Request request = new Request.Builder()
+                .url(urlBuilder.build())
+                .addHeader("Authorization", "Bearer " + token)
+                .get()
+                .build();
+
+        // ✅ Send request
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected response: " + response.code() + " - " + response.message());
+            }
+
+            String jsonBody = response.body() != null ? response.body().string() : "{}";
+
+            return jsonBody;
+        }
+    }
 }
