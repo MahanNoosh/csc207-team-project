@@ -5,7 +5,7 @@ package tut0301.group1.healthz.usecase.auth;
  */
 public interface AuthGateway {
     // Adding the method signatures for authentication
-    void signUpEmail(String email, String password) throws Exception;
+    void signUpEmail(String email, String password, String displayName) throws Exception;
 
     void signInEmail(String email, String password) throws Exception;
 
@@ -21,4 +21,8 @@ public interface AuthGateway {
     String getAccessToken(); // JWT for RLS
 
     String getRefreshToken(); // Refresh token
+
+    String getCurrentUserName();
+
+    void resendSignupVerification(String email) throws Exception;
 }

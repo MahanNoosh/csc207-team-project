@@ -4,11 +4,14 @@ public class SignupInputData {
     private final String email;
     private final String password1;  // First password
     private final String password2;  // Repeated password for validation
+    private final String displayName;
 
-    public SignupInputData(String email, String password1, String password2) {
+
+    public SignupInputData(String email, String password1, String password2, String displayName) {
         this.email = email;
         this.password1 = password1;
         this.password2 = password2;
+        this.displayName = displayName;
     }
 
     public String getEmail() {
@@ -27,4 +30,6 @@ public class SignupInputData {
     public boolean passwordsMatch() {
         return password1.equals(password2);
     }
+
+    public String getDisplayName() { return displayName; }
 }

@@ -48,4 +48,9 @@ public class LoginViewModel {
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
+
+    public boolean isLoggedIn() {
+        return accessToken != null && userId != null;
+    }
+
 }
