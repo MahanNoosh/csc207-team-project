@@ -29,8 +29,6 @@ public class Profile {
         this.targetWeightKg = targetWeightKg;
         this.dailyCalorieTarget = dailyCalorieTarget;
         this.healthCondition = healthCondition;
-        this.targetWeeks = targetWeeks;
-
     }
 
     public String getUserId() {
@@ -84,5 +82,4 @@ public class Profile {
     public void setTargetWeightKg(Double targetWeightKg) { this.targetWeightKg = targetWeightKg; }
     public void setDailyCalorieTarget(Optional<Double> dailyCalorieTarget) { this.dailyCalorieTarget = dailyCalorieTarget; }
     public void setHealthCondition(UserDashboardPort.HealthCondition healthCondition) { this.healthCondition = healthCondition; }
-    public void setTargetWeeks(int targetWeeks) { this.targetWeeks = targetWeeks; }
 }
