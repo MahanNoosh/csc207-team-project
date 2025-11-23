@@ -21,6 +21,8 @@ import java.time.format.DateTimeFormatter;
  * Dashboard View - daily summary, calories, macros, activity tracker, and recent entries
  */
 public class DashboardView {
+        private Scene scene;
+
 
     private Scene scene;
     private String userName = "Bob"; // TODO: Get from user profile
