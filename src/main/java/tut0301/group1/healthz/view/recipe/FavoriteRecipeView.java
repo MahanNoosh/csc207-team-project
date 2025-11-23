@@ -47,6 +47,8 @@ public class FavoriteRecipeView {
         ScrollPane favRecipeFeed = new ScrollPane(createFeed());
         favRecipeFeed.setFitToWidth(true);
 
+        root.setCenter(favRecipeFeed);
+
         return root;
     }
 
@@ -54,48 +56,85 @@ public class FavoriteRecipeView {
      * Create header
      */
     private VBox createHeader() {
-        VBox header = new VBox(20);
-        header.setPadding(new Insets(40, 60, 30, 60));
-        header.setStyle("-fx-background-color: #F8FBF5;");
+        VBox header = new VBox(0);
+        header.setStyle("-fx-background-color: white;");
 
-        // Top row: Back Button + title + HealthZ logo
+        // Top row: Back Button + Title + HealthZ Logo + Profile
         HBox topRow = new HBox(20);
+        topRow.setPadding(new Insets(30, 60, 20, 60));
         topRow.setAlignment(Pos.CENTER_LEFT);
         topRow.setStyle("-fx-background-color: white;");
-        HBox.setHgrow(topRow, Priority.ALWAYS);
 
-        // back button
-        backButton = new Button("Back to Search Page");
-        backButton.setFont(Font.font("Inter", FontWeight.MEDIUM, 15));
+        // Back button with icon
+        backButton = new Button("← Back to Search");
+        backButton.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
         backButton.setTextFill(Color.web("#27692A"));
         backButton.setStyle(
                 "-fx-background-color: transparent; " +
-                        "-fx-cursor: hand;"
+                        "-fx-cursor: hand; " +
+                        "-fx-padding: 10px 15px;"
         );
 
-        // title
+        // Hover effect for back button
+        backButton.setOnMouseEntered(e ->
+                backButton.setStyle(
+                        "-fx-background-color: #F0F7F3; " +
+                                "-fx-cursor: hand; " +
+                                "-fx-padding: 10px 15px; " +
+                                "-fx-background-radius: 8px;"
+                )
+        );
+
+        backButton.setOnMouseExited(e ->
+                backButton.setStyle(
+                        "-fx-background-color: transparent; " +
+                                "-fx-cursor: hand; " +
+                                "-fx-padding: 10px 15px;"
+                )
+        );
+
+        // Title section
         VBox titleBox = new VBox(5);
+        titleBox.setPadding(new Insets(0, 0, 0, 10));
+
         Label title = new Label(username + "'s Favorite Recipes");
-        title.setFont(Font.font("Inter", FontWeight.BOLD, 40));
-        title.setTextFill(Color.web("black"));
+        title.setFont(Font.font("Inter", FontWeight.BOLD, 48));
+        title.setTextFill(Color.web("#111827"));
 
-        titleBox.getChildren().addAll(backButton, title);
+        Label subtitle = new Label("Your saved meals and inspiration");
+        subtitle.setFont(Font.font("Inter", FontWeight.NORMAL, 18));
+        subtitle.setTextFill(Color.web("#27692A"));
 
-        // spacer
+        titleBox.getChildren().addAll(title, subtitle, backButton);
+
+        // Spacer
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // Healthz Logo
+        // HealthZ logo
         Label healthzLabel = new Label("HealthZ");
         healthzLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
         healthzLabel.setTextFill(Color.web("#27692A"));
 
-        topRow.getChildren().addAll(titleBox, spacer, healthzLabel);
+        // Profile circle
+        Circle profileCircle = new Circle(25);
+        profileCircle.setFill(Color.web("#D1D5DB"));
+        profileCircle.setStroke(Color.web("#9CA3AF"));
+        profileCircle.setStrokeWidth(2);
 
-        // search container
+        topRow.getChildren().addAll(titleBox, spacer, healthzLabel, profileCircle);
+
+        // Search container
         HBox searchBox = createSearchBox();
+        searchBox.setPadding(new Insets(20, 60, 30, 60));
+        searchBox.setStyle("-fx-background-color: white;");
 
-        header.getChildren().addAll(topRow, searchBox);
+        // Separator line
+        Region separator = new Region();
+        separator.setPrefHeight(1);
+        separator.setStyle("-fx-background-color: #E5E7EB;");
+
+        header.getChildren().addAll(topRow, separator, searchBox);
 
         return header;
     }
@@ -150,7 +189,7 @@ public class FavoriteRecipeView {
         recipesGrid = new FlowPane(30, 30);
         recipesGrid.setAlignment(Pos.TOP_LEFT);
 
-        // Sample recipes (TODO: Replace with actual data)
+        // TODO: Replace with actual data
         recipesGrid.getChildren().addAll(
                 createRecipeCard(
                         "Blueberry Protein Pancakes",
@@ -184,7 +223,7 @@ public class FavoriteRecipeView {
      */
     private VBox createRecipeCard(String name, String ingredients, String calories,
                                   String time, String imageUrl) {
-        VBox card = new VBox(15);
+        VBox card = new VBox(0);  // ✅ Changed from 15 to 0
         card.setPrefWidth(380);
         card.setStyle(
                 "-fx-background-color: white; " +
@@ -193,7 +232,7 @@ public class FavoriteRecipeView {
                         "-fx-cursor: hand;"
         );
 
-        // Image container
+        // Image container with delete button
         StackPane imageContainer = new StackPane();
         imageContainer.setPrefHeight(280);
         imageContainer.setStyle(
@@ -201,19 +240,55 @@ public class FavoriteRecipeView {
                         "-fx-background-radius: 15px 15px 0 0;"
         );
 
-        // TODO: Load actual recipe image
-        if (imageUrl != null) {
-            // ImageView recipeImage = new ImageView(new Image(imageUrl));
-            // recipeImage.setFitWidth(380);
-            // recipeImage.setFitHeight(280);
-            // recipeImage.setPreserveRatio(false);
-            // imageContainer.getChildren().add(recipeImage);
-        } else {
-            // Placeholder
-            Label placeholder = new Label("🍽");
-            placeholder.setFont(Font.font(80));
-            imageContainer.getChildren().add(placeholder);
-        }
+        // Placeholder emoji
+        Label placeholder = new Label("🍽");
+        placeholder.setFont(Font.font(80));
+
+        // Delete button (on top of image) - ✅ MOVED HERE
+        Button deleteBtn = new Button("🗑️");
+        deleteBtn.setFont(Font.font(20));
+        deleteBtn.setTextFill(Color.web("#DC2626"));
+        deleteBtn.setPrefSize(45, 45);
+        deleteBtn.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-background-radius: 25px; " +
+                        "-fx-cursor: hand; " +
+                        "-fx-border-color: #E5E7EB; " +
+                        "-fx-border-width: 2px; " +
+                        "-fx-border-radius: 25px;"
+        );
+        StackPane.setAlignment(deleteBtn, Pos.TOP_RIGHT);
+        StackPane.setMargin(deleteBtn, new Insets(15));
+
+        deleteBtn.setOnAction(e -> {
+            e.consume();
+            handleDeleteRecipe(name);
+        });
+
+        // Hover effect for delete button
+        deleteBtn.setOnMouseEntered(e ->
+                deleteBtn.setStyle(
+                        "-fx-background-color: #FEE2E2; " +
+                                "-fx-background-radius: 25px; " +
+                                "-fx-cursor: hand; " +
+                                "-fx-border-color: #DC2626; " +
+                                "-fx-border-width: 2px; " +
+                                "-fx-border-radius: 25px;"
+                )
+        );
+
+        deleteBtn.setOnMouseExited(e ->
+                deleteBtn.setStyle(
+                        "-fx-background-color: white; " +
+                                "-fx-background-radius: 25px; " +
+                                "-fx-cursor: hand; " +
+                                "-fx-border-color: #E5E7EB; " +
+                                "-fx-border-width: 2px; " +
+                                "-fx-border-radius: 25px;"
+                )
+        );
+
+        imageContainer.getChildren().addAll(placeholder, deleteBtn);  // ✅ Add both to StackPane
 
         // Card content
         VBox content = new VBox(10);
@@ -254,27 +329,9 @@ public class FavoriteRecipeView {
         timeText.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
         timeBox.getChildren().addAll(timeIcon, timeText);
 
-        // delete recipe button
-        Button deleteBtn = new Button("🗑️");
-        deleteBtn.setFont(Font.font(24));
-        deleteBtn.setTextFill(Color.RED);
-        deleteBtn.setPrefSize(50, 50);
-        deleteBtn.setStyle(
-                "-fx-background-color: #EABBBB; " +
-                        "-fx-background-radius: 25px; " +
-                        "-fx-cursor: hand;"
-        );
-        StackPane.setAlignment(deleteBtn, Pos.BOTTOM_RIGHT);
-        StackPane.setMargin(deleteBtn, new Insets(15));
-
-        deleteBtn.setOnAction(e -> {
-            e.consume();
-            handleDeleteRecipe(name);
-        });
-
         stats.getChildren().addAll(caloriesBox, timeBox);
 
-        content.getChildren().addAll(nameLabel, ingredientsLabel, stats, deleteBtn);
+        content.getChildren().addAll(nameLabel, ingredientsLabel, stats);
 
         card.getChildren().addAll(imageContainer, content);
 
