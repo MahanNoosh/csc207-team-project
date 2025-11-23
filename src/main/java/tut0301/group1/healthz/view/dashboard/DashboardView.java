@@ -24,7 +24,6 @@ public class DashboardView {
         private Scene scene;
 
 
-    private Scene scene;
     private String userName = "Bob"; // TODO: Get from user profile
 
     // TODO: Get from actual data sources)
