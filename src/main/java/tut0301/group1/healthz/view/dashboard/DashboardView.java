@@ -681,5 +681,4 @@ public class DashboardView {
     public Button getActivityLogButton() { return activityLogButton; }
 
 
-
 }

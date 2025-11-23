@@ -34,6 +34,7 @@ import tut0301.group1.healthz.view.macro.SingleMacroPage;
 import tut0301.group1.healthz.view.macro.MacroSearchView;
 import tut0301.group1.healthz.view.settings.SettingsView;
 import tut0301.group1.healthz.view.dashboard.DashboardView;
+import tut0301.group1.healthz.view.recipe.RecipeSearchView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
@@ -50,6 +51,8 @@ public class Navigator {
     private Stage primaryStage;
     private SignupView.SignupData pendingSignupData;
     private Timeline emailCheckTimeline;
+
+    private SupabaseClient authenticatedClient;
 
     private Navigator() {
         // private so we can prevent instantiation
@@ -141,6 +144,17 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Food Details");
     }
 
+    /**
+     * Navigate to Settings page
+     */
+    public void showRecipeSearch() {
+        RecipeSearchView recipeSearchView = new RecipeSearchView();
+
+        // Switch to recipes scene
+        primaryStage.setScene(recipeSearchView.getScene());
+        primaryStage.setTitle("HealthZ - Recipe Search");
+    }
+
 
     /**
      * Navigate to Settings page
@@ -157,48 +171,34 @@ public class Navigator {
      * Navigate to Dashboard page
      */
     public void showDashboard() {
-        // Get user data from Supabase
-        String url = System.getenv("SUPABASE_URL");
-        String anon = System.getenv("SUPABASE_ANON_KEY");
+        String userName = getUserDisplayName();
+        DashboardView dashboardView = new DashboardView(userName);
+        setupDashboardNavigation(dashboardView);
+        primaryStage.setScene(dashboardView.getScene());
+        primaryStage.setTitle("HealthZ - Dashboard");
+    }
 
-        if (url == null || anon == null) {
-            System.err.println("Supabase not configured");
-            // Fallback with default name
-            DashboardView dashboardView = new DashboardView("User");
-            setupDashboardNavigation(dashboardView);
-            primaryStage.setScene(dashboardView.getScene());
-            primaryStage.setTitle("HealthZ - Dashboard");
-            return;
+    private String getUserDisplayName() {
+        // ✅ Use the authenticated client if available
+        if (authenticatedClient != null) {
+            String displayName = authenticatedClient.getDisplayName();
+            if (displayName != null && !displayName.isEmpty()) {
+                return displayName;
+            }
+
+            try {
+                String email = authenticatedClient.getUserEmail();
+                if (email != null && email.contains("@")) {
+                    String firstName = email.split("@")[0].split("\\.")[0];
+                    return firstName.substring(0, 1).toUpperCase() +
+                            firstName.substring(1).toLowerCase();
+                }
+            } catch (Exception e) {
+                System.err.println("Could not get email: " + e.getMessage());
+            }
         }
 
-        try {
-            SupabaseClient client = new SupabaseClient(url, anon);
-            SupabaseUserDataGateway userDataGateway = new SupabaseUserDataGateway(client);
-
-            // ✅ FIX: Use loadCurrentUserProfile() which returns Optional<Profile>
-            var profileOpt = userDataGateway.loadCurrentUserProfile();
-            var profile = profileOpt.orElse(null);
-
-            // Get user name from profile (fallback to "User")
-            String userName = (profile != null) ? "User" : "User"; // TODO: Add name field to Profile
-
-            DashboardView dashboardView = new DashboardView(userName);
-
-            // Setup navigation
-            setupDashboardNavigation(dashboardView);
-
-            primaryStage.setScene(dashboardView.getScene());
-            primaryStage.setTitle("HealthZ - Dashboard");
-
-        } catch (Exception e) {
-            System.err.println("Error loading user data: " + e.getMessage());
-            e.printStackTrace();
-            // Fallback with default name
-            DashboardView dashboardView = new DashboardView("User");
-            setupDashboardNavigation(dashboardView);
-            primaryStage.setScene(dashboardView.getScene());
-            primaryStage.setTitle("HealthZ - Dashboard");
-        }
+        return "User";
     }
 
     /**
@@ -214,7 +214,7 @@ public class Navigator {
         // Recipes button
         dashboardView.getRecipesButton().setOnAction(e -> {
             System.out.println("Navigating to Recipes...");
-            // TODO: showRecipes();
+            showRecipeSearch();
         });
 
         // Macros button
@@ -330,6 +330,8 @@ public class Navigator {
             if (loginVM.isLoggedIn()) {
                 System.out.println("✅ Login successful, ensuring profile row exists...");
 
+                this.authenticatedClient = client;
+
                 try {
                     // 2) Make sure user_data row exists (create blank if missing)
                     SupabaseUserDataGateway userDataGateway = new SupabaseUserDataGateway(client);
@@ -431,6 +433,8 @@ public class Navigator {
         try {
             String userId = loginVM.getUserId();
             System.out.println("🔐 Login succeeded. userId = " + userId);
+
+            this.authenticatedClient = client;
 
             // Map signup data -> Profile
             var profile = SignupProfileMapper.toProfile(userId, signupData);

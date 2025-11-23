@@ -69,7 +69,7 @@ public class RecipeSearchView {
 
         Label subtitle = new Label("Search thousands of recipes tailored to your health goals.");
         subtitle.setFont(Font.font("Inter", FontWeight.NORMAL, 20));
-        subtitle.setTextFill(Color.web("#059669"));
+        subtitle.setTextFill(Color.web("#27692A"));
 
         titleBox.getChildren().addAll(title, subtitle);
 
@@ -80,7 +80,7 @@ public class RecipeSearchView {
         // HealthZ logo
         Label healthzLabel = new Label("HealthZ");
         healthzLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
-        healthzLabel.setTextFill(Color.web("#059669"));
+        healthzLabel.setTextFill(Color.web("#27692A"));
 
         // Profile circle
         Circle profileCircle = new Circle(25);
@@ -95,7 +95,7 @@ public class RecipeSearchView {
         favoritesBtn.setPrefHeight(50);
         favoritesBtn.setPrefWidth(180);
         favoritesBtn.setStyle(
-                "-fx-background-color: #059669; " +
+                "-fx-background-color: #27692A; " +
                         "-fx-background-radius: 25px; " +
                         "-fx-cursor: hand;"
         );
@@ -202,15 +202,15 @@ public class RecipeSearchView {
 
         if (isSelected) {
             chip.setStyle(
-                    "-fx-background-color: #059669; " +
+                    "-fx-background-color: #7CAF8D; " +
                             "-fx-text-fill: white; " +
                             "-fx-background-radius: 25px; " +
                             "-fx-cursor: hand;"
             );
         } else {
             chip.setStyle(
-                    "-fx-background-color: #A7C4BC; " +
-                            "-fx-text-fill: white; " +
+                    "-fx-background-color: #B6CDBE; " +
+                            "-fx-text-fill: #3B7B51; " +
                             "-fx-background-radius: 25px; " +
                             "-fx-cursor: hand;"
             );
@@ -218,18 +218,18 @@ public class RecipeSearchView {
 
         // Toggle on click
         chip.setOnAction(e -> {
-            boolean currentlySelected = chip.getStyle().contains("#059669");
+            boolean currentlySelected = chip.getStyle().contains("#B6CDBE");
             if (currentlySelected) {
                 chip.setStyle(
-                        "-fx-background-color: #A7C4BC; " +
+                        "-fx-background-color: #7CAF8D; " +
                                 "-fx-text-fill: white; " +
                                 "-fx-background-radius: 25px; " +
                                 "-fx-cursor: hand;"
                 );
             } else {
                 chip.setStyle(
-                        "-fx-background-color: #059669; " +
-                                "-fx-text-fill: white; " +
+                        "-fx-background-color: #B6CDBE; " +
+                                "-fx-text-fill: #3B7B51; " +
                                 "-fx-background-radius: 25px; " +
                                 "-fx-cursor: hand;"
                 );
@@ -323,7 +323,7 @@ public class RecipeSearchView {
         favoriteBtn.setTextFill(Color.WHITE);
         favoriteBtn.setPrefSize(50, 50);
         favoriteBtn.setStyle(
-                "-fx-background-color: rgba(5, 150, 105, 0.8); " +
+                "-fx-background-color: #7CAF8D; " +
                         "-fx-background-radius: 25px; " +
                         "-fx-cursor: hand;"
         );
