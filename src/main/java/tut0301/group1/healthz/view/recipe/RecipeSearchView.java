@@ -20,6 +20,9 @@ public class RecipeSearchView {
     private TextField searchField;
     private FlowPane recipesGrid;
 
+    // for navigation logic
+    private Button favoriteRecipesButton;
+
     public RecipeSearchView() {
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
@@ -88,19 +91,18 @@ public class RecipeSearchView {
         profileCircle.setStrokeWidth(2);
 
         // View Favorites button
-        Button favoritesBtn = new Button("♥ View Favorites");
-        favoritesBtn.setFont(Font.font("Inter", FontWeight.BOLD, 16));
-        favoritesBtn.setTextFill(Color.WHITE);
-        favoritesBtn.setPrefHeight(50);
-        favoritesBtn.setPrefWidth(180);
-        favoritesBtn.setStyle(
+        favoriteRecipesButton = new Button("♥ View Favorites");
+        favoriteRecipesButton.setFont(Font.font("Inter", FontWeight.BOLD, 16));
+        favoriteRecipesButton.setTextFill(Color.WHITE);
+        favoriteRecipesButton.setPrefHeight(50);
+        favoriteRecipesButton.setPrefWidth(180);
+        favoriteRecipesButton.setStyle(
                 "-fx-background-color: #27692A; " +
                         "-fx-background-radius: 25px; " +
                         "-fx-cursor: hand;"
         );
-        favoritesBtn.setOnAction(e -> handleViewFavorites());
 
-        topRow.getChildren().addAll(titleBox, spacer, healthzLabel, profileCircle, favoritesBtn);
+        topRow.getChildren().addAll(titleBox, spacer, healthzLabel, profileCircle, favoriteRecipesButton);
 
         // Search and filters container
         VBox searchBox = createSearchAndFilters();
@@ -445,14 +447,6 @@ public class RecipeSearchView {
         alert.showAndWait();
     }
 
-    /**
-     * Handle View Favorites button
-     */
-    private void handleViewFavorites() {
-        System.out.println("View Favorites clicked");
-        // TODO: Navigate to favorites view
-    }
-
     public Scene getScene() {
         return scene;
     }
@@ -464,4 +458,9 @@ public class RecipeSearchView {
     public FlowPane getRecipesGrid() {
         return recipesGrid;
     }
+
+    /**
+     * Get favorite recipes button - for navigation logic
+     */
+    public Button getFavoriteRecipesButton() { return favoriteRecipesButton; }
 }

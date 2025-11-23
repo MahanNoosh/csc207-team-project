@@ -1,12 +1,14 @@
 package tut0301.group1.healthz.navigation;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import tut0301.group1.healthz.dataaccess.API.FatSecretMacroDetailGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
+import tut0301.group1.healthz.entities.nutrition.Recipe;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
@@ -35,6 +37,7 @@ import tut0301.group1.healthz.view.macro.MacroSearchView;
 import tut0301.group1.healthz.view.settings.SettingsView;
 import tut0301.group1.healthz.view.dashboard.DashboardView;
 import tut0301.group1.healthz.view.recipe.RecipeSearchView;
+import tut0301.group1.healthz.view.recipe.FavoriteRecipeView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
@@ -149,10 +152,10 @@ public class Navigator {
      */
     public void showRecipeSearch() {
         RecipeSearchView recipeSearchView = new RecipeSearchView();
-
-        // Switch to recipes scene
+        setupRecipeNavigation(recipeSearchView);
         primaryStage.setScene(recipeSearchView.getScene());
         primaryStage.setTitle("HealthZ - Recipe Search");
+
     }
 
 
@@ -178,6 +181,17 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Dashboard");
     }
 
+    /**
+     * Navigate to Favorite Recipe page
+     */
+    public void showFavoriteRecipes() {
+        String userName = getUserDisplayName();
+        FavoriteRecipeView favoriteRecipeView = new FavoriteRecipeView(userName);
+        setupFavoriteRecipes(favoriteRecipeView);
+        primaryStage.setScene(favoriteRecipeView.getScene());
+        primaryStage.setTitle("HealthZ - Favorite Recipes");
+    }
+
     private String getUserDisplayName() {
         // ✅ Use the authenticated client if available
         if (authenticatedClient != null) {
@@ -201,40 +215,6 @@ public class Navigator {
         return "User";
     }
 
-    /**
-     * Setup navigation for Dashboard page
-     */
-    private void setupDashboardNavigation(DashboardView dashboardView) {
-        // Settings button
-        dashboardView.getSettingsButton().setOnAction(e -> {
-            System.out.println("Navigating to Settings...");
-            showSettings();
-        });
-
-        // Recipes button
-        dashboardView.getRecipesButton().setOnAction(e -> {
-            System.out.println("Navigating to Recipes...");
-            showRecipeSearch();
-        });
-
-        // Macros button
-        dashboardView.getMacrosButton().setOnAction(e -> {
-            System.out.println("Navigating to Macro Search...");
-            showMacroSearch();
-        });
-
-        // Food Log button
-        dashboardView.getFoodLogButton().setOnAction(e -> {
-            System.out.println("Navigating to Food Log...");
-            // TODO: showMealTracker();
-        });
-
-        // Activity Log button
-        dashboardView.getActivityLogButton().setOnAction(e -> {
-            System.out.println("Navigating to Activity Log...");
-            // TODO: showActivityTracker();
-        });
-    }
 
     /**
      * Navigate to Main App/Dashboard (after successful login/signup)
@@ -500,6 +480,61 @@ public class Navigator {
         );
 
         emailCheckTimeline.play();
+    }
+
+    /**
+     * Setup navigation for Dashboard page
+     */
+    private void setupDashboardNavigation(DashboardView dashboardView) {
+        // Settings button
+        dashboardView.getSettingsButton().setOnAction(e -> {
+            System.out.println("Navigating to Settings...");
+            showSettings();
+        });
+
+        // Recipes button
+        dashboardView.getRecipesButton().setOnAction(e -> {
+            System.out.println("Navigating to Recipes...");
+            showRecipeSearch();
+        });
+
+        // Macros button
+        dashboardView.getMacrosButton().setOnAction(e -> {
+            System.out.println("Navigating to Macro Search...");
+            showMacroSearch();
+        });
+
+        // Food Log button
+        dashboardView.getFoodLogButton().setOnAction(e -> {
+            System.out.println("Navigating to Food Log...");
+            // TODO: showMealTracker();
+        });
+
+        // Activity Log button
+        dashboardView.getActivityLogButton().setOnAction(e -> {
+            System.out.println("Navigating to Activity Log...");
+            // TODO: showActivityTracker();
+        });
+    }
+
+    /**
+     * Setup navigation for Recipe Search page
+     */
+    private void setupRecipeNavigation(RecipeSearchView recipeSearchView) {
+        recipeSearchView.getFavoriteRecipesButton().setOnAction(e -> {
+            System.out.println("Navigating to favorite recipes page...");
+            showFavoriteRecipes();
+        });
+    }
+
+    /**
+     * Setup navigation for Favorite Recipe page
+     */
+    private void setupFavoriteRecipes(FavoriteRecipeView favoriteRecipeView) {
+        favoriteRecipeView.getBackButton().setOnAction(e -> {
+            System.out.println("Navigating to Back button...");
+            showRecipeSearch();
+        });
     }
 
 }

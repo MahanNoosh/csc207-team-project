@@ -24,7 +24,7 @@ public class FavoriteRecipeView {
     private FlowPane recipesGrid;
 
     // for navigation logic
-    public Button BackButton;
+    public Button backButton;
 
     public FavoriteRecipeView(String username) {
         this.username = username;
@@ -65,7 +65,7 @@ public class FavoriteRecipeView {
         HBox.setHgrow(topRow, Priority.ALWAYS);
 
         // back button
-        Button backButton = new Button("Back to Search Page");
+        backButton = new Button("Back to Search Page");
         backButton.setFont(Font.font("Inter", FontWeight.MEDIUM, 15));
         backButton.setTextFill(Color.web("#27692A"));
         backButton.setStyle(
@@ -93,7 +93,7 @@ public class FavoriteRecipeView {
         topRow.getChildren().addAll(titleBox, spacer, healthzLabel);
 
         // search container
-        VBox searchBox = createSearchBox();
+        HBox searchBox = createSearchBox();
 
         header.getChildren().addAll(topRow, searchBox);
 
@@ -103,7 +103,7 @@ public class FavoriteRecipeView {
     /**
      * Create search container
      */
-    private VBox createSearchBox() {
+    private HBox createSearchBox() {
         // Search bar
         HBox searchBar = new HBox(15);
         searchBar.setAlignment(Pos.CENTER_LEFT);
@@ -336,13 +336,11 @@ public class FavoriteRecipeView {
     /**
      * Get Scene
      */
-    public Button getScene() { return scene; }
+    public Scene getScene() { return scene; }
 
     /**
      * Get back button - for navigation logic
      */
-    public Button getBackButton() { return BackButton; }
-
-
+    public Button getBackButton() { return backButton; }
 
 }
