@@ -34,6 +34,7 @@ import tut0301.group1.healthz.view.auth.SignupView;
 import tut0301.group1.healthz.view.auth.signuppanels.EmailVerificationView;
 import tut0301.group1.healthz.view.macro.SingleMacroPage;
 import tut0301.group1.healthz.view.macro.MacroSearchView;
+import tut0301.group1.healthz.view.recipe.RecipeDetailView;
 import tut0301.group1.healthz.view.settings.SettingsView;
 import tut0301.group1.healthz.view.dashboard.DashboardView;
 import tut0301.group1.healthz.view.recipe.RecipeSearchView;
@@ -41,6 +42,8 @@ import tut0301.group1.healthz.view.recipe.FavoriteRecipeView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+
+import java.util.List;
 
 /**
  * Navigator - Handles all navigation between views
@@ -111,7 +114,6 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Sign Up");
     }
 
-
     /**
      * Navigate to Macro Search page
      */
@@ -151,13 +153,47 @@ public class Navigator {
      * Navigate to Settings page
      */
     public void showRecipeSearch() {
-        RecipeSearchView recipeSearchView = new RecipeSearchView();
+        RecipeSearchView recipeSearchView = new RecipeSearchView(this);
         setupRecipeNavigation(recipeSearchView);
+
         primaryStage.setScene(recipeSearchView.getScene());
         primaryStage.setTitle("HealthZ - Recipe Search");
-
     }
 
+    /**
+     * Navigate to Favorite Recipe page
+     */
+    public void showFavoriteRecipes() {
+        String userName = getUserDisplayName();
+        FavoriteRecipeView favoriteRecipeView = new FavoriteRecipeView(userName, this);
+        setupFavoriteRecipes(favoriteRecipeView);
+        primaryStage.setScene(favoriteRecipeView.getScene());
+        primaryStage.setTitle("HealthZ - Favorite Recipes");
+    }
+
+    /**
+     * Navigate to Recipe Detail page
+     */
+    public void showRecipeDetail(String recipeName, String imageUrl,
+                                 Double calories, Double protein, Double carbs, Double fats,
+                                 String servingSize, List<String> dietaryTags,
+                                 List<String> ingredients, List<String> instructions) {
+
+        RecipeDetailView detailView = new RecipeDetailView(
+                recipeName, imageUrl, calories, protein, carbs, fats,
+                servingSize, dietaryTags, ingredients, instructions
+        );
+
+        // Setup back button navigation
+        detailView.getBackButton().setOnAction(e -> {
+            System.out.println("Going back from recipe detail...");
+            // TODO: Track which page user came from and go back there
+            showRecipeSearch(); // Default: go back to search
+        });
+
+        primaryStage.setScene(detailView.getScene());
+        primaryStage.setTitle("HealthZ - " + recipeName);
+    }
 
     /**
      * Navigate to Settings page
@@ -179,17 +215,6 @@ public class Navigator {
         setupDashboardNavigation(dashboardView);
         primaryStage.setScene(dashboardView.getScene());
         primaryStage.setTitle("HealthZ - Dashboard");
-    }
-
-    /**
-     * Navigate to Favorite Recipe page
-     */
-    public void showFavoriteRecipes() {
-        String userName = getUserDisplayName();
-        FavoriteRecipeView favoriteRecipeView = new FavoriteRecipeView(userName);
-        setupFavoriteRecipes(favoriteRecipeView);
-        primaryStage.setScene(favoriteRecipeView.getScene());
-        primaryStage.setTitle("HealthZ - Favorite Recipes");
     }
 
     private String getUserDisplayName() {
@@ -214,7 +239,6 @@ public class Navigator {
 
         return "User";
     }
-
 
     /**
      * Navigate to Main App/Dashboard (after successful login/signup)

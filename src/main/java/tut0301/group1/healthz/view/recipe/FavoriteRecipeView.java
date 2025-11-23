@@ -12,6 +12,9 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import tut0301.group1.healthz.entities.nutrition.Recipe;
+import tut0301.group1.healthz.navigation.Navigator;
+
+import java.util.Arrays;
 
 /**
  * Favorite Recipes View
@@ -26,8 +29,11 @@ public class FavoriteRecipeView {
     // for navigation logic
     public Button backButton;
 
-    public FavoriteRecipeView(String username) {
+    private Navigator navigator;
+
+    public FavoriteRecipeView(String username, Navigator navigator) {
         this.username = username;
+        this.navigator = navigator;
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
     }
@@ -374,7 +380,34 @@ public class FavoriteRecipeView {
      */
     private void handleRecipeClick(String recipeName) {
         System.out.println("Recipe clicked: " + recipeName);
-        // TODO: Navigate to recipe detail view
+
+        // ✅ Navigate to detail view
+        navigator.showRecipeDetail(
+                recipeName,
+                null,
+                390.0,
+                15.0,
+                48.0,
+                7.0,
+                "2 pancakes",
+                Arrays.asList("High Protein", "Low Carb", "Vegan", "Gluten-Free"),
+                Arrays.asList(
+                        "1 1/2 cups Almond Flour",
+                        "1/2 cups Protein Powder",
+                        "1 1/2 tsp Baking Powder",
+                        "1/2 tsp Cinnamon",
+                        "3 Eggs",
+                        "2/3 cups Almond Milk",
+                        "1/2 cup Blueberries"
+                ),
+                Arrays.asList(
+                        "Mix dry ingredients in a large bowl.",
+                        "Whisk together eggs and almond milk.",
+                        "Combine wet and dry ingredients.",
+                        "Fold in blueberries.",
+                        "Cook on medium heat for 2-3 minutes per side."
+                )
+        );
     }
 
     /**

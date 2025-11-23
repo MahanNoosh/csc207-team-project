@@ -11,6 +11,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.navigation.Navigator;
+
+import java.util.Arrays;
 
 /**
  * Recipe Search View - displays searching and filtering for recipesCrea
@@ -23,7 +26,10 @@ public class RecipeSearchView {
     // for navigation logic
     private Button favoriteRecipesButton;
 
-    public RecipeSearchView() {
+    private Navigator navigator;
+
+    public RecipeSearchView(Navigator navigator) {
+        this.navigator = navigator;
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
     }
@@ -430,7 +436,35 @@ public class RecipeSearchView {
      */
     private void handleRecipeClick(String recipeName) {
         System.out.println("Recipe clicked: " + recipeName);
-        // TODO: Navigate to recipe detail view
+
+        // Navigate to detail view with sample data
+        // TODO: Replace with actual recipe data from API/database
+        navigator.showRecipeDetail(
+                recipeName,
+                null, // imageUrl
+                390.0, // calories
+                15.0, // protein
+                48.0, // carbs
+                7.0, // fats
+                "2 pancakes", // servingSize
+                Arrays.asList("High Protein", "Low Carb", "Vegan", "Gluten-Free"), // tags
+                Arrays.asList(
+                        "1 1/2 cups Almond Flour",
+                        "1/2 cups Protein Powder",
+                        "1 1/2 tsp Baking Powder",
+                        "1/2 tsp Cinnamon",
+                        "3 Eggs",
+                        "2/3 cups Almond Milk",
+                        "1/2 cup Blueberries"
+                ), // ingredients
+                Arrays.asList(
+                        "Mix dry ingredients in a large bowl.",
+                        "Whisk together eggs and almond milk.",
+                        "Combine wet and dry ingredients.",
+                        "Fold in blueberries.",
+                        "Cook on medium heat for 2-3 minutes per side."
+                ) // instructions
+        );
     }
 
     /**
