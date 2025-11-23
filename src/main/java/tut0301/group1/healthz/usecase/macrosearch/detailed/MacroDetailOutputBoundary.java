@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.usecase.macrosearch;
+package tut0301.group1.healthz.usecase.macrosearch.detailed;
 
 public interface MacroDetailOutputBoundary {
     void prepareSuccessView(MacroDetailOutputData outputData);

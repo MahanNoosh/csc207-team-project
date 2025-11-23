@@ -3,7 +3,8 @@ package tut0301.group1.healthz.interfaceadapter.macro;
 import java.util.List;
 
 import tut0301.group1.healthz.entities.nutrition.MacroSearchResult;
-import tut0301.group1.healthz.usecase.macrosearch.MacroSearchOutputBoundary;
+import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchOutputBoundary;
+import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchOutputData;
 
 public class MacroSearchPresenter implements MacroSearchOutputBoundary {
 
@@ -14,8 +15,8 @@ public class MacroSearchPresenter implements MacroSearchOutputBoundary {
     }
 
     @Override
-    public void presentSuccess(List<MacroSearchResult> results) {
-        viewModel.setResults(results);
+    public void presentSuccess(MacroSearchOutputData output) {
+        viewModel.setResults(output.getSearchResult());
         viewModel.setMessage(null);
         viewModel.setLoading(false);
     }

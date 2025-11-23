@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.usecase.macrosearch;
+package tut0301.group1.healthz.usecase.macrosearch.metadata;
 
 import java.util.List;
 
@@ -15,14 +15,14 @@ public class MacroSearchInteractor implements MacroSearchInputBoundary {
     }
 
     @Override
-    public void search(String query) {
-        if (query == null || query.isBlank()) {
+    public void search(MacroSearchInputData input) {
+        if (input.getSearchQuary() == null || input.getSearchQuary().isBlank()) {
             presenter.presentFailure("Please enter a food name to search.");
             return;
         }
 
         try {
-            List<MacroSearchResult> results = gateway.search(query.trim());
+            MacroSearchOutputData results = gateway.search(input);
             presenter.presentSuccess(results);
         } catch (Exception e) {
             presenter.presentFailure("Could not fetch nutrition data: " + e.getMessage());

@@ -1,6 +1,7 @@
 package tut0301.group1.healthz.interfaceadapter.macro;
 
-import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
+import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputBoundary;
+import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputData;
 
 public class MacroSearchController {
 
@@ -12,11 +13,11 @@ public class MacroSearchController {
         this.presenter = presenter;
     }
 
-    public void search(String query) {
+    public void search(MacroSearchInputData input) {
         presenter.getViewModel().setMessage(null);
         presenter.getViewModel().setResults(java.util.List.of());
         presenter.getViewModel().setLoading(true);
-        interactor.search(query);
+        interactor.search(input);
     }
 
     public MacroSearchViewModel getViewModel() {

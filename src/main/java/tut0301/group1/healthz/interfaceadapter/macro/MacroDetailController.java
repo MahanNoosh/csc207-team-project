@@ -1,7 +1,7 @@
 package tut0301.group1.healthz.interfaceadapter.macro;
 
-import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputBoundary;
-import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputData;
+import tut0301.group1.healthz.usecase.macrosearch.detailed.MacroDetailInputBoundary;
+import tut0301.group1.healthz.usecase.macrosearch.detailed.MacroDetailInputData;
 
 public class MacroDetailController {
 

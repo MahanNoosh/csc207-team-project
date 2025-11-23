@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.List;
 
 import tut0301.group1.healthz.entities.nutrition.MacroSearchResult;
-import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
+import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchGateway;
+import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputData;
+import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchOutputData;
 
 /**
  * Data-access gateway that fetches macro search results from FatSecret.
@@ -18,10 +20,10 @@ public class FatSecretMacroSearchGateway implements MacroSearchGateway {
     }
 
     @Override
-    public List<MacroSearchResult> search(String query) throws Exception {
+    public MacroSearchOutputData search(MacroSearchInputData input) throws Exception {
         String token = fetchToken();
-        String json = foodGateway.searchFoodByName(token, query);
-        return FoodJsonParser.parseMacroResults(json);
+        String json = foodGateway.searchFoodByName(token, input.getSearchQuary());
+        return new MacroSearchOutputData(FoodJsonParser.parseMacroResults(json));
     }
 
     private String fetchToken() throws IOException, InterruptedException {

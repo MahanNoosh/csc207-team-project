@@ -15,6 +15,8 @@ import tut0301.group1.healthz.entities.nutrition.MacroSearchResult;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
+import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputBoundary;
+import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputData;
 
 /**
  * Macro Search page that allows user to search macro of food by name.
@@ -143,7 +145,7 @@ public class MacroSearchView {
         searchField.setPrefWidth(700);
         HBox.setHgrow(searchField, Priority.ALWAYS);
 
-        searchField.setOnAction(e -> performSearch(searchField.getText()));
+        searchField.setOnAction(e -> performSearch(new MacroSearchInputData(searchField.getText())));
 
         searchContainer.getChildren().addAll(searchIcon, searchField);
         return searchContainer;
@@ -302,12 +304,12 @@ public class MacroSearchView {
     /**
      * Perform search when user presses Enter
      */
-    private void performSearch(String query) {
-        if (query == null || query.trim().isEmpty()) {
+    private void performSearch(MacroSearchInputData input) {
+        if (input.getSearchQuary() == null || input.getSearchQuary().trim().isEmpty()) {
             return;
         }
 
-        controller.search(query);
+        controller.search(input);
         refreshResults();
         searchField.clear();
     }

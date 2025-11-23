@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.usecase.macrosearch;
+package tut0301.group1.healthz.usecase.macrosearch.detailed;
 
 public class MacroDetailInputData {
     private final long foodId;
