@@ -1,5 +1,6 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
+import tut0301.group1.healthz.entities.Profile;
 import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.entities.nutrition.Macro;
@@ -7,7 +8,6 @@ import tut0301.group1.healthz.entities.nutrition.ServingInfo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,12 +27,12 @@ public class ProfileTest {
                     70.0,  // weight: 70kg
                     175.0,  // height: 175cm
                     25,  // age: 25 years
-                    UserDashboardPort.Sex.MALE,
-                    UserDashboardPort.Goal.WEIGHT_LOSS,
+                    Sex.MALE,
+                    Goal.WEIGHT_LOSS,
                     1.4,  // light activity
                     65.0,  // target weight: 65kg
                     Optional.of(2000.0),  // daily calorie target: 2000 kcal
-                    UserDashboardPort.HealthCondition.NONE
+                    HealthCondition.NONE
             );
 
             System.out.println("Created profile for user: " + profile.getUserId());

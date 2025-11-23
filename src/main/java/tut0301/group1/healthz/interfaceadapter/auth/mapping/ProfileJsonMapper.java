@@ -2,8 +2,7 @@ package tut0301.group1.healthz.interfaceadapter.auth.mapping;
 
 import org.json.JSONObject;
 import tut0301.group1.healthz.dataaccess.supabase.UserDataFields;
-import tut0301.group1.healthz.usecase.dashboard.Profile;
-import tut0301.group1.healthz.usecase.dashboard.UserDashboardPort;
+import tut0301.group1.healthz.entities.Profile;
 
 import java.util.Optional;
 
@@ -18,13 +17,13 @@ public final class ProfileJsonMapper {
         Double heightCm = optDouble(r, UserDataFields.HEIGHT_CM);
         Integer ageYears = optInt(r, UserDataFields.AGE_YEARS);
 
-        UserDashboardPort.Sex sex = parseEnumSafe(
-                UserDashboardPort.Sex.class,
+        Sex sex = parseEnumSafe(
+                Sex.class,
                 optString(r, UserDataFields.SEX)
         );
 
-        UserDashboardPort.Goal goal = parseEnumSafe(
-                UserDashboardPort.Goal.class,
+        Goal goal = parseEnumSafe(
+                Goal.class,
                 optString(r, UserDataFields.GOAL)
         );
 
@@ -36,8 +35,8 @@ public final class ProfileJsonMapper {
                         ? Optional.empty()
                         : Optional.ofNullable(optDouble(r, UserDataFields.DAILY_CAL_TARGET));
 
-        UserDashboardPort.HealthCondition hc = parseEnumSafe(
-                UserDashboardPort.HealthCondition.class,
+        HealthCondition hc = parseEnumSafe(
+                HealthCondition.class,
                 optString(r, UserDataFields.HEALTH_COND)
         );
 

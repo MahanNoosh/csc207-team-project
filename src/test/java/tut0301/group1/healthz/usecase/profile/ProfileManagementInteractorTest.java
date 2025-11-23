@@ -1,7 +1,6 @@
 package tut0301.group1.healthz.usecase.profile;
 
-import tut0301.group1.healthz.usecase.dashboard.Profile;
-import tut0301.group1.healthz.usecase.dashboard.UserDashboardPort;
+import tut0301.group1.healthz.entities.Profile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,10 +28,10 @@ public class ProfileManagementInteractorTest {
                 public Profile createBlankForCurrentUserIfMissing() {
                     Profile blankProfile = new Profile(
                         "current_user", null, null, null,
-                        UserDashboardPort.Sex.MALE,
-                        UserDashboardPort.Goal.GENERAL_HEALTH,
+                        Sex.MALE,
+                        Goal.GENERAL_HEALTH,
                         1.2, null, Optional.empty(),
-                        UserDashboardPort.HealthCondition.NONE
+                        HealthCondition.NONE
                     );
                     profileDatabase.put("current_user", blankProfile);
                     return blankProfile;
@@ -83,11 +82,11 @@ public class ProfileManagementInteractorTest {
             System.out.println("--- Test 2: Create new profile ---");
             UpdateProfileInputData createData = new UpdateProfileInputData(
                 "user123", 70.0, 175.0, 25,
-                UserDashboardPort.Sex.MALE,
-                UserDashboardPort.Goal.WEIGHT_LOSS,
+                Sex.MALE,
+                Goal.WEIGHT_LOSS,
                 1.4, 65.0,
                 Optional.of(2000.0),
-                UserDashboardPort.HealthCondition.NONE
+                HealthCondition.NONE
             );
             interactor.createProfile(createData);
             System.out.println();
@@ -96,11 +95,11 @@ public class ProfileManagementInteractorTest {
             System.out.println("--- Test 3: Update profile ---");
             UpdateProfileInputData updateData = new UpdateProfileInputData(
                 "user123", 69.0, 175.0, 25,
-                UserDashboardPort.Sex.MALE,
-                UserDashboardPort.Goal.WEIGHT_LOSS,
+                Sex.MALE,
+                Goal.WEIGHT_LOSS,
                 1.4, 65.0,
                 Optional.of(1900.0),
-                UserDashboardPort.HealthCondition.NONE
+                HealthCondition.NONE
             );
             interactor.updateProfile(updateData);
             System.out.println();

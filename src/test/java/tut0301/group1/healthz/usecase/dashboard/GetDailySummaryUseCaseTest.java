@@ -1,5 +1,6 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
+import tut0301.group1.healthz.entities.Profile;
 import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.entities.nutrition.Macro;
@@ -25,12 +26,12 @@ public class GetDailySummaryUseCaseTest {
                     70.0,
                     175.0,
                     25,
-                    UserDashboardPort.Sex.MALE,
-                    UserDashboardPort.Goal.WEIGHT_LOSS,
+                    Sex.MALE,
+                    Goal.WEIGHT_LOSS,
                     1.4,
                     65.0,
                     Optional.of(2000.0),
-                    UserDashboardPort.HealthCondition.NONE
+                    HealthCondition.NONE
             );
             System.out.println("Created profile: " + profile.getUserId());
             System.out.println("Target: " + profile.getDailyCalorieTarget().orElse(0.0) + " kcal\n");

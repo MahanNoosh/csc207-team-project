@@ -1,5 +1,6 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
+import tut0301.group1.healthz.entities.Profile;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 

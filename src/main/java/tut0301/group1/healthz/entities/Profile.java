@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.usecase.dashboard;
+package tut0301.group1.healthz.entities;
 
 import java.util.Optional;
 
@@ -7,18 +7,19 @@ public class Profile {
     private Double weightKg;
     private Double heightCm;
     private Integer ageYears;
-    private UserDashboardPort.Sex sex;
-    private UserDashboardPort.Goal goal;
+    private Sex sex;
+    private Goal goal;
     private Double activityLevelMET; // optional: e.g., 1.2 sedentary, 1.4 light, 1.6 moderate, 1.8+ high
     private Double targetWeightKg;
     private Optional<Double> dailyCalorieTarget;
-    private UserDashboardPort.HealthCondition healthCondition;
+    private HealthCondition healthCondition;
     private int targetWeeks;
+    private DietPreference dietPreference;
 
     public Profile(String userId, Double weightKg, Double heightCm, Integer ageYears,
-                       UserDashboardPort.Sex sex, UserDashboardPort.Goal goal, Double activityLevelMET,
+                       Sex sex, Goal goal, Double activityLevelMET,
                        Double targetWeightKg, Optional<Double> dailyCalorieTarget,
-                       UserDashboardPort.HealthCondition healthCondition, int targetWeeks) {
+                       HealthCondition healthCondition, int targetWeeks, DietPreference dietPreference ) {
         this.userId = userId;
         this.weightKg = weightKg;
         this.heightCm = heightCm;
@@ -29,6 +30,8 @@ public class Profile {
         this.targetWeightKg = targetWeightKg;
         this.dailyCalorieTarget = dailyCalorieTarget;
         this.healthCondition = healthCondition;
+        this.targetWeeks = targetWeeks;
+        this.dietPreference = dietPreference;
     }
 
     public String getUserId() {
@@ -47,11 +50,11 @@ public class Profile {
         return ageYears;
     }
 
-    public UserDashboardPort.Sex getSex() {
+    public Sex getSex() {
         return sex;
     }
 
-    public UserDashboardPort.Goal getGoal() {
+    public Goal getGoal() {
         return goal;
     }
 
@@ -66,20 +69,27 @@ public class Profile {
     public Optional<Double> getDailyCalorieTarget() {
         return dailyCalorieTarget;
     }
-    public UserDashboardPort.HealthCondition getHealthCondition() {
+    public HealthCondition getHealthCondition() {
         return healthCondition;
     }
     public int getTargetWeeks() {
         return targetWeeks;
     }
+    public DietPreference getDietPreference() { return dietPreference; }
 
     public void setWeightKg(Double weightKg) { this.weightKg = weightKg; }
     public void setHeightCm(Double heightCm) { this.heightCm = heightCm; }
     public void setAgeYears(Integer ageYears) { this.ageYears = ageYears; }
-    public void setSex(UserDashboardPort.Sex sex) { this.sex = sex; }
-    public void setGoal(UserDashboardPort.Goal goal) { this.goal = goal; }
-    public void setActivityLevelMET(Double activityLevelMET) { this.activityLevelMET = activityLevelMET; }
-    public void setTargetWeightKg(Double targetWeightKg) { this.targetWeightKg = targetWeightKg; }
-    public void setDailyCalorieTarget(Optional<Double> dailyCalorieTarget) { this.dailyCalorieTarget = dailyCalorieTarget; }
-    public void setHealthCondition(UserDashboardPort.HealthCondition healthCondition) { this.healthCondition = healthCondition; }
+    public void setSex(Sex sex) { this.sex = sex; }
+    public void setGoal(Goal goal) { this.goal = goal; }
+    public void setActivityLevelMET(Double activityLevelMET) {
+        this.activityLevelMET = activityLevelMET; }
+    public void setTargetWeightKg(Double targetWeightKg) {
+        this.targetWeightKg = targetWeightKg; }
+    public void setDailyCalorieTarget(Optional<Double> dailyCalorieTarget) {
+        this.dailyCalorieTarget = dailyCalorieTarget; }
+    public void setHealthCondition(HealthCondition healthCondition) {
+        this.healthCondition = healthCondition; }
+    public void setTargetWeeks(int targetWeeks) { this.targetWeeks = targetWeeks; }
+    public void setDietPreference(DietPreference dietPreference) { this.dietPreference = dietPreference; }
 }

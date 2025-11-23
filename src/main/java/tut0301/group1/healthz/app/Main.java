@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
@@ -19,10 +19,10 @@ import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupViewModel;
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.SignupView;
 
-import tut0301.group1.healthz.usecase.dashboard.UserDataGateway;
+import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
 import tut0301.group1.healthz.usecase.dashboard.ProfileInputBoundary;
 import tut0301.group1.healthz.usecase.dashboard.ProfileInteractor;
-import tut0301.group1.healthz.usecase.dashboard.Profile;
+import tut0301.group1.healthz.entities.Profile;
 import tut0301.group1.healthz.view.dashboard.ProfileCliRenderer;
 
 public class Main {
@@ -39,8 +39,8 @@ public class Main {
         AuthGateway authGateway = new SupabaseAuthGateway(client);
 
         // Profile data gateway & interactor
-        UserDataGateway userDataGateway = new SupabaseUserDataGateway(client);
-        ProfileInputBoundary profileUC = new ProfileInteractor(userDataGateway);
+        UserDataDataAccessInterface userDataDataAccessInterface = new SupabaseUserDataDataAccessObject(client);
+        ProfileInputBoundary profileUC = new ProfileInteractor(userDataDataAccessInterface);
 
         // ---- Login stack ----
         var loginVM = new LoginViewModel();

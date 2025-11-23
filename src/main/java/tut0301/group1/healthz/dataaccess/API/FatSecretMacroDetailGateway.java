@@ -1,7 +1,7 @@
 package tut0301.group1.healthz.dataaccess.API;
 
 import tut0301.group1.healthz.entities.nutrition.FoodNutritionDetails;
-import tut0301.group1.healthz.usecase.macrosearch.MacroDetailGateway;
+import tut0301.group1.healthz.usecase.macrosearch.detailed.MacroDetailGateway;
 
 import static tut0301.group1.healthz.dataaccess.API.FoodJsonParser.parseFoodDetails;
 

@@ -1,7 +1,5 @@
 package tut0301.group1.healthz.usecase.macrosearch.detailed;
 
-import tut0301.group1.healthz.usecase.macrosearch.MacroDetailGateway;
-
 public class MacroDetailInteractor implements MacroDetailInputBoundary {
 
     private final MacroDetailGateway gateway;

@@ -3,8 +3,8 @@ package tut0301.group1.healthz.dataaccess.supabase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import tut0301.group1.healthz.interfaceadapter.auth.mapping.ProfileJsonMapper;
-import tut0301.group1.healthz.usecase.dashboard.Profile;
-import tut0301.group1.healthz.usecase.dashboard.UserDataGateway;
+import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
 
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -14,10 +14,10 @@ import java.util.Optional;
 /**
  * Adapter: implements UserDataGateway using Supabase's REST API.
  */
-public class SupabaseUserDataGateway implements UserDataGateway {
+public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInterface {
     private final SupabaseClient client;
 
-    public SupabaseUserDataGateway(SupabaseClient client) {
+    public SupabaseUserDataDataAccessObject(SupabaseClient client) {
         this.client = client;
     }
 

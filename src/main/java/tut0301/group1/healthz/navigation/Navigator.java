@@ -6,7 +6,7 @@ import tut0301.group1.healthz.dataaccess.API.FatSecretMacroDetailGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
@@ -20,7 +20,7 @@ import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
-import tut0301.group1.healthz.usecase.macrosearch.MacroDetailGateway;
+import tut0301.group1.healthz.usecase.macrosearch.detailed.MacroDetailGateway;
 import tut0301.group1.healthz.usecase.macrosearch.detailed.MacroDetailInputBoundary;
 import tut0301.group1.healthz.usecase.macrosearch.detailed.MacroDetailInteractor;
 import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchGateway;
@@ -248,7 +248,7 @@ public class Navigator {
 
                 try {
                     // 2) Make sure user_data row exists (create blank if missing)
-                    SupabaseUserDataGateway userDataGateway = new SupabaseUserDataGateway(client);
+                    SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
                     userDataGateway.createBlankForCurrentUserIfMissing();
                     System.out.println("💾 user_data row present/created.");
                 } catch (Exception ex) {
@@ -352,7 +352,7 @@ public class Navigator {
             var profile = SignupProfileMapper.toProfile(userId, signupData);
 
             // Save profile
-            SupabaseUserDataGateway userDataGateway = new SupabaseUserDataGateway(client);
+            SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
             userDataGateway.upsertProfile(profile);
 
             System.out.println("💾 Profile saved successfully. Navigating to main app...");

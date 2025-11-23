@@ -1,7 +1,5 @@
 package tut0301.group1.healthz.usecase.profile;
 
-import tut0301.group1.healthz.usecase.dashboard.UserDashboardPort;
-
 import java.util.Optional;
 
 /**
@@ -12,18 +10,18 @@ public class UpdateProfileInputData {
     private final Double weightKg;
     private final Double heightCm;
     private final Integer ageYears;
-    private final UserDashboardPort.Sex sex;
-    private final UserDashboardPort.Goal goal;
+    private final Sex sex;
+    private final Goal goal;
     private final Double activityLevelMET;
     private final Double targetWeightKg;
     private final Optional<Double> dailyCalorieTarget;
-    private final UserDashboardPort.HealthCondition healthCondition;
+    private final HealthCondition healthCondition;
 
     public UpdateProfileInputData(String userId, Double weightKg, Double heightCm, Integer ageYears,
-                                  UserDashboardPort.Sex sex, UserDashboardPort.Goal goal,
+                                  Sex sex, Goal goal,
                                   Double activityLevelMET, Double targetWeightKg,
                                   Optional<Double> dailyCalorieTarget,
-                                  UserDashboardPort.HealthCondition healthCondition) {
+                                  HealthCondition healthCondition) {
         this.userId = userId;
         this.weightKg = weightKg;
         this.heightCm = heightCm;
@@ -52,11 +50,11 @@ public class UpdateProfileInputData {
         return ageYears;
     }
 
-    public UserDashboardPort.Sex getSex() {
+    public Sex getSex() {
         return sex;
     }
 
-    public UserDashboardPort.Goal getGoal() {
+    public Goal getGoal() {
         return goal;
     }
 
@@ -72,7 +70,7 @@ public class UpdateProfileInputData {
         return dailyCalorieTarget;
     }
 
-    public UserDashboardPort.HealthCondition getHealthCondition() {
+    public HealthCondition getHealthCondition() {
         return healthCondition;
     }
 }
