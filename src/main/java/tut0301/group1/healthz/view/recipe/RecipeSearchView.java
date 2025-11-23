@@ -13,8 +13,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 /**
- * Recipe Search View - displays searching and filtering for recipes
- * Matches the "Find Your Next Meal" design
+ * Recipe Search View - displays searching and filtering for recipesCrea
  */
 public class RecipeSearchView {
     private Scene scene;
