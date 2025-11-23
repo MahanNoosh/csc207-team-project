@@ -4,6 +4,7 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import tut0301.group1.healthz.dataaccess.API.FatSecretMacroDetailGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
@@ -17,6 +18,9 @@ import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailViewModel;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchPresenter;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
+import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchController;
+import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchPresenter;
+import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
@@ -26,6 +30,9 @@ import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInteractor;
 import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
 import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
 import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
+import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchGateway;
+import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchInputBoundary;
+import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchInteractor;
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
 import tut0301.group1.healthz.view.auth.SignupView;
@@ -138,6 +145,23 @@ public class Navigator {
 
         primaryStage.setScene(detailView.getScene());
         primaryStage.setTitle("HealthZ - Food Details");
+    }
+
+    /**
+     * Navigate to Recipe Search page
+     */
+    public void showRecipeSearch() {
+        RecipeSearchViewModel recipeSearchViewModel = new RecipeSearchViewModel();
+        RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
+        RecipeSearchGateway gateway = new FatSecretRecipeSearchGateway();
+        RecipeSearchInputBoundary interactor = new RecipeSearchInteractor(gateway, presenter);
+        RecipeSearchController controller = new RecipeSearchController(interactor, presenter);
+
+        // RecipeSearchView recipeSearchView = new RecipeSearchView(controller, recipeSearchViewModel, this);
+
+        // Switch to recipe search scene
+        // primaryStage.setScene(recipeSearchView.getScene());
+        primaryStage.setTitle("HealthZ - Recipe Search");
     }
 
 

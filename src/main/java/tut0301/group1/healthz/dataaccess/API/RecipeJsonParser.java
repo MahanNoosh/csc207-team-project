@@ -3,6 +3,7 @@ package tut0301.group1.healthz.dataaccess.API;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import tut0301.group1.healthz.entities.nutrition.Recipe;
+import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
 import tut0301.group1.healthz.entities.nutrition.RecipeIngredient;
 
 import java.util.ArrayList;
@@ -98,5 +99,45 @@ public class RecipeJsonParser {
 
         return new Recipe(recipeId, name, description, instructions, recipeIngredients, prepTime, cookTime,
                 servings, imageUrl);
+    }
+
+    public static List<RecipeSearchResult> parseRecipeResults(String jsonResponse) {
+        List<RecipeSearchResult> results = new ArrayList<>();
+
+        try {
+            JSONObject root = new JSONObject(jsonResponse);
+            if (!root.has("recipes")) {
+                return results;
+            }
+
+            JSONObject recipeObj = root.getJSONObject("recipes");
+            JSONArray recipeArray = recipeObj.optJSONArray("recipe");
+            if (recipeArray == null) {
+                return results;
+            }
+
+            for (int i = 0; i < recipeArray.length(); i++) {
+                JSONObject recipe= recipeArray.getJSONObject(i);
+
+                String recipeId = recipe.optString("recipe_id", "");
+                String recipeName = recipe.optString("recipe_name", "");
+                String description = recipe.optString("recipe_description", "");
+
+                JSONObject ingredients = recipe.getJSONObject("recipe_ingredients");
+                JSONArray ingredientsArray = ingredients.getJSONArray("ingredient");
+                List<String> ingredientNames = new ArrayList<>();
+
+                for (int j = 0; j < ingredientsArray.length(); j++) {
+                    ingredientNames.add(ingredientsArray.getString(j));
+                }
+
+                String imageUrl = recipe.optString("recipe_image", "");
+
+                results.add(new RecipeSearchResult(recipeId, recipeName, description, ingredientNames, imageUrl));
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Failed to parse recipe results: " + e.getMessage());
+        }
+        return results;
     }
 }

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**s
+/**
  * Fetch recipe data from the FatSecret API.
  */
 public class RecipeAPI implements SearchRecipe {
@@ -36,14 +36,15 @@ public class RecipeAPI implements SearchRecipe {
      * @return a list of the names of the recipes
      * @throws RecipeNotFoundException if there are no recipes found
      */
+    @Override
     public List<String> getRecipeNames(String searchExpression, Integer maxResults,
                                        Integer pageNumber, String recipeType)
             throws SearchRecipe.RecipeNotFoundException{
         HttpUrl httpUrl = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder()
-                .addQueryParameter("search_term", searchExpression)
+                .addQueryParameter("search_expression", searchExpression)
                 .addQueryParameter("max_results", String.valueOf(maxResults))
                 .addQueryParameter("page_number", String.valueOf(pageNumber))
-                .addQueryParameter("recipe_type", recipeType)
+                .addQueryParameter("recipe_types", recipeType)
                 .addQueryParameter("format", "json")
                 .build();
 
@@ -89,14 +90,15 @@ public class RecipeAPI implements SearchRecipe {
      * @return the list of Recipe objects that is found
      * @throws RecipeNotFoundException if there are no recipes found
      */
+    @Override
     public List<Recipe> searchByName(String searchExpression, Integer maxResults,
                                      Integer pageNumber, String recipeType)
             throws SearchRecipe.RecipeNotFoundException{
         HttpUrl httpUrl = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder()
-                .addQueryParameter("search_term", searchExpression)
+                .addQueryParameter("search_expression", searchExpression)
                 .addQueryParameter("max_results", String.valueOf(maxResults))
                 .addQueryParameter("page_number", String.valueOf(pageNumber))
-                .addQueryParameter("recipe_type", recipeType)
+                .addQueryParameter("recipe_types", recipeType)
                 .addQueryParameter("format", "json")
                 .build();
 
@@ -134,6 +136,7 @@ public class RecipeAPI implements SearchRecipe {
      * @return the recipe that is found
      * @throws RecipeNotFoundException if there are no recipes found
      */
+    @Override
     public Recipe searchById(String id) throws SearchRecipe.RecipeNotFoundException{
         HttpUrl httpUrl = Objects.requireNonNull(HttpUrl.parse(searchByIdUrl)).newBuilder()
                 .addQueryParameter("recipe_id", id)
@@ -206,7 +209,7 @@ public class RecipeAPI implements SearchRecipe {
                 // print the name of the recipe found
                 System.out.println("Name of recipe with ID 91: " + recipeEntity.getName());
 
-            } catch (SearchRecipe.RecipeNotFoundException e) {
+            } catch (RecipeNotFoundException e) {
                 System.out.println("Recipe not found!");
             }
         } catch (IOException | InterruptedException e) {
