@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 public class DashboardView {
 
     private Scene scene;
-    private String userName = "Bob"; // TODO: Get from user profile
+    private String userName; // TODO: Get from user profile
 
     // TODO: Get from actual data sources)
     private int caloriesRemaining = 425;
@@ -43,7 +43,11 @@ public class DashboardView {
     private Button foodLogButton;
     private Button activityLogButton;
 
-    public DashboardView() {
+    /**
+     * Constructor
+     */
+    public DashboardView(String userName) {
+        this.userName = userName != null ? userName : "User";
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 1200);
     }

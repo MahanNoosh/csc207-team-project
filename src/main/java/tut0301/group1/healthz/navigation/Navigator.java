@@ -33,6 +33,7 @@ import tut0301.group1.healthz.view.auth.signuppanels.EmailVerificationView;
 import tut0301.group1.healthz.view.macro.SingleMacroPage;
 import tut0301.group1.healthz.view.macro.MacroSearchView;
 import tut0301.group1.healthz.view.settings.SettingsView;
+import tut0301.group1.healthz.view.dashboard.DashboardView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
@@ -153,13 +154,96 @@ public class Navigator {
     }
 
     /**
+     * Navigate to Dashboard page
+     */
+    public void showDashboard() {
+        // Get user data from Supabase
+        String url = System.getenv("SUPABASE_URL");
+        String anon = System.getenv("SUPABASE_ANON_KEY");
+
+        if (url == null || anon == null) {
+            System.err.println("Supabase not configured");
+            // Fallback with default name
+            DashboardView dashboardView = new DashboardView("User");
+            setupDashboardNavigation(dashboardView);
+            primaryStage.setScene(dashboardView.getScene());
+            primaryStage.setTitle("HealthZ - Dashboard");
+            return;
+        }
+
+        try {
+            SupabaseClient client = new SupabaseClient(url, anon);
+            SupabaseUserDataGateway userDataGateway = new SupabaseUserDataGateway(client);
+
+            // ✅ FIX: Use loadCurrentUserProfile() which returns Optional<Profile>
+            var profileOpt = userDataGateway.loadCurrentUserProfile();
+            var profile = profileOpt.orElse(null);
+
+            // Get user name from profile (fallback to "User")
+            String userName = (profile != null) ? "User" : "User"; // TODO: Add name field to Profile
+
+            DashboardView dashboardView = new DashboardView(userName);
+
+            // Setup navigation
+            setupDashboardNavigation(dashboardView);
+
+            primaryStage.setScene(dashboardView.getScene());
+            primaryStage.setTitle("HealthZ - Dashboard");
+
+        } catch (Exception e) {
+            System.err.println("Error loading user data: " + e.getMessage());
+            e.printStackTrace();
+            // Fallback with default name
+            DashboardView dashboardView = new DashboardView("User");
+            setupDashboardNavigation(dashboardView);
+            primaryStage.setScene(dashboardView.getScene());
+            primaryStage.setTitle("HealthZ - Dashboard");
+        }
+    }
+
+    /**
+     * Setup navigation for Dashboard page
+     */
+    private void setupDashboardNavigation(DashboardView dashboardView) {
+        // Settings button
+        dashboardView.getSettingsButton().setOnAction(e -> {
+            System.out.println("Navigating to Settings...");
+            showSettings();
+        });
+
+        // Recipes button
+        dashboardView.getRecipesButton().setOnAction(e -> {
+            System.out.println("Navigating to Recipes...");
+            // TODO: showRecipes();
+        });
+
+        // Macros button
+        dashboardView.getMacrosButton().setOnAction(e -> {
+            System.out.println("Navigating to Macro Search...");
+            showMacroSearch();
+        });
+
+        // Food Log button
+        dashboardView.getFoodLogButton().setOnAction(e -> {
+            System.out.println("Navigating to Food Log...");
+            // TODO: showMealTracker();
+        });
+
+        // Activity Log button
+        dashboardView.getActivityLogButton().setOnAction(e -> {
+            System.out.println("Navigating to Activity Log...");
+            // TODO: showActivityTracker();
+        });
+    }
+
+    /**
      * Navigate to Main App/Dashboard (after successful login/signup)
      */
     public void showMainApp() {
         // TODO: create DashboardView
         // For now, show macro search as placeholder
         System.out.println("✅ Login/Signup successful! Navigating to main app...");
-        showMacroSearch();
+        showDashboard(); 
     }
 
     public void showEmailVerification(SignupView.SignupData signupData) {
