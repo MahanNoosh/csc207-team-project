@@ -2,7 +2,10 @@ package tut0301.group1.healthz.interfaceadapter.auth.mapping;
 
 import org.json.JSONObject;
 import tut0301.group1.healthz.dataaccess.supabase.UserDataFields;
+import tut0301.group1.healthz.entities.Goal;
+import tut0301.group1.healthz.entities.HealthCondition;
 import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Sex;
 
 import java.util.Optional;
 
