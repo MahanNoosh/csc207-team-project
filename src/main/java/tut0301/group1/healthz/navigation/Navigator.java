@@ -1,15 +1,13 @@
 package tut0301.group1.healthz.navigation;
 
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import tut0301.group1.healthz.dataaccess.API.FatSecretFoodDetailGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretFoodSearchAdapter;
+import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodDetailDataAccessObject;
+import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAccessObject;
 //import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
-import tut0301.group1.healthz.entities.nutrition.Recipe;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
@@ -26,7 +24,7 @@ import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
 import tut0301.group1.healthz.usecase.food.detail.FoodDetailGateway;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInputBoundary;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInteractor;
-import tut0301.group1.healthz.usecase.food.search.FoodSearchGateway;
+import tut0301.group1.healthz.usecase.food.search.FoodSearchDataAccessInterface;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodInputBoundary;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodInteractor;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodOutputBoundary;
@@ -134,7 +132,7 @@ public class Navigator {
         SearchFoodOutputBoundary presenter = new FoodSearchPresenter(macroSearchViewModel);
 
         // 3. Gateway (Data Access) - implements FoodSearchGateway
-        FoodSearchGateway gateway = new FatSecretFoodSearchAdapter();
+        FoodSearchDataAccessInterface gateway = new FatSecretFoodSearchDataAccessObject();
 
         // 4. Interactor (Use Case) - depends on gateway and outputBoundary interfaces
         SearchFoodInputBoundary interactor = new SearchFoodInteractor(gateway, presenter);
@@ -167,7 +165,7 @@ public class Navigator {
         FoodDetailPresenter presenter = new FoodDetailPresenter(detailViewModel);
 
         // 3. Gateway (Interface Adapter) - implements gateway interface
-        FoodDetailGateway gateway = new FatSecretFoodDetailGateway();
+        FoodDetailGateway gateway = new FatSecretFoodDetailDataAccessObject();
 
         // 4. Interactor (Use Case) - depends on gateway and outputBoundary interfaces
         GetFoodDetailInputBoundary interactor = new GetFoodDetailInteractor(gateway, presenter);
@@ -363,7 +361,7 @@ public class Navigator {
             }
 
             SupabaseClient client = new SupabaseClient(url, anon);
-            AuthGateway authGateway = new SupabaseAuthGateway(client);
+            AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
             LoginViewModel loginVM = new LoginViewModel();
             LoginPresenter loginPresenter = new LoginPresenter(loginVM);
             LoginInputBoundary loginUC = new LoginInteractor(authGateway, loginPresenter);
@@ -379,7 +377,7 @@ public class Navigator {
 
                 try {
                     // 2) Make sure user_data row exists (create blank if missing)
-                    SupabaseUserDataGateway userDataGateway = new SupabaseUserDataGateway(client);
+                    SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
                     userDataGateway.createBlankForCurrentUserIfMissing();
                     System.out.println("💾 user_data row present/created.");
                 } catch (Exception ex) {
@@ -454,7 +452,7 @@ public class Navigator {
 
         SupabaseClient client = new SupabaseClient(url, anon);
 
-        AuthGateway authGateway = new SupabaseAuthGateway(client);
+        AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
         LoginViewModel loginVM = new LoginViewModel();
         LoginPresenter loginPresenter = new LoginPresenter(loginVM);
         LoginInputBoundary loginUC = new LoginInteractor(authGateway, loginPresenter);
@@ -485,7 +483,7 @@ public class Navigator {
             var profile = SignupProfileMapper.toProfile(userId, signupData);
 
             // Save profile
-            SupabaseUserDataGateway userDataGateway = new SupabaseUserDataGateway(client);
+            SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
             userDataGateway.upsertProfile(profile);
 
             System.out.println("💾 Profile saved successfully. Navigating to main app...");

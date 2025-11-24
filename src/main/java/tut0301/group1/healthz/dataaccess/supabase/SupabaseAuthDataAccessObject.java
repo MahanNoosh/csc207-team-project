@@ -5,10 +5,10 @@ import tut0301.group1.healthz.usecase.auth.AuthGateway;
 /**
  * Adapter: implements the AuthGateway using SupabaseClient.
  */
-public class SupabaseAuthGateway implements AuthGateway {
+public class SupabaseAuthDataAccessObject implements AuthGateway {
     private final SupabaseClient client;
 
-    public SupabaseAuthGateway(SupabaseClient client) {
+    public SupabaseAuthDataAccessObject(SupabaseClient client) {
         this.client = client;
     }
 

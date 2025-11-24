@@ -383,7 +383,7 @@ public class MacroSearchView {
             return;
         }
 
-        controller.search(input);
+        controller.search(input.getSearchQuary());
         refreshResults();
         searchField.clear();
     }

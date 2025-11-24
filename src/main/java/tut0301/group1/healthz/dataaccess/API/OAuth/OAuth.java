@@ -9,20 +9,19 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import org.json.JSONObject;
 
 /**
  * Simple class that requests a FatSecret OAuth 2.0 access token
  * and prints the raw JSON response (no parsing).
  */
-public class FatSecretOAuthTokenFetcher {
+public class OAuth {
 
     private static final String TOKEN_URL = "https://oauth.fatsecret.com/connect/token";
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final String clientId;
     private final String clientSecret;
 
-    public FatSecretOAuthTokenFetcher(String clientId, String clientSecret) {
+    public OAuth(String clientId, String clientSecret) {
         if (clientId == null || clientSecret == null)
             throw new IllegalArgumentException("Client ID and secret must not be null.");
         this.clientId = clientId;
@@ -59,36 +58,4 @@ public class FatSecretOAuthTokenFetcher {
         return response.body(); // raw JSON response text
     }
 
-
-    public class TokenParser {
-
-        /**
-         * Extracts the access_token value from a JSON string.
-         *
-         * @param jsonResponse JSON string returned from FatSecret API
-         * @return access token if found, otherwise null
-         */
-        public static String extractAccessToken(String jsonResponse) {
-            if (jsonResponse == null || jsonResponse.isBlank()) {
-                System.err.println("❌ Empty JSON response!");
-                return null;
-            }
-
-            try {
-                JSONObject json = new JSONObject(jsonResponse);
-
-                if (json.has("access_token")) {
-                    String token = json.getString("access_token");
-                    System.out.println("✅ Extracted Access Token: " + token);
-                    return token;
-                } else {
-                    System.err.println("❌ No 'access_token' field found in JSON.");
-                    return null;
-                }
-            } catch (Exception e) {
-                System.err.println("❌ Failed to parse JSON: " + e.getMessage());
-                return null;
-            }
-        }
-    }
 }
