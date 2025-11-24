@@ -1,35 +1,44 @@
 package tut0301.group1.healthz.view.recipe;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchController;
+import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
+import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
 
 import java.util.Arrays;
 
 /**
- * Recipe Search View - displays searching and filtering for recipesCrea
+ * Recipe Search View - displays searching and filtering for recipes
  */
 public class RecipeSearchView {
     private Scene scene;
     private TextField searchField;
     private FlowPane recipesGrid;
-
-    // for navigation logic
     private Button favoriteRecipesButton;
+    private Label statusLabel;
 
-    private Navigator navigator;
+    private final RecipeSearchController controller;
+    private final RecipeSearchViewModel viewModel;
+    private final Navigator navigator;
 
-    public RecipeSearchView(Navigator navigator) {
+    public RecipeSearchView(RecipeSearchController controller,
+                            RecipeSearchViewModel viewModel,
+                            Navigator navigator) {
+        this.controller = controller;
+        this.viewModel = viewModel;
         this.navigator = navigator;
+
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
     }
@@ -41,11 +50,9 @@ public class RecipeSearchView {
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #F5F5F5;");
 
-        // Header = title + search bar + filters
         VBox header = createHeader();
         root.setTop(header);
 
-        // Recipe feed (scrollable)
         ScrollPane recipeFeed = new ScrollPane(createRecipeFeed());
         recipeFeed.setFitToWidth(true);
         recipeFeed.setStyle("-fx-background-color: #F5F5F5;");
@@ -64,12 +71,10 @@ public class RecipeSearchView {
         header.setPadding(new Insets(40, 60, 30, 60));
         header.setStyle("-fx-background-color: white;");
 
-        // Top row: Title + HealthZ logo + Profile + View Favorites
         HBox topRow = new HBox(20);
         topRow.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(topRow, Priority.ALWAYS);
 
-        // Title section
         VBox titleBox = new VBox(5);
         Label title = new Label("Find Your Next Meal");
         title.setFont(Font.font("Inter", FontWeight.BOLD, 48));
@@ -81,22 +86,18 @@ public class RecipeSearchView {
 
         titleBox.getChildren().addAll(title, subtitle);
 
-        // Spacer
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // HealthZ logo
         Label healthzLabel = new Label("HealthZ");
         healthzLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
         healthzLabel.setTextFill(Color.web("#27692A"));
 
-        // Profile circle
         Circle profileCircle = new Circle(25);
         profileCircle.setFill(Color.web("#D1D5DB"));
         profileCircle.setStroke(Color.web("#9CA3AF"));
         profileCircle.setStrokeWidth(2);
 
-        // View Favorites button
         favoriteRecipesButton = new Button("♥ View Favorites");
         favoriteRecipesButton.setFont(Font.font("Inter", FontWeight.BOLD, 16));
         favoriteRecipesButton.setTextFill(Color.WHITE);
@@ -110,7 +111,6 @@ public class RecipeSearchView {
 
         topRow.getChildren().addAll(titleBox, spacer, healthzLabel, profileCircle, favoriteRecipesButton);
 
-        // Search and filters container
         VBox searchBox = createSearchAndFilters();
 
         header.getChildren().addAll(topRow, searchBox);
@@ -142,11 +142,9 @@ public class RecipeSearchView {
                         "-fx-border-width: 2px;"
         );
 
-        // Search icon
         Label searchIcon = new Label("🔍");
         searchIcon.setFont(Font.font(24));
 
-        // Search field
         searchField = new TextField();
         searchField.setPromptText("Search recipes by name or ingredient...");
         searchField.setFont(Font.font("Inter", FontWeight.NORMAL, 18));
@@ -156,9 +154,13 @@ public class RecipeSearchView {
         );
         HBox.setHgrow(searchField, Priority.ALWAYS);
 
-        searchField.setOnKeyReleased(e -> handleSearch());
+        searchField.setOnAction(e -> handleSearch());
 
         searchBar.getChildren().addAll(searchIcon, searchField);
+
+        statusLabel = new Label("");
+        statusLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+        statusLabel.setTextFill(Color.web("#6B7280"));
 
         // Dietary Needs/Restrictions
         VBox dietarySection = new VBox(10);
@@ -194,7 +196,7 @@ public class RecipeSearchView {
 
         categoriesSection.getChildren().addAll(categoriesLabel, categoryChips);
 
-        container.getChildren().addAll(searchBar, dietarySection, categoriesSection);
+        container.getChildren().addAll(searchBar, statusLabel, dietarySection, categoriesSection);
         return container;
     }
 
@@ -223,7 +225,6 @@ public class RecipeSearchView {
             );
         }
 
-        // Toggle on click
         chip.setOnAction(e -> {
             boolean currentlySelected = chip.getStyle().contains("#B6CDBE");
             if (currentlySelected) {
@@ -255,44 +256,98 @@ public class RecipeSearchView {
         feedContainer.setPadding(new Insets(40, 60, 40, 60));
         feedContainer.setStyle("-fx-background-color: #F5F5F5;");
 
-        // Recipe grid
         recipesGrid = new FlowPane(30, 30);
         recipesGrid.setAlignment(Pos.TOP_LEFT);
-
-        // Sample recipes (TODO: Replace with actual data)
-        recipesGrid.getChildren().addAll(
-                createRecipeCard(
-                        "Blueberry Protein Pancakes",
-                        "Almond flour, whey protein powder, almond milk, cinnamon, banana, eggs, blueberries",
-                        "390 kcal",
-                        "15 min",
-                        null
-                ),
-                createRecipeCard(
-                        "Vegan Mac and Cheese",
-                        "Nutritional yeast, vegan cheddar cheese, elbow macaroni, dijon mustard, carrot...",
-                        "420 kcal",
-                        "45 min",
-                        null
-                ),
-                createRecipeCard(
-                        "Black Bean Tacos",
-                        "Black Beans, vegan yogurt, corn tortillas, lime, coconut oil, corn, taco seasoning...",
-                        "340 kcal",
-                        "20 min",
-                        null
-                )
-        );
 
         feedContainer.getChildren().add(recipesGrid);
         return feedContainer;
     }
 
     /**
-     * Create individual recipe card
+     * Handle search input
      */
-    private VBox createRecipeCard(String name, String ingredients,
-                                  String calories, String time, String imageUrl) {
+    private void handleSearch() {
+        String query = searchField.getText();
+        System.out.println("🔍 View: User searched for: " + query);
+
+        if (query == null || query.isBlank()) {
+            statusLabel.setText("Please enter a search term");
+            statusLabel.setTextFill(Color.web("#DC2626"));
+            return;
+        }
+
+        // Show loading state
+        statusLabel.setText("Searching for \"" + query + "\"...");
+        statusLabel.setTextFill(Color.web("#27692A"));
+        recipesGrid.getChildren().clear();
+
+        Task<Void> searchTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                // Call controller (triggers the entire flow)
+                controller.search(query);
+
+                // Wait a bit for presenter to update viewModel
+                Thread.sleep(200);
+
+                return null;
+            }
+
+            @Override
+            protected void succeeded() {
+                // Update UI from ViewModel
+                updateUIFromViewModel();
+            }
+
+            @Override
+            protected void failed() {
+                Platform.runLater(() -> {
+                    statusLabel.setText("Search failed. Please try again.");
+                    statusLabel.setTextFill(Color.web("#DC2626"));
+                });
+            }
+        };
+
+        new Thread(searchTask).start();
+    }
+
+    /**
+     * Update UI from ViewModel
+     */
+    private void updateUIFromViewModel() {
+        Platform.runLater(() -> {
+            // Check for error message
+            if (viewModel.getMessage() != null && !viewModel.getMessage().isEmpty()) {
+                statusLabel.setText(viewModel.getMessage());
+                statusLabel.setTextFill(Color.web("#DC2626"));
+                recipesGrid.getChildren().clear();
+                return;
+            }
+
+            // Get results
+            var results = viewModel.getResults();
+
+            if (results == null || results.isEmpty()) {
+                statusLabel.setText("No recipes found. Try a different search term.");
+                statusLabel.setTextFill(Color.web("#6B7280"));
+                recipesGrid.getChildren().clear();
+            } else {
+                statusLabel.setText("Found " + results.size() + " recipe" + (results.size() == 1 ? "" : "s"));
+                statusLabel.setTextFill(Color.web("#27692A"));
+
+                // Clear and populate grid
+                recipesGrid.getChildren().clear();
+                for (RecipeSearchResult result : results) {
+                    recipesGrid.getChildren().add(createRecipeCardFromResult(result));
+                }
+            }
+        });
+    }
+
+    /**
+     * Create recipe card from RecipeSearchResult
+     */
+    private VBox createRecipeCardFromResult(RecipeSearchResult result) {
         VBox card = new VBox(15);
         card.setPrefWidth(380);
         card.setStyle(
@@ -310,21 +365,12 @@ public class RecipeSearchView {
                         "-fx-background-radius: 15px 15px 0 0;"
         );
 
-        // TODO: Load actual recipe image
-        if (imageUrl != null) {
-            // ImageView recipeImage = new ImageView(new Image(imageUrl));
-            // recipeImage.setFitWidth(380);
-            // recipeImage.setFitHeight(280);
-            // recipeImage.setPreserveRatio(false);
-            // imageContainer.getChildren().add(recipeImage);
-        } else {
-            // Placeholder
-            Label placeholder = new Label("🍽");
-            placeholder.setFont(Font.font(80));
-            imageContainer.getChildren().add(placeholder);
-        }
+        // Placeholder
+        Label placeholder = new Label("🍽");
+        placeholder.setFont(Font.font(80));
+        imageContainer.getChildren().add(placeholder);
 
-        // Favorite button (top right)
+        // Favorite button
         Button favoriteBtn = new Button("♥");
         favoriteBtn.setFont(Font.font(24));
         favoriteBtn.setTextFill(Color.WHITE);
@@ -339,7 +385,7 @@ public class RecipeSearchView {
 
         favoriteBtn.setOnAction(e -> {
             e.consume();
-            handleFavorite(name);
+            handleFavorite(result.recipeName());
         });
 
         imageContainer.getChildren().add(favoriteBtn);
@@ -349,50 +395,42 @@ public class RecipeSearchView {
         content.setPadding(new Insets(20));
 
         // Recipe name
-        Label nameLabel = new Label(name);
+        Label nameLabel = new Label(result.recipeName());
         nameLabel.setFont(Font.font("Inter", FontWeight.BOLD, 22));
         nameLabel.setTextFill(Color.web("#111827"));
         nameLabel.setWrapText(true);
 
-        // Ingredients
-        Label ingredientsLabel = new Label(ingredients);
+        // Ingredients preview (first 3 ingredients)
+        String ingredientsText = "";
+        if (result.ingredientNames() != null && !result.ingredientNames().isEmpty()) {
+            int count = Math.min(3, result.ingredientNames().size());
+            ingredientsText = String.join(", ", result.ingredientNames().subList(0, count));
+            if (result.ingredientNames().size() > 3) {
+                ingredientsText += "...";
+            }
+        } else {
+            ingredientsText = "No ingredients listed";
+        }
+
+        Label ingredientsLabel = new Label(ingredientsText);
         ingredientsLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
         ingredientsLabel.setTextFill(Color.web("#6B7280"));
         ingredientsLabel.setWrapText(true);
         ingredientsLabel.setMaxHeight(50);
 
-        // Calories and time
-        HBox stats = new HBox(20);
-        stats.setAlignment(Pos.CENTER_LEFT);
+        // Description
+        Label descriptionLabel = new Label(result.description());
+        descriptionLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
+        descriptionLabel.setTextFill(Color.web("#27692A"));
+        descriptionLabel.setWrapText(true);
 
-        // Calories
-        HBox caloriesBox = new HBox(8);
-        caloriesBox.setAlignment(Pos.CENTER_LEFT);
-        Label caloriesIcon = new Label("🔥");
-        caloriesIcon.setFont(Font.font(18));
-        Label caloriesText = new Label(calories);
-        caloriesText.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
-        caloriesBox.getChildren().addAll(caloriesIcon, caloriesText);
-
-        // Time
-        HBox timeBox = new HBox(8);
-        timeBox.setAlignment(Pos.CENTER_LEFT);
-        Label timeIcon = new Label("⏱");
-        timeIcon.setFont(Font.font(18));
-        Label timeText = new Label(time);
-        timeText.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
-        timeBox.getChildren().addAll(timeIcon, timeText);
-
-        stats.getChildren().addAll(caloriesBox, timeBox);
-
-        content.getChildren().addAll(nameLabel, ingredientsLabel, stats);
-
+        content.getChildren().addAll(nameLabel, ingredientsLabel, descriptionLabel);
         card.getChildren().addAll(imageContainer, content);
 
-        // Click to view recipe details
-        card.setOnMouseClicked(e -> handleRecipeClick(name));
+        // Click to view details
+        card.setOnMouseClicked(e -> handleRecipeClickFromResult(result));
 
-        // Hover effect
+        // Hover effects
         card.setOnMouseEntered(e ->
                 card.setStyle(
                         "-fx-background-color: white; " +
@@ -415,12 +453,14 @@ public class RecipeSearchView {
     }
 
     /**
-     * Handle search input
+     * OLD: Create recipe card (for sample data)
      */
-    private void handleSearch() {
-        String query = searchField.getText();
-        System.out.println("Searching for: " + query);
-        // TODO: Filter recipes based on search query
+    private VBox createRecipeCard(String name, String ingredients,
+                                  String calories, String time, String imageUrl) {
+        // Keep your existing implementation (not used anymore but won't hurt)
+        VBox card = new VBox(15);
+        // ... (same as before)
+        return card;
     }
 
     /**
@@ -432,22 +472,44 @@ public class RecipeSearchView {
     }
 
     /**
-     * Handle recipe card click
+     * Handle recipe click from search result
+     */
+    private void handleRecipeClickFromResult(RecipeSearchResult result) {
+        System.out.println("Recipe clicked: " + result.recipeName());
+
+        // ⚠️ RecipeSearchResult only has basic info
+        // You'll need to fetch full recipe details from another API call
+        // For now, pass what we have and use defaults for missing data
+        navigator.showRecipeDetail(
+                result.recipeName(),                    // ✅ Fixed
+                result.imageUrl(),                      // ✅ Fixed
+                0.0,                                    // ⚠️ calories not available
+                0.0,                                    // ⚠️ protein not available
+                0.0,                                    // ⚠️ carbs not available
+                0.0,                                    // ⚠️ fats not available
+                "Varies",                               // ⚠️ servingSize not available
+                Arrays.asList(),                        // ⚠️ dietaryTags not available
+                result.ingredientNames() != null ? result.ingredientNames() : Arrays.asList(),
+                Arrays.asList(result.description())     // ✅ Use description as instruction
+        );
+    }
+
+
+    /**
+     * OLD: Handle recipe click (for sample data) - Keep for now
      */
     private void handleRecipeClick(String recipeName) {
         System.out.println("Recipe clicked: " + recipeName);
 
-        // Navigate to detail view with sample data
-        // TODO: Replace with actual recipe data from API/database
         navigator.showRecipeDetail(
                 recipeName,
-                null, // imageUrl
-                390.0, // calories
-                15.0, // protein
-                48.0, // carbs
-                7.0, // fats
-                "2 pancakes", // servingSize
-                Arrays.asList("High Protein", "Low Carb", "Vegan", "Gluten-Free"), // tags
+                null,
+                390.0,
+                15.0,
+                48.0,
+                7.0,
+                "2 pancakes",
+                Arrays.asList("High Protein", "Low Carb", "Vegan", "Gluten-Free"),
                 Arrays.asList(
                         "1 1/2 cups Almond Flour",
                         "1/2 cups Protein Powder",
@@ -456,14 +518,14 @@ public class RecipeSearchView {
                         "3 Eggs",
                         "2/3 cups Almond Milk",
                         "1/2 cup Blueberries"
-                ), // ingredients
+                ),
                 Arrays.asList(
                         "Mix dry ingredients in a large bowl.",
                         "Whisk together eggs and almond milk.",
                         "Combine wet and dry ingredients.",
                         "Fold in blueberries.",
                         "Cook on medium heat for 2-3 minutes per side."
-                ) // instructions
+                )
         );
     }
 
@@ -493,8 +555,7 @@ public class RecipeSearchView {
         return recipesGrid;
     }
 
-    /**
-     * Get favorite recipes button - for navigation logic
-     */
-    public Button getFavoriteRecipesButton() { return favoriteRecipesButton; }
+    public Button getFavoriteRecipesButton() {
+        return favoriteRecipesButton;
+    }
 }

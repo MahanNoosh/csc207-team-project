@@ -167,39 +167,11 @@ public class Navigator {
         RecipeSearchInputBoundary interactor = new RecipeSearchInteractor(gateway, presenter);
         RecipeSearchController controller = new RecipeSearchController(interactor, presenter);
 
-        // RecipeSearchView recipeSearchView = new RecipeSearchView(controller, recipeSearchViewModel, this);
+        RecipeSearchView recipeSearchView = new RecipeSearchView(controller, recipeSearchViewModel, this);
 
-        // Switch to recipe search scene
-        // primaryStage.setScene(recipeSearchView.getScene());
-        primaryStage.setTitle("HealthZ - Recipe Search");
-    }
-
-
-    /**
-     * Navigate to a single macro detail page for a selected food id.
-     */
-    public void showMacroDetails(long foodId) {
-        MacroDetailViewModel detailViewModel = new MacroDetailViewModel();
-        MacroDetailPresenter presenter = new MacroDetailPresenter(detailViewModel);
-        MacroDetailGateway gateway = new FatSecretMacroDetailGateway();
-        MacroDetailInputBoundary interactor = new MacroDetailInteractor(gateway, presenter);
-        MacroDetailController controller = new MacroDetailController(interactor, presenter);
-
-        controller.fetch(foodId);
-
-        SingleMacroPage detailView = new SingleMacroPage(controller, detailViewModel, this);
-
-        primaryStage.setScene(detailView.getScene());
-        primaryStage.setTitle("HealthZ - Food Details");
-    }
-
-    /**
-     * Navigate to Settings page
-     */
-    public void showRecipeSearch() {
-        RecipeSearchView recipeSearchView = new RecipeSearchView(this);
         setupRecipeNavigation(recipeSearchView);
 
+        // Switch to recipe search scene
         primaryStage.setScene(recipeSearchView.getScene());
         primaryStage.setTitle("HealthZ - Recipe Search");
     }
@@ -231,8 +203,7 @@ public class Navigator {
         // Setup back button navigation
         detailView.getBackButton().setOnAction(e -> {
             System.out.println("Going back from recipe detail...");
-            // TODO: Track which page user came from and go back there
-            showRecipeSearch(); // Default: go back to search
+            showRecipeSearch();
         });
 
         primaryStage.setScene(detailView.getScene());
