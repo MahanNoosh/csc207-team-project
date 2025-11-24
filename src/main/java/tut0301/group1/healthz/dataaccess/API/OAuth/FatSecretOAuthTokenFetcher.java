@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.dataaccess.API;
+package tut0301.group1.healthz.dataaccess.API.OAuth;
 
 
 import java.io.IOException;

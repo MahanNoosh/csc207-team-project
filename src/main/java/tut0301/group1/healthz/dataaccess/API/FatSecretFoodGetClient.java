@@ -2,6 +2,7 @@ package tut0301.group1.healthz.dataaccess.API;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import tut0301.group1.healthz.dataaccess.config.EnvConfig;
 
 import java.io.IOException;
 import java.net.URI;

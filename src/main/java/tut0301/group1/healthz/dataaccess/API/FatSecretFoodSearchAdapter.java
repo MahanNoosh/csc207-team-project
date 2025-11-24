@@ -2,6 +2,8 @@ package tut0301.group1.healthz.dataaccess.API;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import tut0301.group1.healthz.dataaccess.API.OAuth.FatSecretOAuthTokenFetcher;
+import tut0301.group1.healthz.dataaccess.config.EnvConfig;
 import tut0301.group1.healthz.entities.nutrition.BasicFood;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 import tut0301.group1.healthz.usecase.food.search.FoodSearchGateway;
