@@ -1,7 +1,7 @@
 package tut0301.group1.healthz.interfaceadapter.recipe;
 
 import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
-import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchOutputBoundary;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchOutputBoundary;
 
 import java.util.List;
 

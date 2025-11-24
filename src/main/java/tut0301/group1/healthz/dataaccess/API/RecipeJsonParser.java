@@ -1,8 +1,10 @@
 package tut0301.group1.healthz.dataaccess.API;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import tut0301.group1.healthz.entities.nutrition.Recipe;
+import tut0301.group1.healthz.entities.nutrition.RecipeDetails;
 import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
 import tut0301.group1.healthz.entities.nutrition.RecipeIngredient;
 
@@ -52,7 +54,7 @@ public class RecipeJsonParser {
      * This assumes the JSON structure follows FatSecret's standard format.
      *
      * @param jsonResponse the JSON string returned from the API
-     * @param recipeId the id of the recipe to search for
+     * @param recipeId     the id of the recipe to search for
      * @return a Recipe entity that is found
      */
     public static Recipe getRecipeById(String jsonResponse, String recipeId) {
@@ -117,7 +119,7 @@ public class RecipeJsonParser {
             }
 
             for (int i = 0; i < recipeArray.length(); i++) {
-                JSONObject recipe= recipeArray.getJSONObject(i);
+                JSONObject recipe = recipeArray.getJSONObject(i);
 
                 String recipeId = recipe.optString("recipe_id", "");
                 String recipeName = recipe.optString("recipe_name", "");
@@ -139,5 +141,80 @@ public class RecipeJsonParser {
             System.err.println("❌ Failed to parse recipe results: " + e.getMessage());
         }
         return results;
+    }
+
+    public static RecipeDetails parseRecipeDetails(String jsonResponse) {
+        RecipeDetails recipeDetails = null;
+        try {
+            JSONObject root = new JSONObject(jsonResponse);
+            JSONObject recipe = root.getJSONObject("recipe");
+
+            if (!root.has("recipe")) {
+                throw new JSONException("Missing 'recipe' object");
+            }
+
+            String name =  recipe.optString("recipe_name", "");
+
+            JSONObject recipeImages = recipe.getJSONObject("recipe_images");
+            JSONArray recipeImage = recipeImages.getJSONArray("recipe_image");
+            String imageUrl = recipeImage.get(0).toString();
+
+            // Nutrition
+            JSONObject serving = recipe.getJSONObject("serving_sizes").getJSONObject("serving");
+            String servingSize = serving.optString("serving_size", "");
+            double calories = serving.getDouble("calories");
+            double protein = serving.getDouble("protein");
+            double carbs = serving.getDouble("carbohydrate");
+            double fats = serving.getDouble("fat");
+
+            // Dietary Tags
+            List<String> tags = new ArrayList<>();
+            if (recipe.has("recipe_types")) {
+                JSONObject recipeTypes = recipe.getJSONObject("recipe_types");
+                JSONArray arr = recipeTypes.getJSONArray("recipe_type");
+                for (int i = 0; i < arr.length(); i++) {
+                    tags.add(arr.get(i).toString());
+                }
+            }
+
+            // Ingredients
+            List<String> ingredients = new ArrayList<>();
+            if (recipe.has("ingredients")) {
+                JSONObject recipeIngredients = recipe.getJSONObject("ingredients");
+                JSONArray arr = recipeIngredients.getJSONArray("ingredient");
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject ingredient = arr.getJSONObject(i);
+                    String food = ingredient.get("food_name").toString();
+                    ingredients.add(food);
+                }
+            }
+
+            // Instructions
+            List<String> instructions = new ArrayList<>();
+            if (recipe.has("directions")) {
+                JSONObject recipeDirections = recipe.getJSONObject("directions");
+                JSONArray arr = recipeDirections.getJSONArray("direction");
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject step = arr.getJSONObject(i);
+                    instructions.add(step.get("direction_description").toString());
+                }
+            }
+
+            recipeDetails = new RecipeDetails(
+                    name,
+                    imageUrl,
+                    calories,
+                    protein,
+                    carbs,
+                    fats,
+                    servingSize,
+                    tags,
+                    ingredients,
+                    instructions);
+
+        } catch (Exception e) {
+            System.err.println("❌ Failed to parse recipe details: " + e.getMessage());
+        }
+        return recipeDetails;
     }
 }

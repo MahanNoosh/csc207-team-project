@@ -1,9 +1,6 @@
 package tut0301.group1.healthz.interfaceadapter.recipe;
 
-import tut0301.group1.healthz.entities.nutrition.Recipe;
-import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchPresenter;
-import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
-import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchInputBoundary;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 
 public class RecipeSearchController {
     private final RecipeSearchInputBoundary interactor;
