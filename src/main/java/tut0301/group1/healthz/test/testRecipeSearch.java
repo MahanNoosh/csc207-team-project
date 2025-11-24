@@ -4,9 +4,9 @@ import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchPresenter;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
-import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchGateway;
-import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchInputBoundary;
-import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchInteractor;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
 
 import java.util.List;
 

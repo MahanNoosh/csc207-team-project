@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.usecase.recipesearch;
+package tut0301.group1.healthz.usecase.recipesearch.metadata;
 
 import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
 
