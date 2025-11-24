@@ -1,148 +1,159 @@
 package tut0301.group1.healthz.dataaccess.API;
 
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import tut0301.group1.healthz.dataaccess.API.OAuth.FatSecretOAuthTokenFetcher;
+import tut0301.group1.healthz.dataaccess.config.EnvConfig;
+import tut0301.group1.healthz.entities.nutrition.BasicFood;
+import tut0301.group1.healthz.entities.nutrition.Macro;
+import tut0301.group1.healthz.usecase.food.search.FoodSearchGateway;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-
-import static tut0301.group1.healthz.dataaccess.API.FoodJsonParser.parseFoodsList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * Uses FatSecret API to search foods by name.
+ * Gateway implementation for FoodSearchGateway (Use Case layer interface).
+ * Data Access layer - handles FatSecret API integration.
+ *
+ * Clean Architecture:
+ * - Implements interface from Use Case layer (Dependency Inversion)
+ * - Uses HTTP client for low-level communication
+ * - Transforms API data to domain entities
  */
-public class FatSecretFoodSearchGateway {
+public class FatSecretFoodSearchGateway implements FoodSearchGateway {
 
-    private static final String SEARCH_URL = "https://platform.fatsecret.com/rest/server.api";
-    private final OkHttpClient client = new OkHttpClient();
+    private final FatSecretApiClient apiClient;
+    private final FatSecretOAuthTokenFetcher tokenFetcher;
 
-    /**
-     * Searches food information from FatSecret API.
-     *
-     * @param token     OAuth access token (Bearer)
-     * @param foodName  The name of the food to search for
-     * @return JSON response as String
-     * @throws IOException if network or API error occurs
-     */
-    public String searchFoodByName(String token, String foodName) throws IOException {
-        // ✅ Build query URL
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(SEARCH_URL).newBuilder()
-                .addQueryParameter("method", "foods.search")
-                .addQueryParameter("search_expression", foodName)
-                .addQueryParameter("format", "json")
-                .addQueryParameter("max_results", "20");
+    public FatSecretFoodSearchGateway() {
+        String clientId = EnvConfig.getClientId();
+        String clientSecret = EnvConfig.getClientSecret();
+        this.tokenFetcher = new FatSecretOAuthTokenFetcher(clientId, clientSecret);
+        this.apiClient = new FatSecretApiClient();
+    }
 
-        // ✅ Create HTTP GET request
-        Request request = new Request.Builder()
-                .url(urlBuilder.build())
-                .addHeader("Authorization", "Bearer " + token)
-                .get()
-                .build();
+    @Override
+    public List<BasicFood> searchByName(String foodName) throws IOException, InterruptedException {
+        String jsonResponse = tokenFetcher.getAccessTokenRaw("basic");
+        String token = FatSecretOAuthTokenFetcher.TokenParser.extractAccessToken(jsonResponse);
+        String foodJson = apiClient.searchFoodByName(token, foodName);
+        return parseBasicFoodList(foodJson);
+    }
 
-        // ✅ Send request
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response: " + response.code() + " - " + response.message());
+    private List<BasicFood> parseBasicFoodList(String jsonResponse) {
+        List<BasicFood> foodList = new ArrayList<>();
+
+        try {
+            JSONObject root = new JSONObject(jsonResponse);
+            if (!root.has("foods")) return foodList;
+
+            JSONObject foodsObj = root.getJSONObject("foods");
+            if (!foodsObj.has("food")) return foodList;
+
+            Object foodObj = foodsObj.get("food");
+
+            if (foodObj instanceof JSONObject) {
+                BasicFood food = parseSingleFood((JSONObject) foodObj);
+                if (food != null) foodList.add(food);
+            } else if (foodObj instanceof JSONArray) {
+                JSONArray foodArray = (JSONArray) foodObj;
+                for (int i = 0; i < foodArray.length(); i++) {
+                    BasicFood food = parseSingleFood(foodArray.getJSONObject(i));
+                    if (food != null) foodList.add(food);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to parse food list: " + e.getMessage());
+        }
+
+        return foodList;
+    }
+
+    private BasicFood parseSingleFood(JSONObject foodObj) {
+        try {
+            long foodId = foodObj.optLong("food_id", 0L);
+            String foodName = foodObj.optString("food_name", "Unknown");
+            String foodDescription = foodObj.optString("food_description", "");
+            String foodType = foodObj.optString("food_type", "Generic");
+            String foodUrl = foodObj.optString("food_url", "");
+
+            Macro macro = parseMacroFromDescription(foodDescription);
+
+            double servingAmount = 100.0;
+            String servingUnit = "g";
+
+            if (foodDescription != null && !foodDescription.isBlank()) {
+                String lowerDesc = foodDescription.toLowerCase().trim();
+                if (lowerDesc.startsWith("per ")) {
+                    try {
+                        int dashIndex = foodDescription.indexOf(" -");
+                        String servingPart = dashIndex > 0
+                            ? foodDescription.substring(4, dashIndex).trim()
+                            : foodDescription.substring(4).trim();
+
+                        Pattern pattern = Pattern.compile("(\\d+(?:\\.\\d+)?)\\s*([a-zA-Z]+)");
+                        Matcher matcher = pattern.matcher(servingPart);
+
+                        if (matcher.find()) {
+                            servingAmount = Double.parseDouble(matcher.group(1));
+                            servingUnit = matcher.group(2);
+                        }
+                    } catch (Exception e) {
+                        // Use defaults
+                    }
+                }
             }
 
-            String jsonBody = response.body() != null ? response.body().string() : "{}";
-
-            return jsonBody;
+            return new BasicFood(
+                foodId,
+                foodName,
+                foodDescription,
+                foodType,
+                foodUrl,
+                macro,
+                servingAmount,
+                servingUnit
+            );
+        } catch (Exception e) {
+            return null;
         }
     }
 
-    public List<String> searchFoodByNameToList(String token, String foodName) throws IOException {
-        // ✅ Build query URL
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(SEARCH_URL).newBuilder()
-                .addQueryParameter("method", "foods.search")
-                .addQueryParameter("search_expression", foodName)
-                .addQueryParameter("format", "json")
-                .addQueryParameter("max_results", "20");
+    private Macro parseMacroFromDescription(String description) {
+        double calories = 0, protein = 0, fat = 0, carbs = 0;
 
-        // ✅ Create HTTP GET request
-        Request request = new Request.Builder()
-                .url(urlBuilder.build())
-                .addHeader("Authorization", "Bearer " + token)
-                .get()
-                .build();
-
-        // ✅ Send request
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response: " + response.code() + " - " + response.message());
+        try {
+            String[] parts = description.split("\\|");
+            for (String part : parts) {
+                String lower = part.trim().toLowerCase();
+                if (lower.contains("calories")) calories = extractNumber(part);
+                else if (lower.contains("protein")) protein = extractNumber(part);
+                else if (lower.contains("fat")) fat = extractNumber(part);
+                else if (lower.contains("carb")) carbs = extractNumber(part);
             }
-
-            String jsonBody = response.body() != null ? response.body().string() : "{}";
-
-
-
-            FoodJsonParser  foodJsonParser = new FoodJsonParser();
-
-            return foodJsonParser.parseFoodsList(jsonBody);
+        } catch (Exception e) {
+            // Return default values
         }
+
+        return new Macro(calories, protein, fat, carbs);
     }
 
-    public JSONObject searchFoodByNameFormated(String token, String foodName) throws IOException {
-        // ✅ Build query URL
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(SEARCH_URL).newBuilder()
-                .addQueryParameter("method", "foods.search")
-                .addQueryParameter("search_expression", foodName)
-                .addQueryParameter("format", "json")
-                .addQueryParameter("max_results", "5");
+    private double extractNumber(String text) {
+        try {
+            String[] split = text.split(":");
+            if (split.length < 2) return 0;
 
-
-        Request request = new Request.Builder()
-                .url(urlBuilder.build())
-                .addHeader("Authorization", "Bearer " + token)
-                .get()
-                .build();
-
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response: " + response.code() + " - " + response.message());
+            Pattern pattern = Pattern.compile("(\\d+(?:\\.\\d+)?)");
+            Matcher matcher = pattern.matcher(split[1]);
+            if (matcher.find()) {
+                return Double.parseDouble(matcher.group(1));
             }
-
-            String jsonBody = response.body() != null ? response.body().string() : "{}";
-
-            System.out.println("=== Raw JSON Response (formatted) ===");
-            try {
-                JSONObject formatted = new JSONObject(jsonBody);
-                System.out.println(formatted.toString(4)); // pretty print
-            } catch (Exception e) {
-                System.out.println(jsonBody); // fallback if not valid JSON
-            }
-
-            JSONObject formatted = new JSONObject(jsonBody);
-
-            return formatted;
+        } catch (Exception e) {
+            // Return default
         }
-    }
-
-    /**
-     * Retrieves a single food's detailed nutrient profile by id.
-     */
-    public String getFoodDetailsById(String token, long foodId) throws IOException {
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(SEARCH_URL).newBuilder()
-                .addQueryParameter("method", "food.get.v3")
-                .addQueryParameter("food_id", String.valueOf(foodId))
-                .addQueryParameter("format", "json");
-
-        Request request = new Request.Builder()
-                .url(urlBuilder.build())
-                .addHeader("Authorization", "Bearer " + token)
-                .get()
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response: " + response.code() + " - " + response.message());
-            }
-
-            return response.body() != null ? response.body().string() : "{}";
-        }
+        return 0;
     }
 }
