@@ -21,10 +21,9 @@ import java.time.format.DateTimeFormatter;
  * Dashboard View - daily summary, calories, macros, activity tracker, and recent entries
  */
 public class DashboardView {
-        private Scene scene;
 
-
-    private String userName = "Bob"; // TODO: Get from user profile
+    private Scene scene;
+    private String userName; // TODO: Get from user profile
 
     // TODO: Get from actual data sources)
     private int caloriesRemaining = 425;
@@ -44,7 +43,11 @@ public class DashboardView {
     private Button foodLogButton;
     private Button activityLogButton;
 
-    public DashboardView() {
+    /**
+     * Constructor
+     */
+    public DashboardView(String userName) {
+        this.userName = userName != null ? userName : "User";
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 1200);
     }
@@ -676,7 +679,6 @@ public class DashboardView {
      * Get the Activity Log button (for navigation logic)
      */
     public Button getActivityLogButton() { return activityLogButton; }
-
 
 
 }

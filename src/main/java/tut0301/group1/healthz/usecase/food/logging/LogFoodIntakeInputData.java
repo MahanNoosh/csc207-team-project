@@ -3,6 +3,8 @@ package tut0301.group1.healthz.usecase.food.logging;
 import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.entities.nutrition.ServingInfo;
 
+import java.time.LocalDateTime;
+
 /**
  * Input DTO for logging food intake.
  */
@@ -12,12 +14,20 @@ public class LogFoodIntakeInputData {
     private final ServingInfo servingInfo;
     private final double servingMultiplier;
     private final String meal;
+    private final LocalDateTime loggedAt;
 
     /**
-     * Constructor with serving multiplier.
+     * Constructor with serving multiplier and custom timestamp.
+     *
+     * @param userId The user's ID
+     * @param food The food details
+     * @param servingInfo The serving information
+     * @param servingMultiplier How many servings
+     * @param meal The meal type (Breakfast, Lunch, Dinner, Snack)
+     * @param loggedAt The timestamp when the food was consumed (if null, uses current time)
      */
     public LogFoodIntakeInputData(String userId, FoodDetails food, ServingInfo servingInfo,
-                                  double servingMultiplier, String meal) {
+                                  double servingMultiplier, String meal, LocalDateTime loggedAt) {
         if (userId == null || userId.isBlank()) {
             throw new IllegalArgumentException("User ID cannot be null or empty");
         }
@@ -39,6 +49,21 @@ public class LogFoodIntakeInputData {
         this.servingInfo = servingInfo;
         this.servingMultiplier = servingMultiplier;
         this.meal = meal;
+        this.loggedAt = loggedAt != null ? loggedAt : LocalDateTime.now();
+    }
+
+    /**
+     * Constructor with serving multiplier (uses current time).
+     *
+     * @param userId The user's ID
+     * @param food The food details
+     * @param servingInfo The serving information
+     * @param servingMultiplier How many servings
+     * @param meal The meal type
+     */
+    public LogFoodIntakeInputData(String userId, FoodDetails food, ServingInfo servingInfo,
+                                  double servingMultiplier, String meal) {
+        this(userId, food, servingInfo, servingMultiplier, meal, null);
     }
 
     /**
@@ -69,5 +94,9 @@ public class LogFoodIntakeInputData {
 
     public String getMeal() {
         return meal;
+    }
+
+    public LocalDateTime getLoggedAt() {
+        return loggedAt;
     }
 }

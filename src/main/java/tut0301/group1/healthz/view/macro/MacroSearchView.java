@@ -82,7 +82,9 @@ public class MacroSearchView {
 
         HBox searchBar = createSearchBar();
 
-        header.getChildren().addAll(profileSection, macroTitle, macroSubTitle, searchBar);
+        HBox navBar = createNavBar();
+
+        header.getChildren().addAll(profileSection, macroTitle, macroSubTitle, searchBar, navBar);
         return header;
     }
 
@@ -147,6 +149,76 @@ public class MacroSearchView {
 
         searchContainer.getChildren().addAll(searchIcon, searchField);
         return searchContainer;
+    }
+
+    /**
+     * Create navigation bar with HOME/RECIPES/MACROS buttons
+     */
+    private HBox createNavBar() {
+        HBox navBar = new HBox(40);
+        navBar.setAlignment(Pos.CENTER_LEFT);
+        navBar.setPadding(new Insets(15, 0, 0, 0));
+
+        Button homeButton = createNavTab("HOME", false);
+        homeButton.setOnAction(e -> {
+            System.out.println("Navigating to Dashboard...");
+            navigator.showDashboard();
+        });
+
+        Button recipesButton = createNavTab("RECIPES", false);
+        recipesButton.setOnAction(e -> {
+            System.out.println("Navigating to Recipe Search...");
+            navigator.showRecipeSearch();
+        });
+
+        Button macrosButton = createNavTab("MACROS", true);
+        // MACROS button is active (we're already on this page)
+
+        navBar.getChildren().addAll(homeButton, recipesButton, macrosButton);
+        return navBar;
+    }
+
+    /**
+     * Create navigation tab button (copied from DashboardView style)
+     */
+    private Button createNavTab(String text, boolean active) {
+        Button tab = new Button(text);
+        tab.setFont(Font.font("Inter", FontWeight.BOLD, 16));
+        tab.setPrefHeight(40);
+
+        if (active) {
+            tab.setStyle(
+                    "-fx-background-color: #8FBF9C; " +
+                            "-fx-text-fill: white; " +
+                            "-fx-background-radius: 5; " +
+                            "-fx-padding: 8px 20px;"
+            );
+        } else {
+            tab.setStyle(
+                    "-fx-background-color: transparent; " +
+                            "-fx-text-fill: #27692A; " +
+                            "-fx-padding: 8px 20px;"
+            );
+
+            tab.setOnMouseEntered(e ->
+                    tab.setStyle(
+                            "-fx-background-color: #8FBF9C; " +
+                                    "-fx-text-fill: white; " +
+                                    "-fx-padding: 8px 20px; " +
+                                    "-fx-cursor: hand;"
+                    )
+            );
+
+            tab.setOnMouseExited(e ->
+                    tab.setStyle(
+                            "-fx-background-color: transparent; " +
+                                    "-fx-text-fill: #27692A; " +
+                                    "-fx-padding: 8px 20px;"
+                    )
+            );
+        }
+
+        return tab;
     }
 
     /**

@@ -1,7 +1,7 @@
-package tut0301.group1.healthz.usecase.macrosearch;
-
-import tut0301.group1.healthz.entities.nutrition.FoodNutritionDetails;
-
-public interface MacroDetailGateway {
-    FoodNutritionDetails fetchDetails(long foodId) throws Exception;
-}
+//package tut0301.group1.healthz.usecase.macrosearch;
+//
+//import tut0301.group1.healthz.entities.nutrition.FoodNutritionDetails;
+//
+//public interface MacroDetailGateway {
+//    FoodNutritionDetails fetchDetails(long foodId) throws Exception;
+//}
