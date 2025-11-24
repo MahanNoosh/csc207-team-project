@@ -1,7 +1,7 @@
 package tut0301.group1.healthz.usecase.nutritionadvice;
 
-import tut0301.group1.healthz.usecase.dashboard.Profile;
-import tut0301.group1.healthz.usecase.dashboard.UserDashboardPort;
+import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Sex;
 
 public class HealthMetricsCalculator {
 
@@ -18,7 +18,7 @@ public class HealthMetricsCalculator {
     }
 
     public static double computeBMR(Profile profile) {
-        if (profile.getSex() == UserDashboardPort.Sex.MALE) {
+        if (profile.getSex() == Sex.MALE) {
             return 10 * profile.getWeightKg() + 6.25 * profile.getHeightCm() - 5 * profile.getAgeYears() + 5;
         } else {
             return 10 * profile.getWeightKg() + 6.25 * profile.getHeightCm() - 5 * profile.getAgeYears() - 161;

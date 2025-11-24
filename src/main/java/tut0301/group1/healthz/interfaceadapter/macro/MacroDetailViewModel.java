@@ -1,17 +1,17 @@
 package tut0301.group1.healthz.interfaceadapter.macro;
 
-import tut0301.group1.healthz.entities.nutrition.FoodNutritionDetails;
+import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 
 public class MacroDetailViewModel {
-    private FoodNutritionDetails details;
+    private FoodDetails details;
     private boolean loading;
     private String message;
 
-    public FoodNutritionDetails getDetails() {
+    public FoodDetails getDetails() {
         return details;
     }
 
-    public void setDetails(FoodNutritionDetails details) {
+    public void setDetails(FoodDetails details) {
         this.details = details;
     }
 

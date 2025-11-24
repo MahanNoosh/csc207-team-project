@@ -1,3 +1,4 @@
+
 package tut0301.group1.healthz.view.auth;
 
 import javafx.geometry.Insets;
@@ -8,17 +9,14 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
-import tut0301.group1.healthz.interfaceadapter.auth.mapping.SignupProfileMapper;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.signup.SignupInputBoundary;
 import tut0301.group1.healthz.usecase.auth.signup.SignupInteractor;
-import tut0301.group1.healthz.usecase.dashboard.Profile;
 import tut0301.group1.healthz.view.auth.signuppanels.*;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupController;
 import java.util.List;
@@ -338,7 +336,7 @@ public class SignupView {
             System.exit(1);
         }
         var client = new SupabaseClient(url, anon);
-        AuthGateway authGateway = new SupabaseAuthGateway(client);
+        AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
         SignupInputBoundary signupUC = new SignupInteractor(authGateway, signupPresenter);
         SignupController signupController = new SignupController(signupUC, signupPresenter);
         signupController.signup(signupData.email, signupData.password, signupData.confirmPassword, signupData.fullName);
