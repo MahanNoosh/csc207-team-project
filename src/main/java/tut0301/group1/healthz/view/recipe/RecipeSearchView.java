@@ -481,8 +481,8 @@ public class RecipeSearchView {
         // You'll need to fetch full recipe details from another API call
         // For now, pass what we have and use defaults for missing data
         navigator.showRecipeDetail(
-                result.recipeName(),                    // ✅ Fixed
-                result.imageUrl(),                      // ✅ Fixed
+                result.recipeName(),
+                result.imageUrl(),
                 0.0,                                    // ⚠️ calories not available
                 0.0,                                    // ⚠️ protein not available
                 0.0,                                    // ⚠️ carbs not available
