@@ -17,7 +17,6 @@ import tut0301.group1.healthz.entities.nutrition.Recipe;
 import tut0301.group1.healthz.entities.nutrition.RecipeIngredient;
 import tut0301.group1.healthz.navigation.Navigator;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
-import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipePresenter;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeViewModel;
 
 import java.util.ArrayList;
@@ -418,30 +417,19 @@ public class FavoriteRecipeView {
     private void handleRecipeClickFromRecipe(Recipe recipe) {
         System.out.println("Recipe clicked: " + recipe.getName());
 
-        // Convert RecipeIngredients to String list for display
-        List<String> ingredientStrings = new ArrayList<>();
-        for (RecipeIngredient ing : recipe.getIngredients()) {
-            // Format: "1.5 cups Almond Flour"
-            String formatted = String.format("%.2f %s %s",
-                    ing.getUnits(),
-                    ing.getMeasurement(),
-                    ing.getName()
-            );
-            ingredientStrings.add(formatted);
-        }
+        // Convert recipe ID to long
+        try {
+            long recipeId = Long.parseLong(recipe.getId());
+            navigator.showRecipeDetail(recipeId);
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid recipe ID: " + recipe.getId());
 
-        navigator.showRecipeDetail(
-                recipe.getName(),
-                recipe.getImageUrl(),
-                0.0, // Calories - calculate if needed
-                0.0, // Protein
-                0.0, // Carbs
-                0.0, // Fats
-                "Serves " + recipe.getServings().orElse(1),
-                Arrays.asList(), // Dietary tags
-                ingredientStrings,
-                recipe.getInstructions()
-        );
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Could not load recipe details");
+            alert.showAndWait();
+        }
     }
 
     /**

@@ -1,16 +1,15 @@
 package tut0301.group1.healthz.navigation;
 
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import tut0301.group1.healthz.dataaccess.API.FatSecretMacroDetailGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchGateway;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
 import tut0301.group1.healthz.dataaccess.favoriterecipe.FakeFavoriteRecipeGateway;
-import tut0301.group1.healthz.entities.nutrition.Recipe;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
@@ -21,9 +20,7 @@ import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailViewModel;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchPresenter;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
-import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchController;
-import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchPresenter;
-import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
+import tut0301.group1.healthz.interfaceadapter.recipe.*;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipePresenter;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeViewModel;
@@ -36,9 +33,15 @@ import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInteractor;
 import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
 import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
 import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
-import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchGateway;
-import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchInputBoundary;
-import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchInteractor;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputData;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailOutputBoundary;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailOutputData;
 import tut0301.group1.healthz.usecase.favoriterecipe.FavoriteRecipeGateway;
 import tut0301.group1.healthz.usecase.favoriterecipe.DeleteFavoriteInteractor;
 import tut0301.group1.healthz.usecase.favoriterecipe.DeleteFavoriteInputBoundary;
@@ -224,7 +227,6 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Favorite Recipes");
     }
 
-    // ✅ Add helper to get current user ID
     private String getCurrentUserId() {
         if (authenticatedClient != null) {
             try {
@@ -237,26 +239,36 @@ public class Navigator {
     }
 
     /**
-     * Navigate to Recipe Detail page
+     * Navigate to Recipe Detail page - UPDATED for Clean Architecture
      */
-    public void showRecipeDetail(String recipeName, String imageUrl,
-                                 Double calories, Double protein, Double carbs, Double fats,
-                                 String servingSize, List<String> dietaryTags,
-                                 List<String> ingredients, List<String> instructions) {
+    public void showRecipeDetail(long recipeId) {
+        System.out.println("🧭 Navigator: Showing recipe detail for ID: " + recipeId);
 
-        RecipeDetailView detailView = new RecipeDetailView(
-                recipeName, imageUrl, calories, protein, carbs, fats,
-                servingSize, dietaryTags, ingredients, instructions
-        );
+        // Create ViewModel
+        RecipeDetailViewModel viewModel = new RecipeDetailViewModel();
 
-        // Setup back button navigation
+        // Create Presenter
+        RecipeDetailPresenter presenter = new RecipeDetailPresenter(viewModel);
+
+        RecipeDetailGateway gateway = new FatSecretRecipeDetailGateway();
+
+        // Create Interactor
+        RecipeDetailInputBoundary interactor = new RecipeDetailInteractor(gateway, presenter);
+
+        // Create Controller
+        RecipeDetailController controller = new RecipeDetailController(interactor, presenter);
+
+        // Create View
+        RecipeDetailView detailView = new RecipeDetailView(recipeId, controller, viewModel, this);
+
+        // Setup back button
         detailView.getBackButton().setOnAction(e -> {
             System.out.println("Going back from recipe detail...");
             showRecipeSearch();
         });
 
         primaryStage.setScene(detailView.getScene());
-        primaryStage.setTitle("HealthZ - " + recipeName);
+        primaryStage.setTitle("HealthZ - Recipe Details");
     }
 
     /**

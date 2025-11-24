@@ -475,58 +475,29 @@ public class RecipeSearchView {
      * Handle recipe click from search result
      */
     private void handleRecipeClickFromResult(RecipeSearchResult result) {
-        System.out.println("Recipe clicked: " + result.recipeName());
+        System.out.println("======================================");
+        System.out.println("🔍 Recipe clicked: " + result.recipeName());
+        System.out.println("🔍 Recipe ID: " + result.recipeId());
+        System.out.println("🔍 Recipe ID type: " + (result.recipeId() == null ? "null" : result.recipeId().getClass().getName()));
+        System.out.println("======================================");
 
-        // ⚠️ RecipeSearchResult only has basic info
-        // You'll need to fetch full recipe details from another API call
-        // For now, pass what we have and use defaults for missing data
-        navigator.showRecipeDetail(
-                result.recipeName(),
-                result.imageUrl(),
-                0.0,                                    // ⚠️ calories not available
-                0.0,                                    // ⚠️ protein not available
-                0.0,                                    // ⚠️ carbs not available
-                0.0,                                    // ⚠️ fats not available
-                "Varies",                               // ⚠️ servingSize not available
-                Arrays.asList(),                        // ⚠️ dietaryTags not available
-                result.ingredientNames() != null ? result.ingredientNames() : Arrays.asList(),
-                Arrays.asList(result.description())     // ✅ Use description as instruction
-        );
-    }
+        // Convert recipeId string to long
+        try {
+            long recipeId = Long.parseLong(result.recipeId());
+            System.out.println("✅ Parsed recipe ID: " + recipeId);
+            System.out.println("✅ Calling navigator.showRecipeDetail(" + recipeId + ")");
+            navigator.showRecipeDetail(recipeId);
+        } catch (NumberFormatException e) {
+            System.err.println("❌ Invalid recipe ID: '" + result.recipeId() + "'");
+            System.err.println("❌ Error: " + e.getMessage());
+            e.printStackTrace();
 
-
-    /**
-     * OLD: Handle recipe click (for sample data) - Keep for now
-     */
-    private void handleRecipeClick(String recipeName) {
-        System.out.println("Recipe clicked: " + recipeName);
-
-        navigator.showRecipeDetail(
-                recipeName,
-                null,
-                390.0,
-                15.0,
-                48.0,
-                7.0,
-                "2 pancakes",
-                Arrays.asList("High Protein", "Low Carb", "Vegan", "Gluten-Free"),
-                Arrays.asList(
-                        "1 1/2 cups Almond Flour",
-                        "1/2 cups Protein Powder",
-                        "1 1/2 tsp Baking Powder",
-                        "1/2 tsp Cinnamon",
-                        "3 Eggs",
-                        "2/3 cups Almond Milk",
-                        "1/2 cup Blueberries"
-                ),
-                Arrays.asList(
-                        "Mix dry ingredients in a large bowl.",
-                        "Whisk together eggs and almond milk.",
-                        "Combine wet and dry ingredients.",
-                        "Fold in blueberries.",
-                        "Cook on medium heat for 2-3 minutes per side."
-                )
-        );
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Could not load recipe details. Invalid recipe ID: " + result.recipeId());
+            alert.showAndWait();
+        }
     }
 
     /**
