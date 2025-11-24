@@ -119,4 +119,6 @@ public class Recipe {
     public Double getCachedHealthScore() {
         return cachedHealthScore;
     }
+
+    public Optional<Integer> getServings() { return servings; }
 }

@@ -9,6 +9,7 @@ import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
+import tut0301.group1.healthz.dataaccess.favoriterecipe.FakeFavoriteRecipeGateway;
 import tut0301.group1.healthz.entities.nutrition.Recipe;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
@@ -23,6 +24,9 @@ import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchPresenter;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipePresenter;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeViewModel;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
@@ -35,6 +39,12 @@ import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
 import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchGateway;
 import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.RecipeSearchInteractor;
+import tut0301.group1.healthz.usecase.favoriterecipe.FavoriteRecipeGateway;
+import tut0301.group1.healthz.usecase.favoriterecipe.DeleteFavoriteInteractor;
+import tut0301.group1.healthz.usecase.favoriterecipe.DeleteFavoriteInputBoundary;
+import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesInteractor;
+import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesInputBoundary;
+import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesOutputBoundary;
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
 import tut0301.group1.healthz.view.auth.SignupView;
@@ -181,10 +191,49 @@ public class Navigator {
      */
     public void showFavoriteRecipes() {
         String userName = getUserDisplayName();
-        FavoriteRecipeView favoriteRecipeView = new FavoriteRecipeView(userName, this);
+
+        // Get current user ID
+        String userId = getCurrentUserId(); // You need to implement this
+
+        // Create ViewModel
+        FavoriteRecipeViewModel viewModel = new FavoriteRecipeViewModel();
+
+        // Create Presenter
+        FavoriteRecipePresenter presenter = new FavoriteRecipePresenter(viewModel);
+
+        // Create Gateway
+        FavoriteRecipeGateway gateway = new FakeFavoriteRecipeGateway();
+
+        // Create Interactors
+        LoadFavoritesInputBoundary loadInteractor =
+                new LoadFavoritesInteractor(gateway, presenter);
+        DeleteFavoriteInputBoundary deleteInteractor =
+                new DeleteFavoriteInteractor(gateway, presenter);
+
+        // Create Controller
+        FavoriteRecipeController controller =
+                new FavoriteRecipeController(loadInteractor, deleteInteractor, presenter);
+
+        // Create View
+        FavoriteRecipeView favoriteRecipeView =
+                new FavoriteRecipeView(userName, userId, controller, viewModel, this);
+
         setupFavoriteRecipes(favoriteRecipeView);
+
         primaryStage.setScene(favoriteRecipeView.getScene());
         primaryStage.setTitle("HealthZ - Favorite Recipes");
+    }
+
+    // ✅ Add helper to get current user ID
+    private String getCurrentUserId() {
+        if (authenticatedClient != null) {
+            try {
+                return authenticatedClient.getUserId();
+            } catch (Exception e) {
+                System.err.println("Could not get user ID: " + e.getMessage());
+            }
+        }
+        return "default-user"; // Fallback
     }
 
     /**
