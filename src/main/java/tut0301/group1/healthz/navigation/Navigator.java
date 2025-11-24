@@ -239,7 +239,7 @@ public class Navigator {
     }
 
     /**
-     * Navigate to Recipe Detail page - UPDATED for Clean Architecture
+     * Navigate to Recipe Detail page
      */
     public void showRecipeDetail(long recipeId) {
         System.out.println("🧭 Navigator: Showing recipe detail for ID: " + recipeId);
