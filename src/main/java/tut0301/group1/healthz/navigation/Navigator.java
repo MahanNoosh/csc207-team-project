@@ -286,7 +286,7 @@ public class Navigator {
         // TODO: create DashboardView
         // For now, show macro search as placeholder
         System.out.println("✅ Login/Signup successful! Navigating to main app...");
-        showDashboard(); 
+        showDashboard();
     }
 
     public void showEmailVerification(SignupView.SignupData signupData) {

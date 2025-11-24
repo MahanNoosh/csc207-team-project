@@ -1,4 +1,5 @@
 
+
 package tut0301.group1.healthz.view.macro;
 
 import javafx.geometry.Insets;
@@ -23,8 +24,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.entities.nutrition.ServingInfo;
-import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeController;
-import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeViewModel;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
@@ -36,11 +35,8 @@ public class SingleMacroPage {
 
     private final MacroDetailController controller;
     private final MacroDetailViewModel viewModel;
-    private final LogFoodIntakeController logFoodController;
-    private final LogFoodIntakeViewModel logFoodViewModel;
     private final Navigator navigator;
     private final Scene scene;
-    private String currentUserId;
 
     private ComboBox<String> servingComboBox;
     private TextField servingsCountField;
@@ -50,15 +46,10 @@ public class SingleMacroPage {
     private FoodItem foodItem;
     private ServingInfo currentServing;
 
-    public SingleMacroPage(MacroDetailController controller, MacroDetailViewModel viewModel,
-                          LogFoodIntakeController logFoodController, LogFoodIntakeViewModel logFoodViewModel,
-                          Navigator navigator, String userId) {
+    public SingleMacroPage(MacroDetailController controller, MacroDetailViewModel viewModel, Navigator navigator) {
         this.controller = controller;
         this.viewModel = viewModel;
-        this.logFoodController = logFoodController;
-        this.logFoodViewModel = logFoodViewModel;
         this.navigator = navigator;
-        this.currentUserId = userId;
 
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #F5F5F5;");
@@ -588,41 +579,20 @@ public class SingleMacroPage {
             return;
         }
 
-        // Get the FoodDetails from viewModel
-        FoodDetails foodDetails = viewModel.getDetails();
-        if (foodDetails == null) {
-            showErrorMessage("Food details not available");
-            return;
-        }
+        double totalCalories = foodItem.getCalories() * multiplier;
 
-        // Find the selected serving from FoodDetails
-        ServingInfo selectedServing = currentServing;
-        if (selectedServing == null) {
-            showErrorMessage("Please select a serving size");
-            return;
-        }
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText("Added to Log!");
+        alert.setContentText(
+                foodItem.getName() + "\n" +
+                        servingSize + " (" + servingsCount + "x servings)\n" +
+                        "Added to " + meal + "\n" +
+                        "Total: " + String.format("%.0f", totalCalories) + " calories"
+        );
+        alert.showAndWait();
 
-        // Call the controller to log food
-        logFoodController.logFood(currentUserId, foodDetails, selectedServing, multiplier, meal);
-
-        // Check the result from ViewModel and show appropriate message
-        if (logFoodViewModel.isSuccess()) {
-            double totalCalories = (selectedServing.calories != null ? selectedServing.calories : 0.0) * multiplier;
-
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setHeaderText("Added to Log!");
-            alert.setContentText(
-                    foodDetails.name + "\n" +
-                            servingSize + " (" + servingsCount + "x servings)\n" +
-                            "Added to " + meal + "\n" +
-                            "Total: " + String.format("%.0f", totalCalories) + " calories"
-            );
-            alert.showAndWait();
-        } else {
-            String errorMessage = logFoodViewModel.getMessage();
-            showErrorMessage(errorMessage != null ? errorMessage : "Failed to add food to log");
-        }
+        // TODO: Actually save to meal log and navigate back if needed.
     }
 
     private void showErrorMessage(String message) {
