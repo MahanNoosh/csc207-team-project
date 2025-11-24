@@ -1,5 +1,6 @@
-package tut0301.group1.healthz.dataaccess.API;
+package tut0301.group1.healthz.dataaccess.API.FatSecret;
 
+import tut0301.group1.healthz.dataaccess.API.FatSecretFoodMapper;
 import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.usecase.food.detail.FoodDetailGateway;
 
@@ -11,17 +12,17 @@ import java.io.IOException;
  * This class is in the Data Access layer and implements the Gateway interface
  * defined in the Use Case layer, following the Dependency Inversion Principle.
  */
-public class FatSecretFoodDetailGateway implements FoodDetailGateway {
-    private final FatSecretFoodGetClient client;
+public class FatSecretFoodDetailDataAccessObject implements FoodDetailGateway {
+    private final FatSecret client;
 
-    public FatSecretFoodDetailGateway() {
-        this.client = new FatSecretFoodGetClient();
+    public FatSecretFoodDetailDataAccessObject() {
+        this.client = new FatSecret();
     }
 
     @Override
     public FoodDetails getFoodDetails(long foodId) throws IOException, InterruptedException {
         // Get data from FatSecret API
-        FatSecretFoodGetClient.FoodDetails apiFoodDetails = client.getFoodDetails(foodId);
+        FoodDetails apiFoodDetails = client.getFoodDetails(foodId);
 
         // Map API data to domain entity
         return FatSecretFoodMapper.toDomain(apiFoodDetails);

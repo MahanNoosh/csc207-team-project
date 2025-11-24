@@ -1,6 +1,7 @@
 package tut0301.group1.healthz.usecase.food.logging;
 
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
+import tut0301.group1.healthz.entities.nutrition.UserFoodLog;
 
 /**
  * Gateway interface for food log data access.
@@ -26,4 +27,13 @@ public interface FoodLogGateway {
      * @throws Exception if retrieval fails
      */
     java.util.List<FoodLog> getFoodLogs(String userId) throws Exception;
+
+    /**
+     * Retrieves the UserFoodLog containing all food logs for a user.
+     *
+     * @param userId the user ID
+     * @return UserFoodLog containing all food logs for the user
+     * @throws Exception if retrieval fails
+     */
+    UserFoodLog getUserFoodLog(String userId) throws Exception;
 }

@@ -279,4 +279,5 @@ public class SupabaseClient {
         try { return Enum.valueOf(clazz, norm); }
         catch (IllegalArgumentException ex) { return null; }
     }
+
 }
