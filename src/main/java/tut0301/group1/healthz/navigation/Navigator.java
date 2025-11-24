@@ -294,7 +294,6 @@ public class Navigator {
     }
 
     private String getUserDisplayName() {
-        // ✅ Use the authenticated client if available
         if (authenticatedClient != null) {
             String displayName = authenticatedClient.getDisplayName();
             if (displayName != null && !displayName.isEmpty()) {
@@ -623,7 +622,7 @@ public class Navigator {
     private void setupRecipeNavigation(RecipeSearchView recipeSearchView) {
         recipeSearchView.getFavoriteRecipesButton().setOnAction(e -> {
             System.out.println("Navigating to favorite recipes page...");
-            showFavoriteRecipes();
+            // TODO: connect to recipe detail
         });
     }
 
