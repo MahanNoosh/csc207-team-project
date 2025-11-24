@@ -10,8 +10,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.entities.nutrition.BasicFood;
 import tut0301.group1.healthz.entities.nutrition.Macro;
-import tut0301.group1.healthz.entities.nutrition.MacroSearchResult;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
@@ -267,7 +267,7 @@ public class MacroSearchView {
     /**
      * Create a food card matching the screenshot design
      */
-    private HBox createFoodCard(MacroSearchResult food) {
+    private HBox createFoodCard(BasicFood food) {
         HBox card = new HBox(20);
         card.setPadding(new Insets(25, 30, 25, 30));
         card.setAlignment(Pos.CENTER_LEFT);
@@ -281,16 +281,18 @@ public class MacroSearchView {
         );
         card.setMaxWidth(1080);
         card.setCursor(Cursor.HAND);
-        card.setOnMouseClicked(e -> navigator.showMacroDetails(food.foodId()));
+        card.setOnMouseClicked(e -> navigator.showMacroDetails(food.getFoodId()));
         // left side - Food info
         VBox foodInfo = new VBox(8);
         HBox.setHgrow(foodInfo, Priority.ALWAYS);
 
-        Label foodName = new Label(food.foodName());
+        Label foodName = new Label(food.getFoodName());
         foodName.setFont(Font.font("Inter", FontWeight.BOLD, 20));
         foodName.setStyle("-fx-text-fill: #111827;");
 
-        Label servingSize = new Label(formatServing(food.servingDescription()));
+        // Format serving size and unit
+        String servingText = formatServing(food.getServingSize(), food.getServingUnit());
+        Label servingSize = new Label(servingText);
         servingSize.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
         servingSize.setStyle("-fx-text-fill: #6B7280");
 
@@ -298,7 +300,7 @@ public class MacroSearchView {
         HBox macrosRow = new HBox(30);
         macrosRow.setAlignment(Pos.CENTER_LEFT);
 
-        Macro macro = food.macro();
+        Macro macro = food.getMacro();
         String caloriesText = macro == null ? "Calories: --" : "Calories: " + macro.calories();
         String proteinText = macro == null ? "Protein: --" : "Protein: " + macro.proteinG() + "g";
         String fatText = macro == null ? "Fat: --" : "Fat: " + macro.fatG() + "g";
@@ -384,15 +386,16 @@ public class MacroSearchView {
         searchField.clear();
     }
 
-    private String formatServing(String description) {
-        if (description == null) {
+    private String formatServing(double servingSize, String servingUnit) {
+        if (servingSize == 0 || servingUnit == null) {
             return "";
         }
-        int dashIndex = description.indexOf("-");
-        if (dashIndex > 0) {
-            return description.substring(0, dashIndex).trim();
+        // Format serving size nicely
+        if (servingSize == (long) servingSize) {
+            return String.format("%d %s", (long) servingSize, servingUnit);
+        } else {
+            return String.format("%.1f %s", servingSize, servingUnit);
         }
-        return description;
     }
 
 
@@ -423,7 +426,7 @@ public class MacroSearchView {
             return;
         }
 
-        for (MacroSearchResult food : viewModel.getResults()) {
+        for (BasicFood food : viewModel.getResults()) {
             resultsContainer.getChildren().add(createFoodCard(food));
         }
     }

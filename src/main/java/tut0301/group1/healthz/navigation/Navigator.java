@@ -4,7 +4,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import tut0301.group1.healthz.dataaccess.API.FatSecretFoodDetailGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
+import tut0301.group1.healthz.dataaccess.API.FatSecretFoodSearchAdapter;
+//import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
@@ -14,10 +15,10 @@ import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
 import tut0301.group1.healthz.interfaceadapter.auth.mapping.SignupProfileMapper;
 import tut0301.group1.healthz.interfaceadapter.food.FoodDetailPresenter;
+import tut0301.group1.healthz.interfaceadapter.food.FoodSearchPresenter;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailViewModel;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
-import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchPresenter;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
@@ -25,12 +26,16 @@ import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
 import tut0301.group1.healthz.usecase.food.detail.FoodDetailGateway;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInputBoundary;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInteractor;
+import tut0301.group1.healthz.usecase.food.search.FoodSearchGateway;
+import tut0301.group1.healthz.usecase.food.search.SearchFoodInputBoundary;
+import tut0301.group1.healthz.usecase.food.search.SearchFoodInteractor;
+import tut0301.group1.healthz.usecase.food.search.SearchFoodOutputBoundary;
 //import tut0301.group1.healthz.usecase.macrosearch.MacroDetailGateway;
 //import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputBoundary;
 //import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInteractor;
-import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
-import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
-import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
 import tut0301.group1.healthz.view.auth.SignupView;
@@ -121,12 +126,28 @@ public class Navigator {
      * Navigate to Macro Search page
      */
     public void showMacroSearch() {
+        // Clean Architecture Layer Setup:
+        // 1. ViewModel (Interface Adapter)
         MacroSearchViewModel macroSearchViewModel = new MacroSearchViewModel();
-        MacroSearchPresenter presenter = new MacroSearchPresenter(macroSearchViewModel);
-        MacroSearchGateway gateway = new FatSecretMacroSearchGateway();
-        MacroSearchInputBoundary interactor = new MacroSearchInteractor(gateway, presenter);
-        MacroSearchController controller = new MacroSearchController(interactor, presenter);
 
+        // 2. Presenter (Interface Adapter) - implements SearchFoodOutputBoundary
+        SearchFoodOutputBoundary presenter = new FoodSearchPresenter(macroSearchViewModel);
+
+        // 3. Gateway (Data Access) - implements FoodSearchGateway
+        FoodSearchGateway gateway = new FatSecretFoodSearchAdapter();
+
+        // 4. Interactor (Use Case) - depends on gateway and outputBoundary interfaces
+        SearchFoodInputBoundary interactor = new SearchFoodInteractor(gateway, presenter);
+
+        // 5. Controller (Interface Adapter) - only knows about interactor
+        MacroSearchController controller = new MacroSearchController(interactor);
+
+        // Set initial state in ViewModel before creating view
+        macroSearchViewModel.setLoading(false);
+        macroSearchViewModel.setMessage(null);
+        macroSearchViewModel.setResults(java.util.List.of());
+
+        // 6. View - observes ViewModel
         MacroSearchView macroSearchView = new MacroSearchView(controller, macroSearchViewModel, this);
 
         // Switch to macro search scene
@@ -138,14 +159,31 @@ public class Navigator {
      * Navigate to a single macro detail page for a selected food id.
      */
     public void showMacroDetails(long foodId) {
+        // Clean Architecture Layer Setup:
+        // 1. ViewModel (Interface Adapter)
         MacroDetailViewModel detailViewModel = new MacroDetailViewModel();
-        FoodDetailPresenter presenter = new FoodDetailPresenter(detailViewModel);
-        FoodDetailGateway gateway = new FatSecretFoodDetailGateway();
-        GetFoodDetailInputBoundary interactor = new GetFoodDetailInteractor(gateway, presenter);
-        MacroDetailController controller = new MacroDetailController(interactor, presenter);
 
+        // 2. Presenter (Interface Adapter) - implements OutputBoundary
+        FoodDetailPresenter presenter = new FoodDetailPresenter(detailViewModel);
+
+        // 3. Gateway (Interface Adapter) - implements gateway interface
+        FoodDetailGateway gateway = new FatSecretFoodDetailGateway();
+
+        // 4. Interactor (Use Case) - depends on gateway and outputBoundary interfaces
+        GetFoodDetailInputBoundary interactor = new GetFoodDetailInteractor(gateway, presenter);
+
+        // 5. Controller (Interface Adapter) - only knows about interactor
+        MacroDetailController controller = new MacroDetailController(interactor);
+
+        // Set initial loading state in ViewModel before calling controller
+        detailViewModel.setLoading(true);
+        detailViewModel.setMessage(null);
+        detailViewModel.setDetails(null);
+
+        // Controller calls interactor, which will call presenter, which updates viewModel
         controller.fetch(foodId);
 
+        // 6. View - observes ViewModel
         SingleMacroPage detailView = new SingleMacroPage(controller, detailViewModel, this);
 
         primaryStage.setScene(detailView.getScene());
