@@ -49,9 +49,12 @@ public class Step3Panel {
         optionBox.setPrefHeight(70);
         optionBox.setAlignment(Pos.CENTER_LEFT);
         optionBox.setPadding(new javafx.geometry.Insets(15));
+
+        // Default style (unselected)
         optionBox.setStyle(
                 "-fx-background-color: white; " +
                         "-fx-border-color: #D1D5DB; " +
+                        "-fx-border-width: 2px; " +
                         "-fx-border-radius: 8px; " +
                         "-fx-background-radius: 8px; " +
                         "-fx-cursor: hand;"
@@ -64,19 +67,73 @@ public class Step3Panel {
         subLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 12));
         subLabel.setTextFill(Color.web("#6B7280"));
 
-        optionBox.getChildren().addAll(mainLabel, subLabel);
-
-        // Make clickable
+        // Hidden radio button for toggle group logic
         RadioButton hiddenButton = new RadioButton();
         hiddenButton.setToggleGroup(group);
         hiddenButton.setVisible(false);
+        hiddenButton.setManaged(false);  // ✅ Don't take up space
 
+        optionBox.getChildren().addAll(mainLabel, subLabel, hiddenButton);
+
+        // ✅ Make clickable with visual feedback
         optionBox.setOnMouseClicked(e -> {
             hiddenButton.setSelected(true);
-            // Update styling
+            updateSelection(optionBox, true);
+        });
+
+        // ✅ Hover effect
+        optionBox.setOnMouseEntered(e -> {
+            if (!hiddenButton.isSelected()) {
+                optionBox.setStyle(
+                        "-fx-background-color: #F9FAFB; " +
+                                "-fx-border-color: #9CA3AF; " +
+                                "-fx-border-width: 2px; " +
+                                "-fx-border-radius: 8px; " +
+                                "-fx-background-radius: 8px; " +
+                                "-fx-cursor: hand;"
+                );
+            }
+        });
+
+        optionBox.setOnMouseExited(e -> {
+            if (!hiddenButton.isSelected()) {
+                updateSelection(optionBox, false);
+            }
+        });
+
+        // ✅ Listen for selection changes (when other options are clicked)
+        hiddenButton.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+            updateSelection(optionBox, isSelected);
         });
 
         return optionBox;
+    }
+
+    /**
+     * Update the visual style based on selection state
+     */
+    private void updateSelection(VBox optionBox, boolean isSelected) {
+        if (isSelected) {
+            // Selected style (green border)
+            optionBox.setStyle(
+                    "-fx-background-color: #ECFDF5; " +  // Light green background
+                            "-fx-border-color: #059669; " +      // Green border
+                            "-fx-border-width: 2px; " +
+                            "-fx-border-radius: 8px; " +
+                            "-fx-background-radius: 8px; " +
+                            "-fx-cursor: hand;"
+            );
+        } else {
+            // Unselected style (gray border)
+            optionBox.setStyle(
+                    "-fx-background-color: white; " +
+                            "-fx-border-color: #D1D5DB; " +
+                            "-fx-border-width: 2px; " +
+                            "-fx-border-radius: 8px; " +
+                            "-fx-background-radius: 8px; " +
+                            "-fx-cursor: hand;"
+            );
+        }
     }
 
     public String getSelectedActivity() {
