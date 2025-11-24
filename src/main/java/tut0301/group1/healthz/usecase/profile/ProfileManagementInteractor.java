@@ -1,6 +1,6 @@
 package tut0301.group1.healthz.usecase.profile;
 
-import tut0301.group1.healthz.usecase.dashboard.Profile;
+import tut0301.group1.healthz.entities.Profile;
 
 /**
  * Interactor for profile management operations.

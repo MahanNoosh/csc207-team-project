@@ -79,7 +79,7 @@ public class SearchFoodInteractorTest {
     }
 
     // Capturing gateway to verify search calls
-    private static class CapturingGateway implements FoodSearchGateway {
+    private static class CapturingGateway implements FoodSearchDataAccessInterface {
         private String capturedSearchTerm;
         private int callCount = 0;
         private List<BasicFood> resultsToReturn;

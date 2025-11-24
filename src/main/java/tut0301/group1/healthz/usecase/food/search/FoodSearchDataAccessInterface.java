@@ -11,7 +11,7 @@ import java.util.List;
  * This interface is defined in the Use Case layer and implemented
  * in the Data Access layer, following the Dependency Inversion Principle.
  */
-public interface FoodSearchGateway {
+public interface FoodSearchDataAccessInterface {
     /**
      * Search for foods by name.
      *

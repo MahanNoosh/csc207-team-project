@@ -2,8 +2,10 @@ package tut0301.group1.healthz.dataaccess.supabase;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import tut0301.group1.healthz.usecase.dashboard.Profile;
-import tut0301.group1.healthz.usecase.dashboard.UserDashboardPort;
+import tut0301.group1.healthz.entities.Goal;
+import tut0301.group1.healthz.entities.HealthCondition;
+import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Sex;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -249,11 +251,11 @@ public class SupabaseClient {
         Double heightCm = r.isNull("heightCm") ? null : r.getDouble("heightCm");
         Integer ageYears = r.isNull("ageYears") ? null : r.getInt("ageYears");
 
-        UserDashboardPort.Sex sex = r.isNull("sex") ? null :
-                parseEnumSafe(UserDashboardPort.Sex.class, r.getString("sex"));
+        Sex sex = r.isNull("sex") ? null :
+                parseEnumSafe(Sex.class, r.getString("sex"));
 
-        UserDashboardPort.Goal goal = r.isNull("goal") ? null :
-                parseEnumSafe(UserDashboardPort.Goal.class, r.getString("goal"));
+        Goal goal = r.isNull("goal") ? null :
+                parseEnumSafe(Goal.class, r.getString("goal"));
 
         Double activityLevelMET = r.isNull("activityLevelMET") ? null : r.getDouble("activityLevelMET");
         Double targetWeightKg   = r.isNull("targetWeightKg")   ? null : r.getDouble("targetWeightKg");
@@ -262,8 +264,8 @@ public class SupabaseClient {
                 r.isNull("dailyCalorieTarget") ? java.util.Optional.empty() :
                         java.util.Optional.of(r.getDouble("dailyCalorieTarget"));
 
-        UserDashboardPort.HealthCondition hc = r.isNull("healthCondition") ? null :
-                parseEnumSafe(UserDashboardPort.HealthCondition.class, r.getString("healthCondition"));
+        HealthCondition hc = r.isNull("healthCondition") ? null :
+                parseEnumSafe(HealthCondition.class, r.getString("healthCondition"));
 
         return new Profile(
                 userId, weightKg, heightCm, ageYears, sex, goal,

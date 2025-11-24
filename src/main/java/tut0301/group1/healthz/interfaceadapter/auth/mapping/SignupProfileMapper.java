@@ -1,8 +1,9 @@
 package tut0301.group1.healthz.interfaceadapter.auth.mapping;
 
+import tut0301.group1.healthz.entities.Goal;
+import tut0301.group1.healthz.entities.Sex;
 import tut0301.group1.healthz.view.auth.SignupView;
-import tut0301.group1.healthz.usecase.dashboard.Profile;
-import tut0301.group1.healthz.usecase.dashboard.UserDashboardPort;
+import tut0301.group1.healthz.entities.Profile;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -25,30 +26,30 @@ public final class SignupProfileMapper {
         }
 
         // ========== SEX ==========
-        UserDashboardPort.Sex sexEnum = null;
+        Sex sexEnum = null;
         String sexStr = data.getSex();
         if (sexStr != null) {
             String raw = sexStr.trim().toLowerCase();
 
-            if (raw.startsWith("m"))      sexEnum = UserDashboardPort.Sex.MALE;
-            else if (raw.startsWith("f")) sexEnum = UserDashboardPort.Sex.FEMALE;
-            else                          sexEnum = UserDashboardPort.Sex.OTHER;
+            if (raw.startsWith("m"))      sexEnum = Sex.MALE;
+            else if (raw.startsWith("f")) sexEnum = Sex.FEMALE;
+            else                          sexEnum = Sex.OTHER;
         }
 
         // ========== GOAL ==========
-        UserDashboardPort.Goal goalEnum = null;
+        Goal goalEnum = null;
         String goalStr = data.getGoal();
         if (goalStr != null) {
             String g = goalStr.toLowerCase();
 
             if (g.contains("lose")) {
-                goalEnum = UserDashboardPort.Goal.WEIGHT_LOSS;
+                goalEnum = Goal.WEIGHT_LOSS;
             } else if (g.contains("gain muscle") || g.contains("muscle")) {
-                goalEnum = UserDashboardPort.Goal.MUSCLE_GAIN;
+                goalEnum = Goal.MUSCLE_GAIN;
             } else if (g.contains("gain")) {
-                goalEnum = UserDashboardPort.Goal.WEIGHT_GAIN;
+                goalEnum = Goal.WEIGHT_GAIN;
             } else {
-                goalEnum = UserDashboardPort.Goal.GENERAL_HEALTH;
+                goalEnum = Goal.GENERAL_HEALTH;
             }
         }
 
