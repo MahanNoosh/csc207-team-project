@@ -1,7 +1,7 @@
 package tut0301.group1.healthz.interfaceadapter.auth.mapping;
 
 import tut0301.group1.healthz.view.auth.SignupView;
-import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
 
 import java.time.LocalDate;
 import java.time.Period;

@@ -1,6 +1,6 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
-import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
 
 public class ProfileInteractor implements ProfileInputBoundary {
     private final UserDataDataAccessInterface userDataDataAccessInterface;
