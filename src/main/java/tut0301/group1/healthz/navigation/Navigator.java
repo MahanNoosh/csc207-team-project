@@ -664,6 +664,11 @@ public class Navigator {
             System.out.println("Navigating to favorite recipes page...");
             // TODO: connect to recipe detail
         });
+
+        recipeSearchView.getHealthzButton().setOnAction(e -> {
+            System.out.println("Navigating to Dashboard...");
+            showDashboard();
+        });
     }
 
     /**

@@ -27,6 +27,7 @@ public class RecipeSearchView {
     private FlowPane recipesGrid;
     private Button favoriteRecipesButton;
     private Label statusLabel;
+    private Button healthzButton;
 
     private final RecipeSearchController controller;
     private final RecipeSearchViewModel viewModel;
@@ -67,7 +68,7 @@ public class RecipeSearchView {
      * Create header with title, search, and filters
      */
     private VBox createHeader() {
-        VBox header = new VBox(20);
+        VBox header = new VBox(10);
         header.setPadding(new Insets(40, 60, 30, 60));
         header.setStyle("-fx-background-color: white;");
 
@@ -89,9 +90,10 @@ public class RecipeSearchView {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Label healthzLabel = new Label("HealthZ");
-        healthzLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
-        healthzLabel.setTextFill(Color.web("#27692A"));
+        healthzButton = new Button("Healthz");
+        healthzButton.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        healthzButton.setTextFill(Color.web("#27692A"));
+        healthzButton.setStyle("-fx-background-color: transparent;");
 
         Circle profileCircle = new Circle(25);
         profileCircle.setFill(Color.web("#D1D5DB"));
@@ -109,7 +111,7 @@ public class RecipeSearchView {
                         "-fx-cursor: hand;"
         );
 
-        topRow.getChildren().addAll(titleBox, spacer, healthzLabel, profileCircle, favoriteRecipesButton);
+        topRow.getChildren().addAll(titleBox, spacer, healthzButton, profileCircle, favoriteRecipesButton);
 
         VBox searchBox = createSearchAndFilters();
 
@@ -121,7 +123,7 @@ public class RecipeSearchView {
      * Create search bar and filter chips
      */
     private VBox createSearchAndFilters() {
-        VBox container = new VBox(20);
+        VBox container = new VBox(10);
         container.setPadding(new Insets(20, 0, 0, 0));
         container.setStyle(
                 "-fx-background-color: #F9FAFB; " +
@@ -528,5 +530,9 @@ public class RecipeSearchView {
 
     public Button getFavoriteRecipesButton() {
         return favoriteRecipesButton;
+    }
+
+    public Button getHealthzButton() {
+        return healthzButton;
     }
 }
