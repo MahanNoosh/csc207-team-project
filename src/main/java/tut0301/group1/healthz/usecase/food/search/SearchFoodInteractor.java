@@ -12,7 +12,7 @@ import java.util.List;
  * following Clean Architecture principles with dependency injection.
  */
 public class SearchFoodInteractor implements SearchFoodInputBoundary {
-    private final FoodSearchGateway gateway;
+    private final FoodSearchDataAccessInterface gateway;
     private final SearchFoodOutputBoundary outputBoundary;
 
     /**
@@ -21,7 +21,7 @@ public class SearchFoodInteractor implements SearchFoodInputBoundary {
      * @param gateway the gateway for accessing food data
      * @param outputBoundary the presenter for displaying results
      */
-    public SearchFoodInteractor(FoodSearchGateway gateway,
+    public SearchFoodInteractor(FoodSearchDataAccessInterface gateway,
                                 SearchFoodOutputBoundary outputBoundary) {
         if (gateway == null) {
             throw new IllegalArgumentException("FoodSearchGateway cannot be null");

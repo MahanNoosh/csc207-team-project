@@ -23,7 +23,7 @@ public class FatSecretFoodMapper {
      * @param apiFood The food details from FatSecret API
      * @return Domain FoodDetails entity
      */
-    public static FoodDetails toDomain(FatSecretFoodGetClient.FoodDetails apiFood) {
+    public static FoodDetails toDomain(FoodDetails apiFood) {
         if (apiFood == null) {
             return null;
         }
@@ -31,7 +31,7 @@ public class FatSecretFoodMapper {
         // Map all servings from API to domain
         List<ServingInfo> domainServings = new ArrayList<>();
         if (apiFood.servings != null) {
-            for (FatSecretFoodGetClient.ServingInfo apiServing : apiFood.servings) {
+            for (ServingInfo apiServing : apiFood.servings) {
                 domainServings.add(toDomain(apiServing));
             }
         }
@@ -52,7 +52,7 @@ public class FatSecretFoodMapper {
      * @param apiServing The serving info from FatSecret API
      * @return Domain ServingInfo entity
      */
-    public static ServingInfo toDomain(FatSecretFoodGetClient.ServingInfo apiServing) {
+    public static ServingInfo toDomain(ServingInfo apiServing) {
         if (apiServing == null) {
             return null;
         }
@@ -78,13 +78,13 @@ public class FatSecretFoodMapper {
      * @param apiFoods List of food details from FatSecret API
      * @return List of domain FoodDetails entities
      */
-    public static List<FoodDetails> toDomainList(List<FatSecretFoodGetClient.FoodDetails> apiFoods) {
+    public static List<FoodDetails> toDomainList(List<FoodDetails> apiFoods) {
         if (apiFoods == null) {
             return new ArrayList<>();
         }
 
         List<FoodDetails> domainFoods = new ArrayList<>();
-        for (FatSecretFoodGetClient.FoodDetails apiFood : apiFoods) {
+        for (FoodDetails apiFood : apiFoods) {
             domainFoods.add(toDomain(apiFood));
         }
         return domainFoods;

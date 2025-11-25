@@ -60,8 +60,7 @@ public class FoodLog {
     /**
      * Get the serving unit (from ServingInfo).
      */
-    public String getServingUnit() {
-        return servingInfo.servingUnit;
+    public String getServingUnit() {return servingInfo.servingUnit;
     }
 
     /**

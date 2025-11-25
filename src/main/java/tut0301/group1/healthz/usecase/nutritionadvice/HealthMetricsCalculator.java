@@ -1,6 +1,7 @@
 package tut0301.group1.healthz.usecase.nutritionadvice;
 
 import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Sex;
 
 public class HealthMetricsCalculator {
 

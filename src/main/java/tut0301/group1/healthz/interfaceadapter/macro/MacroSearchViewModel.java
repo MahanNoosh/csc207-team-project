@@ -1,20 +1,26 @@
 package tut0301.group1.healthz.interfaceadapter.macro;
 
-import tut0301.group1.healthz.entities.nutrition.MacroSearchResult;
+import tut0301.group1.healthz.entities.nutrition.BasicFood;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ViewModel for Macro Search page.
+ *
+ * Holds the UI state for displaying food search results.
+ * Uses BasicFood entity from the domain layer.
+ */
 public class MacroSearchViewModel {
-    private List<MacroSearchResult> results = new ArrayList<>();
+    private List<BasicFood> results = new ArrayList<>();
     private String message;
     private boolean loading;
 
-    public List<MacroSearchResult> getResults() {
+    public List<BasicFood> getResults() {
         return results;
     }
 
-    public void setResults(List<MacroSearchResult> results) {
+    public void setResults(List<BasicFood> results) {
         this.results = results;
     }
 

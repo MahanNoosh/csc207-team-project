@@ -2,7 +2,7 @@ package tut0301.group1.healthz.app;
 
 import java.util.Scanner;
 
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
@@ -36,7 +36,7 @@ public class Main {
         }
 
         var client = new SupabaseClient(url, anon);
-        AuthGateway authGateway = new SupabaseAuthGateway(client);
+        AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
 
         // Profile data gateway & interactor
         UserDataDataAccessInterface userDataDataAccessInterface = new SupabaseUserDataDataAccessObject(client);

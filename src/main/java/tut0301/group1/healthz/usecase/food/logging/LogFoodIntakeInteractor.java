@@ -35,13 +35,13 @@ public class LogFoodIntakeInteractor implements LogFoodIntakeInputBoundary {
     @Override
     public void execute(LogFoodIntakeInputData inputData) {
         try {
-            // Create FoodLog with current timestamp
+            // Create FoodLog with the timestamp from input data
             FoodLog foodLog = new FoodLog(
                 inputData.getFood(),
                 inputData.getServingInfo(),
                 inputData.getServingMultiplier(),
                 inputData.getMeal(),
-                LocalDateTime.now()
+                inputData.getLoggedAt()
             );
 
             // Save through gateway

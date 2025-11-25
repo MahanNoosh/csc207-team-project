@@ -10,6 +10,9 @@ public interface SearchRecipe {
     List<String> getRecipeNames(String searchExpression, Integer maxResults, Integer pageNumber,
                                 String recipeType) throws SearchRecipe.RecipeNotFoundException;
 
+    List<Recipe> searchByName(String searchExpression, Integer maxResults, Integer pageNumber,
+                        String recipeType) throws SearchRecipe.RecipeNotFoundException;
+
     Recipe searchById(String id) throws SearchRecipe.RecipeNotFoundException;
 
     class RecipeNotFoundException extends Exception {

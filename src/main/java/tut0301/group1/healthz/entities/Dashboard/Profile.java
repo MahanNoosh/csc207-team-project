@@ -19,7 +19,7 @@ public class Profile {
     public Profile(String userId, Double weightKg, Double heightCm, Integer ageYears,
                        Sex sex, Goal goal, Double activityLevelMET,
                        Double targetWeightKg, Optional<Double> dailyCalorieTarget,
-                       HealthCondition healthCondition, int targetWeeks, DietPreference dietPreference ) {
+                       HealthCondition healthCondition/*,  int targetWeeks, DietPreference dietPreference */) {
         this.userId = userId;
         this.weightKg = weightKg;
         this.heightCm = heightCm;
@@ -30,8 +30,8 @@ public class Profile {
         this.targetWeightKg = targetWeightKg;
         this.dailyCalorieTarget = dailyCalorieTarget;
         this.healthCondition = healthCondition;
-        this.targetWeeks = targetWeeks;
-        this.dietPreference = dietPreference;
+        //this.targetWeeks = targetWeeks;
+        //this.dietPreference = dietPreference;
     }
 
     public String getUserId() {
