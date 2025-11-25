@@ -2,23 +2,21 @@ package tut0301.group1.healthz.navigation;
 
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import tut0301.group1.healthz.dataaccess.API.FatSecretMacroDetailGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailGateway;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
+import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodDetailDataAccessObject;
+import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAccessObject;
+//import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
-import tut0301.group1.healthz.dataaccess.favoriterecipe.FakeFavoriteRecipeGateway;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
 import tut0301.group1.healthz.interfaceadapter.auth.mapping.SignupProfileMapper;
+import tut0301.group1.healthz.interfaceadapter.food.FoodDetailPresenter;
+import tut0301.group1.healthz.interfaceadapter.food.FoodSearchPresenter;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailController;
-import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailPresenter;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailViewModel;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
-import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchPresenter;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
 import tut0301.group1.healthz.interfaceadapter.recipe.*;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
@@ -27,6 +25,19 @@ import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeView
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
+import tut0301.group1.healthz.usecase.food.detail.FoodDetailGateway;
+import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInputBoundary;
+import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInteractor;
+import tut0301.group1.healthz.usecase.food.search.FoodSearchDataAccessInterface;
+import tut0301.group1.healthz.usecase.food.search.SearchFoodInputBoundary;
+import tut0301.group1.healthz.usecase.food.search.SearchFoodInteractor;
+import tut0301.group1.healthz.usecase.food.search.SearchFoodOutputBoundary;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailGateway;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputBoundary;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInteractor;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
 import tut0301.group1.healthz.usecase.macrosearch.MacroDetailGateway;
 import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputBoundary;
 import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInteractor;
@@ -134,17 +145,32 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Sign Up");
     }
 
-
     /**
      * Navigate to Macro Search page
      */
     public void showMacroSearch() {
+        // Clean Architecture Layer Setup:
+        // 1. ViewModel (Interface Adapter)
         MacroSearchViewModel macroSearchViewModel = new MacroSearchViewModel();
-        MacroSearchPresenter presenter = new MacroSearchPresenter(macroSearchViewModel);
-        MacroSearchGateway gateway = new FatSecretMacroSearchGateway();
-        MacroSearchInputBoundary interactor = new MacroSearchInteractor(gateway, presenter);
-        MacroSearchController controller = new MacroSearchController(interactor, presenter);
 
+        // 2. Presenter (Interface Adapter) - implements SearchFoodOutputBoundary
+        SearchFoodOutputBoundary presenter = new FoodSearchPresenter(macroSearchViewModel);
+
+        // 3. Gateway (Data Access) - implements FoodSearchGateway
+        FoodSearchDataAccessInterface gateway = new FatSecretFoodSearchDataAccessObject();
+
+        // 4. Interactor (Use Case) - depends on gateway and outputBoundary interfaces
+        SearchFoodInputBoundary interactor = new SearchFoodInteractor(gateway, presenter);
+
+        // 5. Controller (Interface Adapter) - only knows about interactor
+        MacroSearchController controller = new MacroSearchController(interactor);
+
+        // Set initial state in ViewModel before creating view
+        macroSearchViewModel.setLoading(false);
+        macroSearchViewModel.setMessage(null);
+        macroSearchViewModel.setResults(java.util.List.of());
+
+        // 6. View - observes ViewModel
         MacroSearchView macroSearchView = new MacroSearchView(controller, macroSearchViewModel, this);
 
         // Switch to macro search scene
@@ -156,14 +182,31 @@ public class Navigator {
      * Navigate to a single macro detail page for a selected food id.
      */
     public void showMacroDetails(long foodId) {
+        // Clean Architecture Layer Setup:
+        // 1. ViewModel (Interface Adapter)
         MacroDetailViewModel detailViewModel = new MacroDetailViewModel();
-        MacroDetailPresenter presenter = new MacroDetailPresenter(detailViewModel);
-        MacroDetailGateway gateway = new FatSecretMacroDetailGateway();
-        MacroDetailInputBoundary interactor = new MacroDetailInteractor(gateway, presenter);
-        MacroDetailController controller = new MacroDetailController(interactor, presenter);
 
+        // 2. Presenter (Interface Adapter) - implements OutputBoundary
+        FoodDetailPresenter presenter = new FoodDetailPresenter(detailViewModel);
+
+        // 3. Gateway (Interface Adapter) - implements gateway interface
+        FoodDetailGateway gateway = new FatSecretFoodDetailDataAccessObject();
+
+        // 4. Interactor (Use Case) - depends on gateway and outputBoundary interfaces
+        GetFoodDetailInputBoundary interactor = new GetFoodDetailInteractor(gateway, presenter);
+
+        // 5. Controller (Interface Adapter) - only knows about interactor
+        MacroDetailController controller = new MacroDetailController(interactor);
+
+        // Set initial loading state in ViewModel before calling controller
+        detailViewModel.setLoading(true);
+        detailViewModel.setMessage(null);
+        detailViewModel.setDetails(null);
+
+        // Controller calls interactor, which will call presenter, which updates viewModel
         controller.fetch(foodId);
 
+        // 6. View - observes ViewModel
         SingleMacroPage detailView = new SingleMacroPage(controller, detailViewModel, this);
 
         primaryStage.setScene(detailView.getScene());
@@ -413,7 +456,7 @@ public class Navigator {
 
                 try {
                     // 2) Make sure user_data row exists (create blank if missing)
-                    SupabaseUserDataGateway userDataGateway = new SupabaseUserDataGateway(client);
+                    SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
                     userDataGateway.createBlankForCurrentUserIfMissing();
                     System.out.println("💾 user_data row present/created.");
                 } catch (Exception ex) {
@@ -488,7 +531,7 @@ public class Navigator {
 
         SupabaseClient client = new SupabaseClient(url, anon);
 
-        AuthGateway authGateway = new SupabaseAuthGateway(client);
+        AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
         LoginViewModel loginVM = new LoginViewModel();
         LoginPresenter loginPresenter = new LoginPresenter(loginVM);
         LoginInputBoundary loginUC = new LoginInteractor(authGateway, loginPresenter);
@@ -519,7 +562,7 @@ public class Navigator {
             var profile = SignupProfileMapper.toProfile(userId, signupData);
 
             // Save profile
-            SupabaseUserDataGateway userDataGateway = new SupabaseUserDataGateway(client);
+            SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
             userDataGateway.upsertProfile(profile);
 
             System.out.println("💾 Profile saved successfully. Navigating to main app...");
