@@ -1,4 +1,6 @@
 package tut0301.group1.healthz.dataaccess.API;
+import tut0301.group1.healthz.dataaccess.API.OAuth.OAuth;
+import tut0301.group1.healthz.dataaccess.API.OAuth.OAuthDataAccessObject;
 import tut0301.group1.healthz.entities.nutrition.Recipe;
 
 import okhttp3.HttpUrl;
@@ -175,14 +177,14 @@ public class RecipeAPI implements SearchRecipe {
                 return;
             }
 
-            FatSecretOAuthTokenFetcher fetcher = new FatSecretOAuthTokenFetcher(clientId, clientSecret);
+            OAuth fetcher = new OAuth(clientId, clientSecret);
             String jsonResponse = fetcher.getAccessTokenRaw("basic");
 
             System.out.println("\n=== Raw Token JSON ===");
             System.out.println(jsonResponse);
             System.out.println("======================\n");
 
-            String token = FatSecretOAuthTokenFetcher.TokenParser.extractAccessToken(jsonResponse);
+            String token = OAuthDataAccessObject.extractAccessToken(jsonResponse);
             if (token == null) {
                 System.err.println("❌ Failed to extract access token. Stopping execution.");
                 return;

@@ -1,7 +1,5 @@
 package tut0301.group1.healthz.usecase.recipesearch.detailed;
 
-import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputData;
-import tut0301.group1.healthz.usecase.macrosearch.MacroDetailOutputData;
 
 public class RecipeDetailInteractor implements RecipeDetailInputBoundary {
     private final RecipeDetailGateway gateway;
