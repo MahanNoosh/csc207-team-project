@@ -8,6 +8,9 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import tut0301.group1.healthz.dataaccess.API.OAuth.OAuth;
+import tut0301.group1.healthz.dataaccess.API.OAuth.OAuthDataAccessObject;
+import tut0301.group1.healthz.dataaccess.config.EnvConfig;
 import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
 
@@ -70,9 +73,9 @@ public class FatSecretRecipeSearchGateway implements RecipeSearchGateway {
         String clientId = EnvConfig.getClientId();
         String clientSecret = EnvConfig.getClientSecret();
 
-        FatSecretOAuthTokenFetcher fetcher = new FatSecretOAuthTokenFetcher(clientId, clientSecret);
+        OAuth fetcher = new OAuth(clientId, clientSecret);
         String raw = fetcher.getAccessTokenRaw("basic");
-        String token = FatSecretOAuthTokenFetcher.TokenParser.extractAccessToken(raw);
+        String token = OAuthDataAccessObject.extractAccessToken(raw);
 
         if (token == null) {
             throw new IOException("Unable to retrieve FatSecret access token");
