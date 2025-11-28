@@ -63,6 +63,7 @@ public class SettingsView {
         root.getStylesheets().add("root");
 
         // left sidebar
+        // TODO: get actual user credentials
         Sidebar sidebar = new Sidebar(navigator, "Settings", "Bob Dylan", "bob.dylan@gmail.com");
         root.setLeft(sidebar);
 

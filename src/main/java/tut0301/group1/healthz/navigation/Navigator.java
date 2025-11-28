@@ -498,7 +498,17 @@ public class Navigator {
      * Navigate to Food Log Page
      */
     public void showFoodLog() {
-        FoodLogView foodLogView = new FoodLogView();
+        MacroSearchViewModel macroSearchViewModel = new MacroSearchViewModel();
+        SearchFoodOutputBoundary presenter = new FoodSearchPresenter(macroSearchViewModel);
+        FoodSearchDataAccessInterface gateway = new FatSecretFoodSearchDataAccessObject();
+        SearchFoodInputBoundary interactor = new SearchFoodInteractor(gateway, presenter);
+        MacroSearchController controller = new MacroSearchController(interactor);
+
+        macroSearchViewModel.setLoading(false);
+        macroSearchViewModel.setMessage(null);
+        macroSearchViewModel.setResults(java.util.List.of());
+
+        FoodLogView foodLogView = new FoodLogView(this, controller, macroSearchViewModel);
 
         primaryStage.setScene(foodLogView.getScene());
         primaryStage.setTitle("HealthZ - Food Log");

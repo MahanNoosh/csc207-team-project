@@ -153,23 +153,20 @@ public class Sidebar extends VBox {
 
         // Create navigation buttons
         Button dashboardBtn = createNavButton("Dashboard", "📊", "Dashboard");
-        Button recipesBtn = createNavButton("Recipe Search", "🔍", "Recipe Search");
-        Button favoritesBtn = createNavButton("Favorites", "♥️", "Favorites");
-        Button mealTrackerBtn = createNavButton("Meal Tracker", "🍴", "Meal Tracker");
+        Button activityBtn = createNavButton("Activity Log", "🔍", "Activity Log");
+        Button foodBtn = createNavButton("Food Log", "♥️", "Food Log");
         Button settingsBtn = createNavButton("Settings", "⚙️", "Settings");
 
         // Store buttons for external access
         navButtons.put("Dashboard", dashboardBtn);
-        navButtons.put("Recipe Search", recipesBtn);
-        navButtons.put("Favorites", favoritesBtn);
-        navButtons.put("Meal Tracker", mealTrackerBtn);
+        navButtons.put("Activity Log", activityBtn);
+        navButtons.put("Food Log", foodBtn);
         navButtons.put("Settings", settingsBtn);
 
         navBox.getChildren().addAll(
                 dashboardBtn,
-                recipesBtn,
-                favoritesBtn,
-                mealTrackerBtn,
+                activityBtn,
+                foodBtn,
                 settingsBtn
         );
 
