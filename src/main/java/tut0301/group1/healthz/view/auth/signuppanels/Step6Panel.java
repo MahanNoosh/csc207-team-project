@@ -109,6 +109,7 @@ public class Step6Panel {
         button.setPrefWidth(150);
         button.setPrefHeight(50);
         button.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 14));
+        button.setPadding(new Insets(10, 10, 10, 10));
 
         // Style based on selection
         updateSexButtonStyle(button, isSelected);
@@ -127,7 +128,7 @@ public class Step6Panel {
     private void updateSexButtonStyle(RadioButton button, boolean isSelected) {
         if (isSelected) {
             button.setStyle(
-                    "-fx-background-color: #059669; " +
+                    "-fx-background-color: #27692A; " +
                             "-fx-text-fill: white; " +
                             "-fx-background-radius: 25px; " +
                             "-fx-cursor: hand; " +
@@ -135,8 +136,8 @@ public class Step6Panel {
             );
         } else {
             button.setStyle(
-                    "-fx-background-color: #D1FAE5; " +
-                            "-fx-text-fill: #059669; " +
+                    "-fx-background-color: #B6CDBE; " +
+                            "-fx-text-fill: black; " +
                             "-fx-background-radius: 25px; " +
                             "-fx-cursor: hand; " +
                             "-fx-font-weight: 600;"
@@ -178,14 +179,14 @@ public class Step6Panel {
      * Height field with unit label
      */
     private VBox createHeightField() {
-        return createFieldWithUnit("Height", "175", "cm");
+        return createFieldWithUnit("Height", "Enter your height", "cm");
     }
 
     /**
      * Weight field with unit label
      */
     private VBox createWeightField() {
-        VBox section = createFieldWithUnit("Weight", "82", "kg");
+        VBox section = createFieldWithUnit("Weight", "Enter your weight", "kg");
 
         // Add listener to auto-fill goal weight if goal is "Maintain Weight"
         weightField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -202,7 +203,7 @@ public class Step6Panel {
      * Goal Weight field with unit label
      */
     private VBox createGoalWeightField() {
-        return createFieldWithUnit("Goal Weight", "82", "kg");
+        return createFieldWithUnit("Goal Weight", "Enter your goal weight", "kg");
     }
 
     /**
@@ -226,7 +227,8 @@ public class Step6Panel {
         );
         fieldBox.setPrefHeight(55);
 
-        TextField textField = new TextField(defaultValue);
+        TextField textField = new TextField();
+        textField.setPromptText(defaultValue);
         textField.setStyle(
                 "-fx-background-color: transparent; " +
                         "-fx-border-color: transparent; " +
@@ -244,7 +246,6 @@ public class Step6Panel {
 
         fieldBox.getChildren().addAll(textField, unitLabel);
 
-        // Store reference to field for data collection
         if (labelText.equals("Height")) {
             heightField = textField;
         } else if (labelText.equals("Weight")) {

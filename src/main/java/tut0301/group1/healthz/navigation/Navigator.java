@@ -59,6 +59,7 @@ import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesOutputBoundary
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
 import tut0301.group1.healthz.view.auth.SignupView;
+import tut0301.group1.healthz.view.auth.LogoutView;
 import tut0301.group1.healthz.view.auth.signuppanels.EmailVerificationView;
 import tut0301.group1.healthz.view.macro.SingleMacroPage;
 import tut0301.group1.healthz.view.macro.MacroSearchView;
@@ -67,6 +68,8 @@ import tut0301.group1.healthz.view.settings.SettingsView;
 import tut0301.group1.healthz.view.dashboard.DashboardView;
 import tut0301.group1.healthz.view.recipe.RecipeSearchView;
 import tut0301.group1.healthz.view.recipe.FavoriteRecipeView;
+import tut0301.group1.healthz.view.nutrition.FoodLogView;
+import tut0301.group1.healthz.view.activity.ActivityLogView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
@@ -315,7 +318,7 @@ public class Navigator {
      * Navigate to Settings page
      */
     public void showSettings() {
-        SettingsView settingsView = new SettingsView();
+        SettingsView settingsView = new SettingsView(this);
 
         // Switch to settings scene
         primaryStage.setScene(settingsView.getScene());
@@ -365,6 +368,9 @@ public class Navigator {
         showDashboard();
     }
 
+    /**
+     * Navigate to Email Verification
+     */
     public void showEmailVerification(SignupView.SignupData signupData) {
         // Remember signup data so retry helper can use it
         this.pendingSignupData = signupData;
@@ -414,7 +420,9 @@ public class Navigator {
         alert.showAndWait();
     }
 
-
+    /**
+     * Navigate to Log In Page
+     */
     public void showLogin() {
         LoginView loginView = new LoginView();
 
@@ -474,6 +482,47 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Log In");
     }
 
+    /**
+     * Navigate to Log Out Page
+     */
+    public void showLogout() {
+        LogoutView logoutView = new LogoutView();
+
+        setupLogoutNavigation(logoutView);
+
+        primaryStage.setScene(logoutView.getScene());
+        primaryStage.setTitle("HealthZ - Log Out");
+    }
+
+    /**
+     * Navigate to Food Log Page
+     */
+    public void showFoodLog() {
+        MacroSearchViewModel macroSearchViewModel = new MacroSearchViewModel();
+        SearchFoodOutputBoundary presenter = new FoodSearchPresenter(macroSearchViewModel);
+        FoodSearchDataAccessInterface gateway = new FatSecretFoodSearchDataAccessObject();
+        SearchFoodInputBoundary interactor = new SearchFoodInteractor(gateway, presenter);
+        MacroSearchController controller = new MacroSearchController(interactor);
+
+        macroSearchViewModel.setLoading(false);
+        macroSearchViewModel.setMessage(null);
+        macroSearchViewModel.setResults(java.util.List.of());
+
+        FoodLogView foodLogView = new FoodLogView(this, controller, macroSearchViewModel);
+
+        primaryStage.setScene(foodLogView.getScene());
+        primaryStage.setTitle("HealthZ - Food Log");
+    }
+
+    /**
+     * Navigate to Activity Log Page
+     */
+    public void showActivityLog() {
+        ActivityLogView activityLogView = new ActivityLogView();
+
+        primaryStage.setScene(activityLogView.getScene());
+        primaryStage.setTitle("HealthZ - Activity Log");
+    }
 
     /**
      * Go back to previous page
@@ -654,6 +703,27 @@ public class Navigator {
             System.out.println("Navigating to Activity Log...");
             // TODO: showActivityTracker();
         });
+
+        // Log out Button
+        dashboardView.getLogOutButton().setOnAction(e -> {
+            System.out.println("Navigating to Log out...");
+            showLogout();
+        });
+    }
+
+    /**
+     * Setup navigation for Log Out page
+     */
+    private void setupLogoutNavigation(LogoutView logoutView) {
+        logoutView.getLogoutButton().setOnAction(e -> {
+            System.out.println("Logging Out...");
+            // TODO: implement log out
+        });
+
+        logoutView.getCancelButton().setOnAction(e -> {
+            System.out.println("Returning to Dashboard...");
+            showDashboard();
+        });
     }
 
     /**
@@ -663,6 +733,11 @@ public class Navigator {
         recipeSearchView.getFavoriteRecipesButton().setOnAction(e -> {
             System.out.println("Navigating to favorite recipes page...");
             // TODO: connect to recipe detail
+        });
+
+        recipeSearchView.getHealthzButton().setOnAction(e -> {
+            System.out.println("Navigating to Dashboard...");
+            showDashboard();
         });
     }
 
@@ -675,5 +750,6 @@ public class Navigator {
             showRecipeSearch();
         });
     }
+
 
 }
