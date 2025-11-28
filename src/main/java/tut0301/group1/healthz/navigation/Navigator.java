@@ -68,6 +68,8 @@ import tut0301.group1.healthz.view.settings.SettingsView;
 import tut0301.group1.healthz.view.dashboard.DashboardView;
 import tut0301.group1.healthz.view.recipe.RecipeSearchView;
 import tut0301.group1.healthz.view.recipe.FavoriteRecipeView;
+import tut0301.group1.healthz.view.nutrition.FoodLogView;
+import tut0301.group1.healthz.view.activity.ActivityLogView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
@@ -316,7 +318,7 @@ public class Navigator {
      * Navigate to Settings page
      */
     public void showSettings() {
-        SettingsView settingsView = new SettingsView();
+        SettingsView settingsView = new SettingsView(this);
 
         // Switch to settings scene
         primaryStage.setScene(settingsView.getScene());
@@ -366,6 +368,9 @@ public class Navigator {
         showDashboard();
     }
 
+    /**
+     * Navigate to Email Verification
+     */
     public void showEmailVerification(SignupView.SignupData signupData) {
         // Remember signup data so retry helper can use it
         this.pendingSignupData = signupData;
@@ -415,7 +420,9 @@ public class Navigator {
         alert.showAndWait();
     }
 
-
+    /**
+     * Navigate to Log In Page
+     */
     public void showLogin() {
         LoginView loginView = new LoginView();
 
@@ -475,6 +482,9 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Log In");
     }
 
+    /**
+     * Navigate to Log Out Page
+     */
     public void showLogout() {
         LogoutView logoutView = new LogoutView();
 
@@ -482,6 +492,26 @@ public class Navigator {
 
         primaryStage.setScene(logoutView.getScene());
         primaryStage.setTitle("HealthZ - Log Out");
+    }
+
+    /**
+     * Navigate to Food Log Page
+     */
+    public void showFoodLog() {
+        FoodLogView foodLogView = new FoodLogView();
+
+        primaryStage.setScene(foodLogView.getScene());
+        primaryStage.setTitle("HealthZ - Food Log");
+    }
+
+    /**
+     * Navigate to Activity Log Page
+     */
+    public void showActivityLog() {
+        ActivityLogView activityLogView = new ActivityLogView();
+
+        primaryStage.setScene(activityLogView.getScene());
+        primaryStage.setTitle("HealthZ - Activity Log");
     }
 
     /**
