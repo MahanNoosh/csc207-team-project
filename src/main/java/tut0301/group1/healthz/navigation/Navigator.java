@@ -59,6 +59,7 @@ import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesOutputBoundary
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
 import tut0301.group1.healthz.view.auth.SignupView;
+import tut0301.group1.healthz.view.auth.LogoutView;
 import tut0301.group1.healthz.view.auth.signuppanels.EmailVerificationView;
 import tut0301.group1.healthz.view.macro.SingleMacroPage;
 import tut0301.group1.healthz.view.macro.MacroSearchView;
@@ -474,6 +475,14 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Log In");
     }
 
+    public void showLogout() {
+        LogoutView logoutView = new LogoutView();
+
+        setupLogoutNavigation(logoutView);
+
+        primaryStage.setScene(logoutView.getScene());
+        primaryStage.setTitle("HealthZ - Log Out");
+    }
 
     /**
      * Go back to previous page
@@ -654,6 +663,27 @@ public class Navigator {
             System.out.println("Navigating to Activity Log...");
             // TODO: showActivityTracker();
         });
+
+        // Log out Button
+        dashboardView.getLogOutButton().setOnAction(e -> {
+            System.out.println("Navigating to Log out...");
+            showLogout();
+        });
+    }
+
+    /**
+     * Setup navigation for Log Out page
+     */
+    private void setupLogoutNavigation(LogoutView logoutView) {
+        logoutView.getLogoutButton().setOnAction(e -> {
+            System.out.println("Logging Out...");
+            // TODO: implement log out
+        });
+
+        logoutView.getCancelButton().setOnAction(e -> {
+            System.out.println("Returning to Dashboard...");
+            showDashboard();
+        });
     }
 
     /**
@@ -680,5 +710,6 @@ public class Navigator {
             showRecipeSearch();
         });
     }
+
 
 }

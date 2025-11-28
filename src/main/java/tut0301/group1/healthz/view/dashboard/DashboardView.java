@@ -42,6 +42,7 @@ public class DashboardView {
     private Button macrosButton;
     private Button foodLogButton;
     private Button activityLogButton;
+    private Button logOutButton;
 
     /**
      * Constructor
@@ -119,8 +120,8 @@ public class DashboardView {
         logoLabel.setTextFill(Color.web("#27692A"));
 
         // External link icon
-        Button externalLink = createIconButton("↗", 20);
-        externalLink.setOnAction(e -> System.out.println("External link clicked"));
+        logOutButton = createIconButton("↗", 20);
+        logOutButton.setOnAction(e -> System.out.println("Log Out clicked"));
 
         // Step goal notification with bell
         HBox stepGoalBox = new HBox(10);
@@ -143,7 +144,7 @@ public class DashboardView {
         stepGoalBox.getChildren().addAll(bellIcon, stepGoalText);
 
         topRow.getChildren().addAll(profileCircle, welcomeBox, spacer1,
-                settingsButton, logoLabel, externalLink, stepGoalBox);
+                settingsButton, logoLabel, logOutButton, stepGoalBox);
 
         // Bottom row: Navigation bar
         HBox navBar = new HBox(40);
@@ -680,5 +681,9 @@ public class DashboardView {
      */
     public Button getActivityLogButton() { return activityLogButton; }
 
+    /**
+     * Get the Log Out button (for navigation logic)
+     */
+    public Button getLogOutButton() { return logOutButton; }
 
 }
