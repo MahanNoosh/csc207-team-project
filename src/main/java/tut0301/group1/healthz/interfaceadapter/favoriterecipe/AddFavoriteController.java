@@ -11,7 +11,7 @@ public class AddFavoriteController {
     }
 
     public void addFavorite(String userId, String recipeId) throws Exception {
-        System.out.println("🎮 Controller: Adding favorite");
+        System.out.println("Controller: Adding favorite");
         addFavoriteInteractor.addFavorite(userId, recipeId);
     }
 }
