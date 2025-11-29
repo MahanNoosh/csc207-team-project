@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.AddFavoriteController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
@@ -33,12 +34,18 @@ public class RecipeSearchView {
     private final RecipeSearchViewModel viewModel;
     private final Navigator navigator;
 
+    private final AddFavoriteController addFavoriteController;
+    private final String userId;
+
     public RecipeSearchView(RecipeSearchController controller,
                             RecipeSearchViewModel viewModel,
-                            Navigator navigator) {
+                            Navigator navigator, AddFavoriteController addFavoriteController,
+                            String userId) {
         this.controller = controller;
         this.viewModel = viewModel;
         this.navigator = navigator;
+        this.addFavoriteController = addFavoriteController;
+        this.userId = userId;
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
@@ -373,7 +380,7 @@ public class RecipeSearchView {
         imageContainer.getChildren().add(placeholder);
 
         // Favorite button
-        Button favoriteBtn = new Button("♥");
+        Button favoriteBtn = new Button("❤️");
         favoriteBtn.setFont(Font.font(24));
         favoriteBtn.setTextFill(Color.WHITE);
         favoriteBtn.setPrefSize(50, 50);
@@ -387,7 +394,7 @@ public class RecipeSearchView {
 
         favoriteBtn.setOnAction(e -> {
             e.consume();
-            handleFavorite(result.recipeName());
+            handleFavorite(result);
         });
 
         imageContainer.getChildren().add(favoriteBtn);
@@ -505,14 +512,32 @@ public class RecipeSearchView {
     /**
      * Handle favorite button click
      */
-    private void handleFavorite(String recipeName) {
-        System.out.println("Favorited: " + recipeName);
-        // TODO: Add/remove from favorites
+    private void handleFavorite(RecipeSearchResult result) {
+        System.out.println("➕ Adding to favorites: " + result.recipeName());
 
+        if (addFavoriteController == null || userId == null) {
+            System.err.println("❌ Favorites not configured");
+            showAlert("Error", "Unable to add to favorites. Please sign in.");
+            return;
+        }
+
+        try {
+            // Add to favorites using the controller
+            addFavoriteController.addFavorite(userId, result.recipeId());
+
+            showAlert("Added to Favorites", result.recipeName() + " has been added to your favorites! ♥");
+
+        } catch (Exception e) {
+            System.err.println("❌ Failed to add favorite: " + e.getMessage());
+            showAlert("Error", "Failed to add to favorites: " + e.getMessage());
+        }
+    }
+
+    private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Added to Favorites");
+        alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(recipeName + " added to your favorites!");
+        alert.setContentText(message);
         alert.showAndWait();
     }
 
