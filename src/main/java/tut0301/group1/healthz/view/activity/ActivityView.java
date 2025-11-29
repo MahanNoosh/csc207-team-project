@@ -244,7 +244,7 @@ public class ActivityView {
             selectedActivity = newVal;
             if (selectedActivity != null && !durationField.getText().isEmpty()) {
                 try {
-                    searchField.setText(newVal);
+                    searchField.setText(selectedActivity);
                     controller.onDurationOrActivityChange(selectedActivity, durationField.getText(), currentProfile);
                     caloriesField.setText(String.format("%.1f", exerciseListViewModel.getCurrentCalories()));
                 } catch (Exception e) {
