@@ -1,13 +1,16 @@
-package tut0301.group1.healthz.usecase.activity;
+package tut0301.group1.healthz.usecase.activity.caloriecalculator;
 
-public class ActivityLogInputData {
+import tut0301.group1.healthz.entities.Dashboard.Profile;
+
+public class CalorieCalculatorInputData {
     private final String exerciseName;
     private final int durationMinutes;
 
-    public  ActivityLogInputData(String exerciseName, int durationMinutes) {
+    public CalorieCalculatorInputData(String exerciseName, int durationMinutes) {
         this.exerciseName = exerciseName;
         this.durationMinutes = durationMinutes;
     }
+
     public String getExerciseName() {
         return exerciseName;
     }
