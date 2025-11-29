@@ -553,7 +553,7 @@ public class Navigator {
      * Navigate to Activity Log Page
      */
     public void showActivityLog() {
-        ActivityLogView activityLogView = new ActivityLogView();
+        ActivityLogView activityLogView = new ActivityLogView(this);
 
         primaryStage.setScene(activityLogView.getScene());
         primaryStage.setTitle("HealthZ - Activity Log");
@@ -736,7 +736,7 @@ public class Navigator {
         // Activity Log button
         dashboardView.getActivityLogButton().setOnAction(e -> {
             System.out.println("Navigating to Activity Log...");
-            // TODO: showActivityTracker();
+            showActivityLog();
         });
 
         // Log out Button
