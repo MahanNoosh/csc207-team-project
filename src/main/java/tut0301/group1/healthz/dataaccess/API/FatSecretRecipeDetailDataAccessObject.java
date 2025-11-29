@@ -7,11 +7,11 @@ import tut0301.group1.healthz.entities.nutrition.RecipeDetails;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
 import static tut0301.group1.healthz.dataaccess.API.RecipeJsonParser.parseRecipeDetails;
 
-public class FatSecretRecipeDetailGateway implements RecipeDetailGateway {
-    private final FatSecretRecipeSearchGateway recipeGateway;
+public class FatSecretRecipeDetailDataAccessObject implements RecipeDetailGateway {
+    private final FatSecretRecipeSearchDataAccessObject recipeGateway;
 
-    public FatSecretRecipeDetailGateway() {
-        this.recipeGateway = new FatSecretRecipeSearchGateway();
+    public FatSecretRecipeDetailDataAccessObject() {
+        this.recipeGateway = new FatSecretRecipeSearchDataAccessObject();
     }
 
     @Override
@@ -32,7 +32,6 @@ public class FatSecretRecipeDetailGateway implements RecipeDetailGateway {
         if (token == null) {
             throw new Exception("Unable to retrieve FatSecret access token");
         }
-
         return token;
     }
 }

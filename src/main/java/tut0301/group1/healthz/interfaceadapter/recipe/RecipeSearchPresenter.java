@@ -26,6 +26,22 @@ public class RecipeSearchPresenter implements RecipeSearchOutputBoundary {
         viewModel.setLoading(false);
     }
 
+    @Override
+    public void presentResults(List<RecipeSearchResult> results) {
+        System.out.println("Presenter: Presenting " + results.size() + " results");
+        viewModel.setResults(results);
+        viewModel.setMessage(null);
+        viewModel.setLoading(false);
+    }
+
+    @Override
+    public void presentError(String errorMessage) {
+        System.err.println("Presenter: Presenting error: " + errorMessage);
+        viewModel.setMessage(errorMessage);
+        viewModel.setResults(java.util.List.of());
+        viewModel.setLoading(false);
+    }
+
     public RecipeSearchViewModel getViewModel() {
         return viewModel;
     }

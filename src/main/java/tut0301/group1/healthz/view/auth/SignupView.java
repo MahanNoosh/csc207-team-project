@@ -339,9 +339,7 @@ public class SignupView {
         System.out.println("Name: " + signupData.fullName);
         System.out.println("Email: " + signupData.email);
         System.out.println("Goal: " + signupData.goal);
-        // ... etc
 
-        // TODO: Call SignupController here
         var signupVM = new SignupViewModel();
         var signupPresenter = new SignupPresenter(this, signupVM);
         String url  = System.getenv("SUPABASE_URL");
@@ -356,6 +354,7 @@ public class SignupView {
         SignupController signupController = new SignupController(signupUC, signupPresenter);
         signupController.signup(signupData.email, signupData.password, signupData.confirmPassword, signupData.fullName);
 
+        // TODO: show only when successful sign up (email can be wrong)
         Navigator.getInstance().showEmailVerification(signupData);
 
         showSuccess("Account created successfully!");
