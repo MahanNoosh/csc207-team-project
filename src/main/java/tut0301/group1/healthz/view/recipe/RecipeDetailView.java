@@ -12,7 +12,9 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import tut0301.group1.healthz.entities.nutrition.RecipeDetails;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.AddFavoriteController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
@@ -31,12 +33,14 @@ public class RecipeDetailView {
     private Button backButton;
     private Button favoriteButton;
 
-    // Clean Architecture components
     private final RecipeDetailController controller;
     private final RecipeDetailViewModel viewModel;
     private final Navigator navigator;
     private final long recipeId;
     private String currentRecipeName;
+
+    private final AddFavoriteController addFavoriteController;
+    private final String userId;
 
     /**
      * Constructor with Clean Architecture components
@@ -44,11 +48,18 @@ public class RecipeDetailView {
     public RecipeDetailView(long recipeId,
                             RecipeDetailController controller,
                             RecipeDetailViewModel viewModel,
-                            Navigator navigator) {
+                            Navigator navigator,
+                            AddFavoriteController addFavoriteController,
+                            String userId) {
         this.recipeId = recipeId;
         this.controller = controller;
         this.viewModel = viewModel;
         this.navigator = navigator;
+        this.addFavoriteController = addFavoriteController;
+        this.userId = userId;
+
+        this.backButton = new Button("⬅️");
+        this.favoriteButton = new Button("♥");
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
@@ -61,23 +72,31 @@ public class RecipeDetailView {
      * Load recipe details using controller
      */
     private void loadRecipeDetails() {
+        System.out.println("🔍 RecipeDetailView: Loading recipe ID: " + recipeId);
+
+        // Listen for changes to the ViewModel
+        viewModel.loadingProperty().addListener((obs, wasLoading, isNowLoading) -> {
+            if (wasLoading && !isNowLoading) {
+                // Loading finished
+                System.out.println("Loading finished, updating UI");
+                updateUIFromViewModel();
+            }
+        });
+
+        // Start loading in background
         Task<Void> loadTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
                 controller.fetch(recipeId);
-                Thread.sleep(200); // Wait for presenter
                 return null;
             }
 
             @Override
-            protected void succeeded() {
-                updateUIFromViewModel();
-            }
-
-            @Override
             protected void failed() {
+                System.err.println("Load task failed: " + getException().getMessage());
+                getException().printStackTrace();
                 Platform.runLater(() -> {
-                    showError("Failed to load recipe details");
+                    showError("Failed to load recipe: " + getException().getMessage());
                 });
             }
         };
@@ -98,6 +117,10 @@ public class RecipeDetailView {
             RecipeDetails details = viewModel.getDetails();
             if (details != null) {
                 displayRecipeDetails(details);
+
+                if (backButton != null) {
+                    backButton.setOnAction(e -> navigator.showRecipeSearch());
+                }
             } else {
                 showError("No recipe details available");
             }
@@ -143,21 +166,22 @@ public class RecipeDetailView {
         errorLabel.setTextFill(Color.web("#DC2626"));
         errorLabel.setWrapText(true);
         errorLabel.setMaxWidth(600);
-        errorLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        errorLabel.setTextAlignment(TextAlignment.CENTER);
 
-        Button retryButton = new Button("Retry");
-        retryButton.setFont(Font.font("Inter", FontWeight.BOLD, 18));
-        retryButton.setPrefHeight(50);
-        retryButton.setPrefWidth(150);
-        retryButton.setStyle(
+        Button searchButton = new Button("Return to Search Page");
+        searchButton.setFont(Font.font("Inter", FontWeight.BOLD, 18));
+        searchButton.setPadding(new Insets(10));
+        searchButton.setPrefHeight(50);
+        searchButton.setPrefWidth(150);
+        searchButton.setStyle(
                 "-fx-background-color: #27692A; " +
                         "-fx-text-fill: white; " +
                         "-fx-background-radius: 25px; " +
                         "-fx-cursor: hand;"
         );
-        retryButton.setOnAction(e -> loadRecipeDetails());
+        searchButton.setOnAction(e -> navigator.showRecipeSearch());
 
-        errorBox.getChildren().addAll(errorIcon, errorLabel, retryButton);
+        errorBox.getChildren().addAll(errorIcon, errorLabel, searchButton);
         contentContainer.getChildren().add(errorBox);
     }
 
@@ -209,7 +233,6 @@ public class RecipeDetailView {
         header.setStyle("-fx-background-color: white;");
 
         // Back button
-        backButton = new Button("←");
         backButton.setFont(Font.font("Inter", FontWeight.BOLD, 32));
         backButton.setTextFill(Color.web("#111827"));
         backButton.setPrefSize(50, 50);
@@ -244,7 +267,7 @@ public class RecipeDetailView {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         // Favorite button
-        favoriteButton = new Button("♥");
+        favoriteButton = new Button("❤️");
         favoriteButton.setFont(Font.font(32));
         favoriteButton.setTextFill(Color.WHITE);
         favoriteButton.setPrefSize(70, 70);
@@ -254,7 +277,7 @@ public class RecipeDetailView {
                         "-fx-cursor: hand;"
         );
 
-        favoriteButton.setOnAction(e -> handleFavorite());
+        // favoriteButton.setOnAction(e -> handleFavorite(details));
 
         header.getChildren().addAll(backButton, title, spacer, favoriteButton);
         return header;
@@ -486,14 +509,35 @@ public class RecipeDetailView {
     /**
      * Handle favorite button click
      */
-    private void handleFavorite() {
-        System.out.println("Favorited: " + currentRecipeName);
-        // TODO: Add/remove from favorites using proper use case
+    /*
+    private void handleFavorite(RecipeDetails result) {
+        System.out.println("➕ Adding to favorites: " + result.recipeName());
 
+        if (addFavoriteController == null || userId == null) {
+            System.err.println("❌ Favorites not configured");
+            showAlert("Error", "Unable to add to favorites. Please sign in.");
+            return;
+        }
+
+        try {
+            // Add to favorites using the controller
+            addFavoriteController.addFavorite(userId, result.recipeName());
+
+            showAlert("Added to Favorites", result.recipeName() + " has been added to your favorites! ♥");
+
+        } catch (Exception e) {
+            System.err.println("❌ Failed to add favorite: " + e.getMessage());
+            showAlert("Error", "Failed to add to favorites: " + e.getMessage());
+        }
+    }
+
+     */
+
+    private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Added to Favorites");
+        alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(currentRecipeName + " added to your favorites!");
+        alert.setContentText(message);
         alert.showAndWait();
     }
 
@@ -509,4 +553,5 @@ public class RecipeDetailView {
     public Button getFavoriteButton() {
         return favoriteButton;
     }
+
 }

@@ -22,6 +22,7 @@ import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeView
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Favorite Recipes View
@@ -170,7 +171,13 @@ public class FavoriteRecipeView {
         VBox titleBox = new VBox(5);
         titleBox.setPadding(new Insets(0, 0, 0, 10));
 
-        Label title = new Label(username + "'s Favorite Recipes");
+        String formattedName = Arrays.stream(username.split(" "))
+                .map(word -> word.isEmpty()
+                        ? word
+                        : word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
+
+        Label title = new Label(formattedName + "'s Favorite Recipes");
         title.setFont(Font.font("Inter", FontWeight.BOLD, 48));
         title.setTextFill(Color.web("#111827"));
 

@@ -92,9 +92,21 @@ public class RecipeJsonParser {
             recipeIngredients.add(recipeIngredient);
         }
 
-        Optional<Integer> prepTime = Integer.valueOf(recipe.getString("preparation_time_min")).describeConstable();
-        Optional<Integer> cookTime = Integer.valueOf(recipe.getString("cooking_time_min")).describeConstable();
-        Optional<Integer> servings = Integer.valueOf(recipe.getString("number_of_servings")).describeConstable();
+        Optional<Integer> prepTime =
+                recipe.has("preparation_time_min")
+                        ? Optional.of(recipe.getInt("preparation_time_min"))
+                        : Optional.empty();
+
+        Optional<Integer> cookTime =
+                recipe.has("cooking_time_min")
+                        ? Optional.of(recipe.getInt("cooking_time_min"))
+                        : Optional.empty();
+
+        Optional<Integer> servings =
+                recipe.has("number_of_servings")
+                        ? Optional.of(recipe.getInt("number_of_servings"))
+                        : Optional.empty();
+
         JSONObject recipeImages = recipe.getJSONObject("recipe_images");
         JSONArray recipeImage = recipeImages.getJSONArray("recipe_image");
         String imageUrl = recipeImage.get(0).toString();

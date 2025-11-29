@@ -6,11 +6,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.AddFavoriteController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
@@ -27,17 +31,24 @@ public class RecipeSearchView {
     private FlowPane recipesGrid;
     private Button favoriteRecipesButton;
     private Label statusLabel;
+    private Button healthzButton;
 
     private final RecipeSearchController controller;
     private final RecipeSearchViewModel viewModel;
     private final Navigator navigator;
 
+    private final AddFavoriteController addFavoriteController;
+    private final String userId;
+
     public RecipeSearchView(RecipeSearchController controller,
                             RecipeSearchViewModel viewModel,
-                            Navigator navigator) {
+                            Navigator navigator, AddFavoriteController addFavoriteController,
+                            String userId) {
         this.controller = controller;
         this.viewModel = viewModel;
         this.navigator = navigator;
+        this.addFavoriteController = addFavoriteController;
+        this.userId = userId;
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
@@ -67,7 +78,7 @@ public class RecipeSearchView {
      * Create header with title, search, and filters
      */
     private VBox createHeader() {
-        VBox header = new VBox(20);
+        VBox header = new VBox(10);
         header.setPadding(new Insets(40, 60, 30, 60));
         header.setStyle("-fx-background-color: white;");
 
@@ -89,9 +100,10 @@ public class RecipeSearchView {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Label healthzLabel = new Label("HealthZ");
-        healthzLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
-        healthzLabel.setTextFill(Color.web("#27692A"));
+        healthzButton = new Button("Healthz");
+        healthzButton.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        healthzButton.setTextFill(Color.web("#27692A"));
+        healthzButton.setStyle("-fx-background-color: transparent;");
 
         Circle profileCircle = new Circle(25);
         profileCircle.setFill(Color.web("#D1D5DB"));
@@ -109,7 +121,7 @@ public class RecipeSearchView {
                         "-fx-cursor: hand;"
         );
 
-        topRow.getChildren().addAll(titleBox, spacer, healthzLabel, profileCircle, favoriteRecipesButton);
+        topRow.getChildren().addAll(titleBox, spacer, healthzButton, profileCircle, favoriteRecipesButton);
 
         VBox searchBox = createSearchAndFilters();
 
@@ -121,7 +133,7 @@ public class RecipeSearchView {
      * Create search bar and filter chips
      */
     private VBox createSearchAndFilters() {
-        VBox container = new VBox(20);
+        VBox container = new VBox(10);
         container.setPadding(new Insets(20, 0, 0, 0));
         container.setStyle(
                 "-fx-background-color: #F9FAFB; " +
@@ -365,13 +377,33 @@ public class RecipeSearchView {
                         "-fx-background-radius: 15px 15px 0 0;"
         );
 
-        // Placeholder
-        Label placeholder = new Label("🍽");
-        placeholder.setFont(Font.font(80));
-        imageContainer.getChildren().add(placeholder);
+        String imageUrl = result.imageUrl();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                ImageView recipeImage = new ImageView(new Image(imageUrl));
+                recipeImage.setFitWidth(imageContainer.getPrefWidth());
+                recipeImage.setFitHeight(280);
+                recipeImage.setPreserveRatio(true);
+                recipeImage.setSmooth(true);
+
+                Rectangle clip = new Rectangle(280, 280);
+                clip.setArcWidth(15);
+                clip.setArcHeight(15);
+                recipeImage.setClip(clip);
+                imageContainer.getChildren().add(recipeImage);
+            } catch (Exception e) {
+                Label placeholder = new Label("🍽");
+                placeholder.setFont(Font.font(80));
+                imageContainer.getChildren().add(placeholder);
+            }
+        } else {
+            Label placeholder = new Label("🍽");
+            placeholder.setFont(Font.font(120));
+            imageContainer.getChildren().add(placeholder);
+        }
 
         // Favorite button
-        Button favoriteBtn = new Button("♥");
+        Button favoriteBtn = new Button("❤️");
         favoriteBtn.setFont(Font.font(24));
         favoriteBtn.setTextFill(Color.WHITE);
         favoriteBtn.setPrefSize(50, 50);
@@ -385,7 +417,7 @@ public class RecipeSearchView {
 
         favoriteBtn.setOnAction(e -> {
             e.consume();
-            handleFavorite(result.recipeName());
+            handleFavorite(result);
         });
 
         imageContainer.getChildren().add(favoriteBtn);
@@ -400,7 +432,7 @@ public class RecipeSearchView {
         nameLabel.setTextFill(Color.web("#111827"));
         nameLabel.setWrapText(true);
 
-        // Ingredients preview (first 3 ingredients)
+        // Ingredients preview
         String ingredientsText = "";
         if (result.ingredientNames() != null && !result.ingredientNames().isEmpty()) {
             int count = Math.min(3, result.ingredientNames().size());
@@ -453,17 +485,6 @@ public class RecipeSearchView {
     }
 
     /**
-     * OLD: Create recipe card (for sample data)
-     */
-    private VBox createRecipeCard(String name, String ingredients,
-                                  String calories, String time, String imageUrl) {
-        // Keep your existing implementation (not used anymore but won't hurt)
-        VBox card = new VBox(15);
-        // ... (same as before)
-        return card;
-    }
-
-    /**
      * Handle filter change
      */
     private void handleFilterChange() {
@@ -503,14 +524,32 @@ public class RecipeSearchView {
     /**
      * Handle favorite button click
      */
-    private void handleFavorite(String recipeName) {
-        System.out.println("Favorited: " + recipeName);
-        // TODO: Add/remove from favorites
+    private void handleFavorite(RecipeSearchResult result) {
+        System.out.println("Adding to favorites: " + result.recipeName());
 
+        if (addFavoriteController == null || userId == null) {
+            System.err.println("Favorites not configured");
+            showAlert("Error", "Unable to add to favorites. Please sign in.");
+            return;
+        }
+
+        try {
+            // Add to favorites using the controller
+            addFavoriteController.addFavorite(userId, result.recipeId());
+
+            showAlert("Added to Favorites", result.recipeName() + " has been added to your favorites! ♥");
+
+        } catch (Exception e) {
+            System.err.println("❌ Failed to add favorite: " + e.getMessage());
+            showAlert("Error", "Failed to add to favorites: " + e.getMessage());
+        }
+    }
+
+    private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Added to Favorites");
+        alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(recipeName + " added to your favorites!");
+        alert.setContentText(message);
         alert.showAndWait();
     }
 
@@ -528,5 +567,9 @@ public class RecipeSearchView {
 
     public Button getFavoriteRecipesButton() {
         return favoriteRecipesButton;
+    }
+
+    public Button getHealthzButton() {
+        return healthzButton;
     }
 }

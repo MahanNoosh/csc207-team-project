@@ -47,8 +47,23 @@ public class SignupView {
 
     public SignupView() {
         signupData = new SignupData();
-        root = createMainLayout();
-        scene = new Scene(root, 900, 700);
+        BorderPane mainLayout = createMainLayout();
+
+        ScrollPane scrollPane = new ScrollPane(mainLayout);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(false);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setStyle(
+                "-fx-background: #F8FBF5; " +
+                        "-fx-background-color: #F8FBF5; " +
+                        "-fx-border-width: 0;"
+        );
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setPannable(true);
+        scrollPane.setVvalue(0);
+
+        scene = new Scene(scrollPane, 1280, 900);
 
         showStep(1);
     }
@@ -129,7 +144,7 @@ public class SignupView {
                 if (step6Panel == null) {
                     step6Panel = new Step6Panel(signupData);
                 }
-                step6Panel.updateGoalWeightFromData(); // Auto-fill
+                step6Panel.updateGoalWeightFromData();
                 stepPanel = step6Panel.getPanel();
                 break;
             case 7:
@@ -238,7 +253,7 @@ public class SignupView {
 
         nextButton.setOnMouseExited(e ->
                 nextButton.setStyle(
-                        "-fx-background-color: #059669; " +
+                        "-fx-background-color: #27692A; " +
                                 "-fx-text-fill: white; " +
                                 "-fx-font-size: 14px; " +
                                 "-fx-font-weight: 600; " +
@@ -296,10 +311,10 @@ public class SignupView {
                 return signupData.activityLevel != null;
             case 4:
                 signupData.dietaryRestrictions = step4Panel.getSelectedDiets();
-                return true; // Optional
+                return true;
             case 5:
                 signupData.medicalConsiderations = step5Panel.getMedicalInfo();
-                return true; // Optional
+                return true;
             case 6:
                 signupData.sex = step6Panel.getSex();
                 signupData.dateOfBirth = step6Panel.getDateOfBirth();
@@ -371,7 +386,7 @@ public class SignupView {
     // data class for storing sign up info
     public static class SignupData {
         String fullName;
-        public String goal;  // you had this public already
+        public String goal;
         String activityLevel;
         List<String> dietaryRestrictions;
         String medicalConsiderations;
@@ -384,7 +399,7 @@ public class SignupView {
         String password;
         String confirmPassword;
 
-        // --- getters (you can add more as needed) ---
+        // getters
 
         public String getFullName() {
             return fullName;
