@@ -110,7 +110,7 @@ public class SettingsView {
                 "    -fx-cursor: hand;" +
                 "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.3), 10, 0, 0, 4);");
 
-        HBox buttonArea = new HBox();
+        HBox buttonArea = new HBox(20);
         buttonArea.setAlignment(Pos.CENTER);
         buttonArea.setPadding(new Insets(20, 20, 0, 0));
         buttonArea.getChildren().addAll(deleteAccountBtn, saveButton);
