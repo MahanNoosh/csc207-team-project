@@ -1,5 +1,6 @@
-package tut0301.group1.healthz.test;
+package tut0301.group1.healthz.usecase.recipesearch;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchDataAccessObject;
+import tut0301.group1.healthz.entities.nutrition.RecipeFilter;
 import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchPresenter;
@@ -7,11 +8,10 @@ import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
-import tut0301.group1.healthz.entities.nutrition.RecipeFilter;
 
 import java.util.List;
 
-public class testRecipeSearch {
+public class RecipeSearchTest {
 
     public static void main(String[] args) throws Exception {
 

@@ -1,7 +1,7 @@
-package tut0301.group1.healthz.test;
+package tut0301.group1.healthz.usecase.recipesearch;
 
-import tut0301.group1.healthz.entities.nutrition.RecipeDetails;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailDataAccessObject;
+import tut0301.group1.healthz.entities.nutrition.RecipeDetails;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailViewModel;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailPresenter;
@@ -9,7 +9,7 @@ import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
 
-public class testRecipeDetail {
+public class RecipeDetailTest {
     public static void main(String[] args) throws Exception {
 
         RecipeDetailViewModel viewModel = new RecipeDetailViewModel();
