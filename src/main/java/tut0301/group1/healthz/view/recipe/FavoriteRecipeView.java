@@ -1,5 +1,7 @@
 package tut0301.group1.healthz.view.recipe;
 
+import javafx.concurrent.Task;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,9 +14,15 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import tut0301.group1.healthz.entities.nutrition.Recipe;
+import tut0301.group1.healthz.entities.nutrition.RecipeIngredient;
 import tut0301.group1.healthz.navigation.Navigator;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeViewModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Favorite Recipes View
@@ -25,17 +33,77 @@ public class FavoriteRecipeView {
     private String username;
     private TextField searchField;
     private FlowPane recipesGrid;
-
-    // for navigation logic
+    private Label statusLabel;
     public Button backButton;
 
-    private Navigator navigator;
+    private final FavoriteRecipeController controller;
+    private final FavoriteRecipeViewModel viewModel;
+    private final Navigator navigator;
+    private final String userId;
 
-    public FavoriteRecipeView(String username, Navigator navigator) {
+    public FavoriteRecipeView(String username, String userId,
+                              FavoriteRecipeController controller,
+                              FavoriteRecipeViewModel viewModel,
+                              Navigator navigator) {
         this.username = username;
+        this.userId = userId;
+        this.controller = controller;
+        this.viewModel = viewModel;
         this.navigator = navigator;
+
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
+
+        loadFavorites();
+    }
+
+    private void loadFavorites() {
+        Task<Void> loadTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                controller.loadFavorites(userId);
+                Thread.sleep(100); // Wait for presenter
+                return null;
+            }
+
+            @Override
+            protected void succeeded() {
+                updateUIFromViewModel();
+            }
+
+            @Override
+            protected void failed() {
+                Platform.runLater(() -> {
+                    statusLabel.setText("Failed to load favorites");
+                });
+            }
+        };
+
+        new Thread(loadTask).start();
+    }
+
+    private void updateUIFromViewModel() {
+        Platform.runLater(() -> {
+            if (viewModel.getMessage() != null) {
+                statusLabel.setText(viewModel.getMessage());
+                recipesGrid.getChildren().clear();
+                return;
+            }
+
+            var recipes = viewModel.getRecipes();
+            recipesGrid.getChildren().clear();
+
+            if (recipes.isEmpty()) {
+                statusLabel.setText("No favorite recipes yet");
+            } else {
+                statusLabel.setText(recipes.size() + " favorite recipe" +
+                        (recipes.size() == 1 ? "" : "s"));
+
+                for (Recipe recipe : recipes) {
+                    recipesGrid.getChildren().add(createRecipeCardFromRecipe(recipe));
+                }
+            }
+        });
     }
 
     /**
@@ -103,7 +171,13 @@ public class FavoriteRecipeView {
         VBox titleBox = new VBox(5);
         titleBox.setPadding(new Insets(0, 0, 0, 10));
 
-        Label title = new Label(username + "'s Favorite Recipes");
+        String formattedName = Arrays.stream(username.split(" "))
+                .map(word -> word.isEmpty()
+                        ? word
+                        : word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
+
+        Label title = new Label(formattedName + "'s Favorite Recipes");
         title.setFont(Font.font("Inter", FontWeight.BOLD, 48));
         title.setTextFill(Color.web("#111827"));
 
@@ -191,45 +265,24 @@ public class FavoriteRecipeView {
         feedContainer.setPadding(new Insets(40, 60, 40, 60));
         feedContainer.setStyle("-fx-background-color: #F5F5F5;");
 
-        // Recipe grid
+        // Recipe grid - starts empty, populated by loadFavorites()
         recipesGrid = new FlowPane(30, 30);
         recipesGrid.setAlignment(Pos.TOP_LEFT);
 
-        // TODO: Replace with actual data
-        recipesGrid.getChildren().addAll(
-                createRecipeCard(
-                        "Blueberry Protein Pancakes",
-                        "Almond flour, whey protein powder, almond milk, cinnamon, banana, eggs, blueberries",
-                        "390 kcal",
-                        "15 min",
-                        null
-                ),
-                createRecipeCard(
-                        "Vegan Mac and Cheese",
-                        "Nutritional yeast, vegan cheddar cheese, elbow macaroni, dijon mustard, carrot...",
-                        "420 kcal",
-                        "45 min",
-                        null
-                ),
-                createRecipeCard(
-                        "Black Bean Tacos",
-                        "Black Beans, vegan yogurt, corn tortillas, lime, coconut oil, corn, taco seasoning...",
-                        "340 kcal",
-                        "20 min",
-                        null
-                )
-        );
+        // Add status label
+        statusLabel = new Label("Loading favorites...");
+        statusLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 18));
+        statusLabel.setTextFill(Color.web("#6B7280"));
 
-        feedContainer.getChildren().add(recipesGrid);
+        feedContainer.getChildren().addAll(statusLabel, recipesGrid);
         return feedContainer;
     }
 
     /**
-     * Create individual recipe card
+     * Create recipe card from Recipe entity
      */
-    private VBox createRecipeCard(String name, String ingredients, String calories,
-                                  String time, String imageUrl) {
-        VBox card = new VBox(0);  // ✅ Changed from 15 to 0
+    private VBox createRecipeCardFromRecipe(Recipe recipe) {
+        VBox card = new VBox(0);
         card.setPrefWidth(380);
         card.setStyle(
                 "-fx-background-color: white; " +
@@ -238,7 +291,7 @@ public class FavoriteRecipeView {
                         "-fx-cursor: hand;"
         );
 
-        // Image container with delete button
+        // Image container
         StackPane imageContainer = new StackPane();
         imageContainer.setPrefHeight(280);
         imageContainer.setStyle(
@@ -246,11 +299,10 @@ public class FavoriteRecipeView {
                         "-fx-background-radius: 15px 15px 0 0;"
         );
 
-        // Placeholder emoji
         Label placeholder = new Label("🍽");
         placeholder.setFont(Font.font(80));
 
-        // Delete button (on top of image) - ✅ MOVED HERE
+        // Delete button
         Button deleteBtn = new Button("🗑️");
         deleteBtn.setFont(Font.font(20));
         deleteBtn.setTextFill(Color.web("#DC2626"));
@@ -268,7 +320,7 @@ public class FavoriteRecipeView {
 
         deleteBtn.setOnAction(e -> {
             e.consume();
-            handleDeleteRecipe(name);
+            handleDeleteRecipe(recipe.getId(), recipe.getName());
         });
 
         // Hover effect for delete button
@@ -294,57 +346,57 @@ public class FavoriteRecipeView {
                 )
         );
 
-        imageContainer.getChildren().addAll(placeholder, deleteBtn);  // ✅ Add both to StackPane
+        imageContainer.getChildren().addAll(placeholder, deleteBtn);
 
         // Card content
         VBox content = new VBox(10);
         content.setPadding(new Insets(20));
 
         // Recipe name
-        Label nameLabel = new Label(name);
+        Label nameLabel = new Label(recipe.getName());
         nameLabel.setFont(Font.font("Inter", FontWeight.BOLD, 22));
         nameLabel.setTextFill(Color.web("#111827"));
         nameLabel.setWrapText(true);
 
-        // Ingredients
-        Label ingredientsLabel = new Label(ingredients);
+        // Ingredients preview (first 3)
+        String ingredientsText = "";
+        if (!recipe.getIngredients().isEmpty()) {
+            int count = Math.min(3, recipe.getIngredients().size());
+            List<String> ingredientNames = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                ingredientNames.add(recipe.getIngredients().get(i).getName());
+            }
+            ingredientsText = String.join(", ", ingredientNames);
+            if (recipe.getIngredients().size() > 3) {
+                ingredientsText += "...";
+            }
+        }
+
+        Label ingredientsLabel = new Label(ingredientsText);
         ingredientsLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
         ingredientsLabel.setTextFill(Color.web("#6B7280"));
         ingredientsLabel.setWrapText(true);
         ingredientsLabel.setMaxHeight(50);
 
-        // Calories and time
+        // Stats
         HBox stats = new HBox(20);
         stats.setAlignment(Pos.CENTER_LEFT);
 
-        // Calories
-        HBox caloriesBox = new HBox(8);
-        caloriesBox.setAlignment(Pos.CENTER_LEFT);
-        Label caloriesIcon = new Label("🔥");
-        caloriesIcon.setFont(Font.font(18));
-        Label caloriesText = new Label(calories);
-        caloriesText.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
-        caloriesBox.getChildren().addAll(caloriesIcon, caloriesText);
+        Label ingredientCount = new Label("📋 " + recipe.getIngredients().size() + " ingredients");
+        ingredientCount.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
 
-        // Time
-        HBox timeBox = new HBox(8);
-        timeBox.setAlignment(Pos.CENTER_LEFT);
-        Label timeIcon = new Label("⏱");
-        timeIcon.setFont(Font.font(18));
-        Label timeText = new Label(time);
-        timeText.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
-        timeBox.getChildren().addAll(timeIcon, timeText);
+        Label servings = new Label("👥 " + recipe.getServings().orElse(1) + " servings");
+        servings.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
 
-        stats.getChildren().addAll(caloriesBox, timeBox);
+        stats.getChildren().addAll(ingredientCount, servings);
 
         content.getChildren().addAll(nameLabel, ingredientsLabel, stats);
-
         card.getChildren().addAll(imageContainer, content);
 
-        // Click to view recipe details
-        card.setOnMouseClicked(e -> handleRecipeClick(name));
+        // Click to view details
+        card.setOnMouseClicked(e -> handleRecipeClickFromRecipe(recipe));
 
-        // Hover effect
+        // Hover effects
         card.setOnMouseEntered(e ->
                 card.setStyle(
                         "-fx-background-color: white; " +
@@ -367,6 +419,67 @@ public class FavoriteRecipeView {
     }
 
     /**
+     * Handle recipe click from Recipe entity
+     */
+    private void handleRecipeClickFromRecipe(Recipe recipe) {
+        System.out.println("Recipe clicked: " + recipe.getName());
+
+        // Convert recipe ID to long
+        try {
+            long recipeId = Long.parseLong(recipe.getId());
+            navigator.showRecipeDetail(recipeId);
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid recipe ID: " + recipe.getId());
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Could not load recipe details");
+            alert.showAndWait();
+        }
+    }
+
+    /**
+     * Handle delete with recipe ID
+     */
+    private void handleDeleteRecipe(String recipeId, String recipeName) {
+        System.out.println("Deleting recipe: " + recipeName);
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Recipe");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to remove " + recipeName + " from your favorites?");
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                // Call controller to delete
+                Task<Void> deleteTask = new Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        controller.deleteFavorite(userId, recipeId);
+                        Thread.sleep(300); // Wait for update
+                        return null;
+                    }
+
+                    @Override
+                    protected void succeeded() {
+                        updateUIFromViewModel();
+                    }
+
+                    @Override
+                    protected void failed() {
+                        Platform.runLater(() -> {
+                            statusLabel.setText("Failed to delete recipe");
+                        });
+                    }
+                };
+
+                new Thread(deleteTask).start();
+            }
+        });
+    }
+
+    /**
      * Handle search input
      */
     private void handleSearch() {
@@ -375,40 +488,6 @@ public class FavoriteRecipeView {
         // TODO: Filter recipes based on search query
     }
 
-    /**
-     * Handle recipe card click
-     */
-    private void handleRecipeClick(String recipeName) {
-        System.out.println("Recipe clicked: " + recipeName);
-
-        // ✅ Navigate to detail view
-        navigator.showRecipeDetail(
-                recipeName,
-                null,
-                390.0,
-                15.0,
-                48.0,
-                7.0,
-                "2 pancakes",
-                Arrays.asList("High Protein", "Low Carb", "Vegan", "Gluten-Free"),
-                Arrays.asList(
-                        "1 1/2 cups Almond Flour",
-                        "1/2 cups Protein Powder",
-                        "1 1/2 tsp Baking Powder",
-                        "1/2 tsp Cinnamon",
-                        "3 Eggs",
-                        "2/3 cups Almond Milk",
-                        "1/2 cup Blueberries"
-                ),
-                Arrays.asList(
-                        "Mix dry ingredients in a large bowl.",
-                        "Whisk together eggs and almond milk.",
-                        "Combine wet and dry ingredients.",
-                        "Fold in blueberries.",
-                        "Cook on medium heat for 2-3 minutes per side."
-                )
-        );
-    }
 
     /**
      * Handle delete favorite recipe button click

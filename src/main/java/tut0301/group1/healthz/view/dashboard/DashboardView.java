@@ -16,6 +16,8 @@ import javafx.scene.text.TextAlignment;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Dashboard View - daily summary, calories, macros, activity tracker, and recent entries
@@ -42,6 +44,7 @@ public class DashboardView {
     private Button macrosButton;
     private Button foodLogButton;
     private Button activityLogButton;
+    private Button logOutButton;
 
     /**
      * Constructor
@@ -97,7 +100,12 @@ public class DashboardView {
 
         // Welcome message
         VBox welcomeBox = new VBox(2);
-        Label welcomeLabel = new Label("Welcome Back, " + userName);
+        String formattedName = Arrays.stream(userName.split(" "))
+                .map(word -> word.isEmpty()
+                        ? word
+                        : word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
+        Label welcomeLabel = new Label("Welcome Back, " + formattedName);
         welcomeLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 20));
         welcomeLabel.setTextFill(Color.web("#2E7D32"));
 
@@ -119,8 +127,8 @@ public class DashboardView {
         logoLabel.setTextFill(Color.web("#27692A"));
 
         // External link icon
-        Button externalLink = createIconButton("↗", 20);
-        externalLink.setOnAction(e -> System.out.println("External link clicked"));
+        logOutButton = createIconButton("↗", 20);
+        logOutButton.setOnAction(e -> System.out.println("Log Out clicked"));
 
         // Step goal notification with bell
         HBox stepGoalBox = new HBox(10);
@@ -143,7 +151,7 @@ public class DashboardView {
         stepGoalBox.getChildren().addAll(bellIcon, stepGoalText);
 
         topRow.getChildren().addAll(profileCircle, welcomeBox, spacer1,
-                settingsButton, logoLabel, externalLink, stepGoalBox);
+                settingsButton, logoLabel, logOutButton, stepGoalBox);
 
         // Bottom row: Navigation bar
         HBox navBar = new HBox(40);
@@ -680,5 +688,9 @@ public class DashboardView {
      */
     public Button getActivityLogButton() { return activityLogButton; }
 
+    /**
+     * Get the Log Out button (for navigation logic)
+     */
+    public Button getLogOutButton() { return logOutButton; }
 
 }

@@ -5,22 +5,31 @@ import javafx.stage.Stage;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodDetailDataAccessObject;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAccessObject;
 //import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailGateway;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchGateway;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseFavoriteRecipeDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
 import tut0301.group1.healthz.interfaceadapter.auth.mapping.SignupProfileMapper;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.AddFavoriteController;
 import tut0301.group1.healthz.interfaceadapter.food.FoodDetailPresenter;
 import tut0301.group1.healthz.interfaceadapter.food.FoodSearchPresenter;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailViewModel;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
+import tut0301.group1.healthz.interfaceadapter.recipe.*;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipePresenter;
+import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeViewModel;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
+import tut0301.group1.healthz.usecase.favoriterecipe.*;
 import tut0301.group1.healthz.usecase.food.detail.FoodDetailGateway;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInputBoundary;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInteractor;
@@ -34,9 +43,16 @@ import tut0301.group1.healthz.usecase.food.search.SearchFoodOutputBoundary;
 //import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
 //import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
 //import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
 import tut0301.group1.healthz.view.auth.SignupView;
+import tut0301.group1.healthz.view.auth.LogoutView;
 import tut0301.group1.healthz.view.auth.signuppanels.EmailVerificationView;
 import tut0301.group1.healthz.view.macro.SingleMacroPage;
 import tut0301.group1.healthz.view.macro.MacroSearchView;
@@ -45,11 +61,11 @@ import tut0301.group1.healthz.view.settings.SettingsView;
 import tut0301.group1.healthz.view.dashboard.DashboardView;
 import tut0301.group1.healthz.view.recipe.RecipeSearchView;
 import tut0301.group1.healthz.view.recipe.FavoriteRecipeView;
+import tut0301.group1.healthz.view.nutrition.FoodLogView;
+import tut0301.group1.healthz.view.activity.ActivityLogView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
-
-import java.util.List;
 
 /**
  * Navigator - Handles all navigation between views
@@ -189,56 +205,157 @@ public class Navigator {
     }
 
     /**
-     * Navigate to Settings page
+     * Navigate to Recipe Search page
      */
     public void showRecipeSearch() {
-        RecipeSearchView recipeSearchView = new RecipeSearchView(this);
+        // Recipe Search setup
+        RecipeSearchViewModel recipeSearchViewModel = new RecipeSearchViewModel();
+        RecipeSearchPresenter recipeSearchPresenter = new RecipeSearchPresenter(recipeSearchViewModel);
+        RecipeSearchGateway recipeSearchGateway = new FatSecretRecipeSearchGateway();
+        RecipeSearchInputBoundary recipeSearchInteractor = new RecipeSearchInteractor(recipeSearchGateway, recipeSearchPresenter);
+        RecipeSearchController recipeSearchController = new RecipeSearchController(recipeSearchInteractor, recipeSearchPresenter);
+
+        String userId = getCurrentUserId();
+        String oauthToken = getFatSecretToken();
+
+        FavoriteRecipeGateway favoriteGateway = new SupabaseFavoriteRecipeDataAccessObject(
+                authenticatedClient,
+                oauthToken
+        );
+
+        AddFavoriteInputBoundary addFavoriteInteractor = new AddFavoriteInteractor(favoriteGateway);
+        AddFavoriteController addFavoriteController = new AddFavoriteController(addFavoriteInteractor);
+
+        RecipeSearchView recipeSearchView = new RecipeSearchView(
+                recipeSearchController,
+                recipeSearchViewModel,
+                this,
+                addFavoriteController,
+                userId
+        );
+
         setupRecipeNavigation(recipeSearchView);
 
         primaryStage.setScene(recipeSearchView.getScene());
         primaryStage.setTitle("HealthZ - Recipe Search");
     }
 
-    /**
-     * Navigate to Favorite Recipe page
-     */
     public void showFavoriteRecipes() {
         String userName = getUserDisplayName();
-        FavoriteRecipeView favoriteRecipeView = new FavoriteRecipeView(userName, this);
-        setupFavoriteRecipes(favoriteRecipeView);
-        primaryStage.setScene(favoriteRecipeView.getScene());
+        String userId = getCurrentUserId();
+        String oauthToken = getFatSecretToken();
+
+        FavoriteRecipeViewModel viewModel = new FavoriteRecipeViewModel();
+        FavoriteRecipePresenter presenter = new FavoriteRecipePresenter(viewModel);
+
+        FavoriteRecipeGateway gateway = new SupabaseFavoriteRecipeDataAccessObject(
+                authenticatedClient,
+                oauthToken
+        );
+
+        LoadFavoritesInputBoundary loadInteractor = new LoadFavoritesInteractor(gateway, presenter);
+        DeleteFavoriteInputBoundary deleteInteractor = new DeleteFavoriteInteractor(gateway, presenter);
+
+        FavoriteRecipeController controller = new FavoriteRecipeController(loadInteractor, deleteInteractor, presenter);
+
+        FavoriteRecipeView view = new FavoriteRecipeView(userName, userId, controller, viewModel, this);
+
+        setupFavoriteRecipes(view);
+
+        primaryStage.setScene(view.getScene());
         primaryStage.setTitle("HealthZ - Favorite Recipes");
+    }
+
+    private String getFatSecretToken() {
+        try {
+            String clientId = System.getenv("FATSECRET_CLIENT_ID");
+            String clientSecret = System.getenv("FATSECRET_CLIENT_SECRET");
+
+            if (clientId == null || clientSecret == null) {
+                System.err.println("FatSecret credentials not set");
+                return null;
+            }
+
+            // Use your partner's OAuth class
+            tut0301.group1.healthz.dataaccess.API.OAuth.OAuth fetcher =
+                    new tut0301.group1.healthz.dataaccess.API.OAuth.OAuth(clientId, clientSecret);
+
+            String jsonResponse = fetcher.getAccessTokenRaw("basic");
+            return tut0301.group1.healthz.dataaccess.API.OAuth.OAuthDataAccessObject.extractAccessToken(jsonResponse);
+
+        } catch (Exception e) {
+            System.err.println("Failed to get FatSecret token: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private String getCurrentUserId() {
+        if (authenticatedClient != null) {
+            try {
+                return authenticatedClient.getUserId();
+            } catch (Exception e) {
+                System.err.println("Could not get user ID: " + e.getMessage());
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
      * Navigate to Recipe Detail page
      */
-    public void showRecipeDetail(String recipeName, String imageUrl,
-                                 Double calories, Double protein, Double carbs, Double fats,
-                                 String servingSize, List<String> dietaryTags,
-                                 List<String> ingredients, List<String> instructions) {
+    public void showRecipeDetail(long recipeId) {
+        System.out.println("🧭 Navigator: Showing recipe detail for ID: " + recipeId);
 
-        RecipeDetailView detailView = new RecipeDetailView(
-                recipeName, imageUrl, calories, protein, carbs, fats,
-                servingSize, dietaryTags, ingredients, instructions
+        // Create ViewModel
+        RecipeDetailViewModel viewModel = new RecipeDetailViewModel();
+
+        // Create Presenter
+        RecipeDetailPresenter presenter = new RecipeDetailPresenter(viewModel);
+
+        RecipeDetailGateway gateway = new FatSecretRecipeDetailGateway();
+
+        // Create Interactor
+        RecipeDetailInputBoundary interactor = new RecipeDetailInteractor(gateway, presenter);
+
+        // Create Controller
+        RecipeDetailController controller = new RecipeDetailController(interactor, presenter);
+
+        String userId = getCurrentUserId();
+        String oauthToken = getFatSecretToken();
+
+        FavoriteRecipeGateway favoriteGateway = new SupabaseFavoriteRecipeDataAccessObject(
+                authenticatedClient,
+                oauthToken
         );
 
-        // Setup back button navigation
+        AddFavoriteInputBoundary addFavoriteInteractor = new AddFavoriteInteractor(favoriteGateway);
+        AddFavoriteController addFavoriteController = new AddFavoriteController(addFavoriteInteractor);
+
+        // Create View
+        RecipeDetailView detailView = new RecipeDetailView(
+                recipeId,
+                controller,
+                viewModel,
+                this,
+                addFavoriteController,
+                userId );
+
+        // Setup back button
         detailView.getBackButton().setOnAction(e -> {
             System.out.println("Going back from recipe detail...");
-            // TODO: Track which page user came from and go back there
-            showRecipeSearch(); // Default: go back to search
+            showRecipeSearch();
         });
 
         primaryStage.setScene(detailView.getScene());
-        primaryStage.setTitle("HealthZ - " + recipeName);
+        primaryStage.setTitle("HealthZ - Recipe Details");
     }
 
     /**
      * Navigate to Settings page
      */
     public void showSettings() {
-        SettingsView settingsView = new SettingsView();
+        SettingsView settingsView = new SettingsView(this);
 
         // Switch to settings scene
         primaryStage.setScene(settingsView.getScene());
@@ -257,7 +374,6 @@ public class Navigator {
     }
 
     private String getUserDisplayName() {
-        // ✅ Use the authenticated client if available
         if (authenticatedClient != null) {
             String displayName = authenticatedClient.getDisplayName();
             if (displayName != null && !displayName.isEmpty()) {
@@ -283,12 +399,13 @@ public class Navigator {
      * Navigate to Main App/Dashboard (after successful login/signup)
      */
     public void showMainApp() {
-        // TODO: create DashboardView
-        // For now, show macro search as placeholder
         System.out.println("✅ Login/Signup successful! Navigating to main app...");
-        showDashboard(); 
+        showDashboard();
     }
 
+    /**
+     * Navigate to Email Verification
+     */
     public void showEmailVerification(SignupView.SignupData signupData) {
         // Remember signup data so retry helper can use it
         this.pendingSignupData = signupData;
@@ -338,7 +455,9 @@ public class Navigator {
         alert.showAndWait();
     }
 
-
+    /**
+     * Navigate to Log In Page
+     */
     public void showLogin() {
         LoginView loginView = new LoginView();
 
@@ -379,7 +498,7 @@ public class Navigator {
                     // 2) Make sure user_data row exists (create blank if missing)
                     SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
                     userDataGateway.createBlankForCurrentUserIfMissing();
-                    System.out.println("💾 user_data row present/created.");
+                    System.out.println("user_data row present/created.");
                 } catch (Exception ex) {
                     System.err.println("Failed to init user_data row: " + ex.getMessage());
                     // optional: showError("Logged in, but could not initialize your profile data.");
@@ -388,7 +507,7 @@ public class Navigator {
                 // 3) Continue to main app
                 showMainApp();
             } else {
-                System.out.println("❌ Login failed.");
+                System.out.println("Login failed.");
                 showError("Login failed. Please check your email and password, or verify your email.");
                 // stay on the same login screen
             }
@@ -398,6 +517,47 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Log In");
     }
 
+    /**
+     * Navigate to Log Out Page
+     */
+    public void showLogout() {
+        LogoutView logoutView = new LogoutView();
+
+        setupLogoutNavigation(logoutView);
+
+        primaryStage.setScene(logoutView.getScene());
+        primaryStage.setTitle("HealthZ - Log Out");
+    }
+
+    /**
+     * Navigate to Food Log Page
+     */
+    public void showFoodLog() {
+        MacroSearchViewModel macroSearchViewModel = new MacroSearchViewModel();
+        SearchFoodOutputBoundary presenter = new FoodSearchPresenter(macroSearchViewModel);
+        FoodSearchDataAccessInterface gateway = new FatSecretFoodSearchDataAccessObject();
+        SearchFoodInputBoundary interactor = new SearchFoodInteractor(gateway, presenter);
+        MacroSearchController controller = new MacroSearchController(interactor);
+
+        macroSearchViewModel.setLoading(false);
+        macroSearchViewModel.setMessage(null);
+        macroSearchViewModel.setResults(java.util.List.of());
+
+        FoodLogView foodLogView = new FoodLogView(this, controller, macroSearchViewModel);
+
+        primaryStage.setScene(foodLogView.getScene());
+        primaryStage.setTitle("HealthZ - Food Log");
+    }
+
+    /**
+     * Navigate to Activity Log Page
+     */
+    public void showActivityLog() {
+        ActivityLogView activityLogView = new ActivityLogView();
+
+        primaryStage.setScene(activityLogView.getScene());
+        primaryStage.setTitle("HealthZ - Activity Log");
+    }
 
     /**
      * Go back to previous page
@@ -570,13 +730,34 @@ public class Navigator {
         // Food Log button
         dashboardView.getFoodLogButton().setOnAction(e -> {
             System.out.println("Navigating to Food Log...");
-            // TODO: showMealTracker();
+            showFoodLog();
         });
 
         // Activity Log button
         dashboardView.getActivityLogButton().setOnAction(e -> {
             System.out.println("Navigating to Activity Log...");
             // TODO: showActivityTracker();
+        });
+
+        // Log out Button
+        dashboardView.getLogOutButton().setOnAction(e -> {
+            System.out.println("Navigating to Log out...");
+            showLogout();
+        });
+    }
+
+    /**
+     * Setup navigation for Log Out page
+     */
+    private void setupLogoutNavigation(LogoutView logoutView) {
+        logoutView.getLogoutButton().setOnAction(e -> {
+            System.out.println("Logging Out...");
+            // TODO: implement log out
+        });
+
+        logoutView.getCancelButton().setOnAction(e -> {
+            System.out.println("Returning to Dashboard...");
+            showDashboard();
         });
     }
 
@@ -587,6 +768,11 @@ public class Navigator {
         recipeSearchView.getFavoriteRecipesButton().setOnAction(e -> {
             System.out.println("Navigating to favorite recipes page...");
             showFavoriteRecipes();
+        });
+
+        recipeSearchView.getHealthzButton().setOnAction(e -> {
+            System.out.println("Navigating to Dashboard...");
+            showDashboard();
         });
     }
 
@@ -599,5 +785,6 @@ public class Navigator {
             showRecipeSearch();
         });
     }
+
 
 }
