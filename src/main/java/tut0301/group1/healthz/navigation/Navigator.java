@@ -321,8 +321,25 @@ public class Navigator {
         // Create Controller
         RecipeDetailController controller = new RecipeDetailController(interactor, presenter);
 
+        String userId = getCurrentUserId();
+        String oauthToken = getFatSecretToken();
+
+        FavoriteRecipeGateway favoriteGateway = new SupabaseFavoriteRecipeDataAccessObject(
+                authenticatedClient,
+                oauthToken
+        );
+
+        AddFavoriteInputBoundary addFavoriteInteractor = new AddFavoriteInteractor(favoriteGateway);
+        AddFavoriteController addFavoriteController = new AddFavoriteController(addFavoriteInteractor);
+
         // Create View
-        RecipeDetailView detailView = new RecipeDetailView(recipeId, controller, viewModel, this);
+        RecipeDetailView detailView = new RecipeDetailView(
+                recipeId,
+                controller,
+                viewModel,
+                this,
+                addFavoriteController,
+                userId );
 
         // Setup back button
         detailView.getBackButton().setOnAction(e -> {

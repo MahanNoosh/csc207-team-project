@@ -7,4 +7,5 @@ public record RecipeDetails (String recipeName, String imageUrl, Double calories
     public String getName() {
         return recipeName;
     }
+
 }
