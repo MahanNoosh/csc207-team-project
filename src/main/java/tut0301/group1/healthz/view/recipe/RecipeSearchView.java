@@ -20,8 +20,6 @@ import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
 import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
 
-import java.util.Arrays;
-
 /**
  * Recipe Search View - displays searching and filtering for recipes
  */
@@ -40,9 +38,18 @@ public class RecipeSearchView {
     private final AddFavoriteController addFavoriteController;
     private final String userId;
 
+    // Filter controls
+    private Slider carbSlider;
+    private Slider proteinSlider;
+    private Slider fatSlider;
+    private Label carbValueLabel;
+    private Label proteinValueLabel;
+    private Label fatValueLabel;
+
     public RecipeSearchView(RecipeSearchController controller,
                             RecipeSearchViewModel viewModel,
-                            Navigator navigator, AddFavoriteController addFavoriteController,
+                            Navigator navigator,
+                            AddFavoriteController addFavoriteController,
                             String userId) {
         this.controller = controller;
         this.viewModel = viewModel;
@@ -130,10 +137,10 @@ public class RecipeSearchView {
     }
 
     /**
-     * Create search bar and filter chips
+     * Create search bar and filter section
      */
     private VBox createSearchAndFilters() {
-        VBox container = new VBox(10);
+        VBox container = new VBox(20);
         container.setPadding(new Insets(20, 0, 0, 0));
         container.setStyle(
                 "-fx-background-color: #F9FAFB; " +
@@ -174,28 +181,28 @@ public class RecipeSearchView {
         statusLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
         statusLabel.setTextFill(Color.web("#6B7280"));
 
-        // Dietary Needs/Restrictions
-        VBox dietarySection = new VBox(10);
-        Label dietaryLabel = new Label("Dietary Needs and/or Restrictions");
-        dietaryLabel.setFont(Font.font("Inter", FontWeight.BOLD, 16));
-        dietaryLabel.setTextFill(Color.web("#111827"));
-
-        FlowPane dietaryChips = new FlowPane(10, 10);
-        dietaryChips.getChildren().addAll(
-                createFilterChip("High Protein", true),
-                createFilterChip("Low Carb", false),
-                createFilterChip("Vegan", false),
-                createFilterChip("Gluten-Free", false),
-                createFilterChip("Select More", false)
-        );
-
-        dietarySection.getChildren().addAll(dietaryLabel, dietaryChips);
-
         // Categories
-        VBox categoriesSection = new VBox(10);
-        Label categoriesLabel = new Label("Categories");
-        categoriesLabel.setFont(Font.font("Inter", FontWeight.BOLD, 16));
-        categoriesLabel.setTextFill(Color.web("#111827"));
+        VBox categoriesSection = createCategoriesSection();
+
+        // Calorie Range
+        VBox calorieSection = createCalorieRangeSection();
+
+        // Macro Sliders
+        VBox macroSection = createMacroSlidersSection();
+
+        container.getChildren().addAll(searchBar, statusLabel, categoriesSection, calorieSection, macroSection);
+        return container;
+    }
+
+    /**
+     * Create categories section
+     */
+    private VBox createCategoriesSection() {
+        VBox section = new VBox(10);
+
+        Label label = new Label("Categories");
+        label.setFont(Font.font("Inter", FontWeight.BOLD, 16));
+        label.setTextFill(Color.web("#111827"));
 
         FlowPane categoryChips = new FlowPane(10, 10);
         categoryChips.getChildren().addAll(
@@ -206,10 +213,100 @@ public class RecipeSearchView {
                 createFilterChip("Dessert", false)
         );
 
-        categoriesSection.getChildren().addAll(categoriesLabel, categoryChips);
+        section.getChildren().addAll(label, categoryChips);
+        return section;
+    }
 
-        container.getChildren().addAll(searchBar, statusLabel, dietarySection, categoriesSection);
-        return container;
+    /**
+     * Create calorie range section
+     */
+    private VBox createCalorieRangeSection() {
+        VBox section = new VBox(10);
+
+        Label label = new Label("Calorie Range");
+        label.setFont(Font.font("Inter", FontWeight.BOLD, 16));
+        label.setTextFill(Color.web("#111827"));
+
+        FlowPane calorieChips = new FlowPane(10, 10);
+        calorieChips.getChildren().addAll(
+                createFilterChip("Under 100", false),
+                createFilterChip("100 to 250", false),
+                createFilterChip("250 to 500", false),
+                createFilterChip("Over 500", false)
+        );
+
+        section.getChildren().addAll(label, calorieChips);
+        return section;
+    }
+
+    /**
+     * Create macro sliders section
+     */
+    private VBox createMacroSlidersSection() {
+        VBox section = new VBox(15);
+
+        Label label = new Label("Macronutrient Distribution (%)");
+        label.setFont(Font.font("Inter", FontWeight.BOLD, 16));
+        label.setTextFill(Color.web("#111827"));
+
+        // Carbohydrates slider
+        VBox carbBox = createMacroSlider("Carbohydrates", "#B91C1C");
+        carbSlider = (Slider) ((HBox) carbBox.getChildren().get(1)).getChildren().get(0);
+        carbValueLabel = (Label) ((HBox) carbBox.getChildren().get(1)).getChildren().get(1);
+
+        // Protein slider
+        VBox proteinBox = createMacroSlider("Protein", "#1B9DBB");
+        proteinSlider = (Slider) ((HBox) proteinBox.getChildren().get(1)).getChildren().get(0);
+        proteinValueLabel = (Label) ((HBox) proteinBox.getChildren().get(1)).getChildren().get(1);
+
+        // Fat slider
+        VBox fatBox = createMacroSlider("Fat", "#B26B00");
+        fatSlider = (Slider) ((HBox) fatBox.getChildren().get(1)).getChildren().get(0);
+        fatValueLabel = (Label) ((HBox) fatBox.getChildren().get(1)).getChildren().get(1);
+
+        section.getChildren().addAll(label, carbBox, proteinBox, fatBox);
+        return section;
+    }
+
+    /**
+     * Create a macro slider with label and value display
+     */
+    private VBox createMacroSlider(String macroName, String color) {
+        VBox sliderBox = new VBox(8);
+
+        // Label
+        Label nameLabel = new Label(macroName);
+        nameLabel.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 14));
+        nameLabel.setTextFill(Color.web("#374151"));
+
+        // Slider and value
+        HBox sliderRow = new HBox(15);
+        sliderRow.setAlignment(Pos.CENTER_LEFT);
+
+        Slider slider = new Slider(0, 100, 33); // min, max, initial value
+        slider.setShowTickLabels(false);
+        slider.setShowTickMarks(false);
+        slider.setPrefWidth(400);
+        slider.setStyle(
+                "-fx-control-inner-background: " + color + ";"
+        );
+        HBox.setHgrow(slider, Priority.ALWAYS);
+
+        Label valueLabel = new Label("33%");
+        valueLabel.setFont(Font.font("Inter", FontWeight.BOLD, 14));
+        valueLabel.setTextFill(Color.web(color));
+        valueLabel.setMinWidth(50);
+
+        // Update value label as slider moves
+        slider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            valueLabel.setText(String.format("%.0f%%", newVal.doubleValue()));
+            handleFilterChange();
+        });
+
+        sliderRow.getChildren().addAll(slider, valueLabel);
+        sliderBox.getChildren().addAll(nameLabel, sliderRow);
+
+        return sliderBox;
     }
 
     /**
@@ -296,18 +393,13 @@ public class RecipeSearchView {
         Task<Void> searchTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                // Call controller (triggers the entire flow)
                 controller.search(query);
-
-                // Wait a bit for presenter to update viewModel
-                Thread.sleep(200);
-
+                Thread.sleep(500);
                 return null;
             }
 
             @Override
             protected void succeeded() {
-                // Update UI from ViewModel
                 updateUIFromViewModel();
             }
 
@@ -328,7 +420,6 @@ public class RecipeSearchView {
      */
     private void updateUIFromViewModel() {
         Platform.runLater(() -> {
-            // Check for error message
             if (viewModel.getMessage() != null && !viewModel.getMessage().isEmpty()) {
                 statusLabel.setText(viewModel.getMessage());
                 statusLabel.setTextFill(Color.web("#DC2626"));
@@ -336,7 +427,6 @@ public class RecipeSearchView {
                 return;
             }
 
-            // Get results
             var results = viewModel.getResults();
 
             if (results == null || results.isEmpty()) {
@@ -347,7 +437,6 @@ public class RecipeSearchView {
                 statusLabel.setText("Found " + results.size() + " recipe" + (results.size() == 1 ? "" : "s"));
                 statusLabel.setTextFill(Color.web("#27692A"));
 
-                // Clear and populate grid
                 recipesGrid.getChildren().clear();
                 for (RecipeSearchResult result : results) {
                     recipesGrid.getChildren().add(createRecipeCardFromResult(result));
@@ -369,7 +458,7 @@ public class RecipeSearchView {
                         "-fx-cursor: hand;"
         );
 
-        // Image container with favorite button
+        // Image container
         StackPane imageContainer = new StackPane();
         imageContainer.setPrefHeight(280);
         imageContainer.setStyle(
@@ -381,12 +470,12 @@ public class RecipeSearchView {
         if (imageUrl != null && !imageUrl.isEmpty()) {
             try {
                 ImageView recipeImage = new ImageView(new Image(imageUrl));
-                recipeImage.setFitWidth(imageContainer.getPrefWidth());
+                recipeImage.setFitWidth(380);
                 recipeImage.setFitHeight(280);
-                recipeImage.setPreserveRatio(true);
+                recipeImage.setPreserveRatio(false);
                 recipeImage.setSmooth(true);
 
-                Rectangle clip = new Rectangle(280, 280);
+                Rectangle clip = new Rectangle(380, 280);
                 clip.setArcWidth(15);
                 clip.setArcHeight(15);
                 recipeImage.setClip(clip);
@@ -398,12 +487,12 @@ public class RecipeSearchView {
             }
         } else {
             Label placeholder = new Label("🍽");
-            placeholder.setFont(Font.font(120));
+            placeholder.setFont(Font.font(80));
             imageContainer.getChildren().add(placeholder);
         }
 
         // Favorite button
-        Button favoriteBtn = new Button("❤️");
+        Button favoriteBtn = new Button("♥");
         favoriteBtn.setFont(Font.font(24));
         favoriteBtn.setTextFill(Color.WHITE);
         favoriteBtn.setPrefSize(50, 50);
@@ -426,13 +515,11 @@ public class RecipeSearchView {
         VBox content = new VBox(10);
         content.setPadding(new Insets(20));
 
-        // Recipe name
         Label nameLabel = new Label(result.recipeName());
         nameLabel.setFont(Font.font("Inter", FontWeight.BOLD, 22));
         nameLabel.setTextFill(Color.web("#111827"));
         nameLabel.setWrapText(true);
 
-        // Ingredients preview
         String ingredientsText = "";
         if (result.ingredientNames() != null && !result.ingredientNames().isEmpty()) {
             int count = Math.min(3, result.ingredientNames().size());
@@ -450,7 +537,6 @@ public class RecipeSearchView {
         ingredientsLabel.setWrapText(true);
         ingredientsLabel.setMaxHeight(50);
 
-        // Description
         Label descriptionLabel = new Label(result.description());
         descriptionLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
         descriptionLabel.setTextFill(Color.web("#27692A"));
@@ -459,10 +545,8 @@ public class RecipeSearchView {
         content.getChildren().addAll(nameLabel, ingredientsLabel, descriptionLabel);
         card.getChildren().addAll(imageContainer, content);
 
-        // Click to view details
         card.setOnMouseClicked(e -> handleRecipeClickFromResult(result));
 
-        // Hover effects
         card.setOnMouseEntered(e ->
                 card.setStyle(
                         "-fx-background-color: white; " +
@@ -488,31 +572,21 @@ public class RecipeSearchView {
      * Handle filter change
      */
     private void handleFilterChange() {
-        System.out.println("Filters changed");
-        // TODO: Update recipes based on selected filters
+        System.out.println("Filters changed:");
+        System.out.println("  Carbs: " + (int)carbSlider.getValue() + "%");
+        System.out.println("  Protein: " + (int)proteinSlider.getValue() + "%");
+        System.out.println("  Fat: " + (int)fatSlider.getValue() + "%");
+        // TODO: Apply filters to search results
     }
 
     /**
-     * Handle recipe click from search result
+     * Handle recipe click
      */
     private void handleRecipeClickFromResult(RecipeSearchResult result) {
-        System.out.println("======================================");
-        System.out.println("🔍 Recipe clicked: " + result.recipeName());
-        System.out.println("🔍 Recipe ID: " + result.recipeId());
-        System.out.println("🔍 Recipe ID type: " + (result.recipeId() == null ? "null" : result.recipeId().getClass().getName()));
-        System.out.println("======================================");
-
-        // Convert recipeId string to long
         try {
             long recipeId = Long.parseLong(result.recipeId());
-            System.out.println("✅ Parsed recipe ID: " + recipeId);
-            System.out.println("✅ Calling navigator.showRecipeDetail(" + recipeId + ")");
             navigator.showRecipeDetail(recipeId);
         } catch (NumberFormatException e) {
-            System.err.println("❌ Invalid recipe ID: '" + result.recipeId() + "'");
-            System.err.println("❌ Error: " + e.getMessage());
-            e.printStackTrace();
-
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
@@ -525,22 +599,15 @@ public class RecipeSearchView {
      * Handle favorite button click
      */
     private void handleFavorite(RecipeSearchResult result) {
-        System.out.println("Adding to favorites: " + result.recipeName());
-
         if (addFavoriteController == null || userId == null) {
-            System.err.println("Favorites not configured");
             showAlert("Error", "Unable to add to favorites. Please sign in.");
             return;
         }
 
         try {
-            // Add to favorites using the controller
             addFavoriteController.addFavorite(userId, result.recipeId());
-
             showAlert("Added to Favorites", result.recipeName() + " has been added to your favorites! ♥");
-
         } catch (Exception e) {
-            System.err.println("❌ Failed to add favorite: " + e.getMessage());
             showAlert("Error", "Failed to add to favorites: " + e.getMessage());
         }
     }

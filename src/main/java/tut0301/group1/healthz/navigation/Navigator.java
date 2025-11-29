@@ -7,7 +7,6 @@ import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAc
 //import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchGateway;
-//import tut0301.group1.healthz.dataaccess.favoriterecipe.FakeFavoriteRecipeGateway;
 import tut0301.group1.healthz.dataaccess.supabase.*;
 import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.interfaceadapter.activity.*;
@@ -624,7 +623,7 @@ public class Navigator {
      * Navigate to Activity Log Page
      */
     public void showActivityLog() {
-        ActivityLogView activityLogView = new ActivityLogView();
+        ActivityLogView activityLogView = new ActivityLogView(this);
 
         primaryStage.setScene(activityLogView.getScene());
         primaryStage.setTitle("HealthZ - Activity Log");
@@ -808,6 +807,7 @@ public class Navigator {
         dashboardView.getActivityLogButton().setOnAction(e -> {
             System.out.println("Navigating to Activity Log...");
             showActivityTracker();
+//            showActivityLog();
         });
 
         // Log out Button
