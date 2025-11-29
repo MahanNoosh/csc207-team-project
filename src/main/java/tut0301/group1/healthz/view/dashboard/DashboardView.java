@@ -16,6 +16,8 @@ import javafx.scene.text.TextAlignment;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Dashboard View - daily summary, calories, macros, activity tracker, and recent entries
@@ -98,7 +100,12 @@ public class DashboardView {
 
         // Welcome message
         VBox welcomeBox = new VBox(2);
-        Label welcomeLabel = new Label("Welcome Back, " + userName);
+        String formattedName = Arrays.stream(userName.split(" "))
+                .map(word -> word.isEmpty()
+                        ? word
+                        : word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
+        Label welcomeLabel = new Label("Welcome Back, " + formattedName);
         welcomeLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 20));
         welcomeLabel.setTextFill(Color.web("#2E7D32"));
 

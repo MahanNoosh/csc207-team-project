@@ -509,4 +509,5 @@ public class RecipeDetailView {
     public Button getFavoriteButton() {
         return favoriteButton;
     }
+
 }
