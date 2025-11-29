@@ -20,7 +20,7 @@ public class ActivityLogView {
     private Scene scene;
     private final Navigator navigator;
 
-    // Form fields
+    // Form field
     private ComboBox<String> activityDropdown;
     private TextField durationField;
     private TextField caloriesField;

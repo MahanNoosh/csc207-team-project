@@ -47,6 +47,9 @@ public class SettingsView {
     private ComboBox<String> goalCombo;
     private TextField dailyActivityField;
 
+    // save settings button
+    private Button saveButton;
+
     public SettingsView(Navigator navigator) {
         this.navigator = navigator;
         BorderPane root = createMainLayout();
@@ -97,17 +100,27 @@ public class SettingsView {
         deleteAccountBtn.getStyleClass().add("delete-account-button");
         deleteAccountBtn.setOnAction(e -> handleDeleteAccount());
 
-        HBox deleteBox = new HBox();
-        deleteBox.setAlignment(Pos.CENTER);
-        deleteBox.setPadding(new Insets(20, 0, 0, 0));
-        deleteBox.getChildren().add(deleteAccountBtn);
+        // Save Settings button
+        saveButton = new Button("Save");
+        saveButton.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 14));
+        saveButton.setTextFill(Color.web("white"));
+        saveButton.setStyle("-fx-background-color: #27692A;" +
+                "    -fx-padding: 14px 40px;" +
+                "    -fx-background-radius: 25px;" +
+                "    -fx-cursor: hand;" +
+                "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.3), 10, 0, 0, 4);");
+
+        HBox buttonArea = new HBox();
+        buttonArea.setAlignment(Pos.CENTER);
+        buttonArea.setPadding(new Insets(20, 20, 0, 0));
+        buttonArea.getChildren().addAll(deleteAccountBtn, saveButton);
 
         content.getChildren().addAll(
                 headerTitle,
                 personalDetailsSection,
                 biometricsSection,
                 goalsSection,
-                deleteBox
+                buttonArea
         );
 
         return content;
