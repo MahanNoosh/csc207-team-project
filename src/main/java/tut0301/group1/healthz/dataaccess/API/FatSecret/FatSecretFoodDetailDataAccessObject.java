@@ -1,6 +1,5 @@
 package tut0301.group1.healthz.dataaccess.API.FatSecret;
 
-import tut0301.group1.healthz.dataaccess.API.FatSecretFoodMapper;
 import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.usecase.food.detail.FoodDetailGateway;
 
@@ -22,9 +21,6 @@ public class FatSecretFoodDetailDataAccessObject implements FoodDetailGateway {
     @Override
     public FoodDetails getFoodDetails(long foodId) throws IOException, InterruptedException {
         // Get data from FatSecret API
-        FoodDetails apiFoodDetails = client.getFoodDetails(foodId);
-
-        // Map API data to domain entity
-        return FatSecretFoodMapper.toDomain(apiFoodDetails);
+        return client.getFoodDetails(foodId);
     }
 }
