@@ -6,9 +6,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.AddFavoriteController;
@@ -374,10 +377,30 @@ public class RecipeSearchView {
                         "-fx-background-radius: 15px 15px 0 0;"
         );
 
-        // Placeholder
-        Label placeholder = new Label("🍽");
-        placeholder.setFont(Font.font(80));
-        imageContainer.getChildren().add(placeholder);
+        String imageUrl = result.imageUrl();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                ImageView recipeImage = new ImageView(new Image(imageUrl));
+                recipeImage.setFitWidth(imageContainer.getPrefWidth());
+                recipeImage.setFitHeight(280);
+                recipeImage.setPreserveRatio(true);
+                recipeImage.setSmooth(true);
+
+                Rectangle clip = new Rectangle(280, 280);
+                clip.setArcWidth(15);
+                clip.setArcHeight(15);
+                recipeImage.setClip(clip);
+                imageContainer.getChildren().add(recipeImage);
+            } catch (Exception e) {
+                Label placeholder = new Label("🍽");
+                placeholder.setFont(Font.font(80));
+                imageContainer.getChildren().add(placeholder);
+            }
+        } else {
+            Label placeholder = new Label("🍽");
+            placeholder.setFont(Font.font(120));
+            imageContainer.getChildren().add(placeholder);
+        }
 
         // Favorite button
         Button favoriteBtn = new Button("❤️");
@@ -409,7 +432,7 @@ public class RecipeSearchView {
         nameLabel.setTextFill(Color.web("#111827"));
         nameLabel.setWrapText(true);
 
-        // Ingredients preview (first 3 ingredients)
+        // Ingredients preview
         String ingredientsText = "";
         if (result.ingredientNames() != null && !result.ingredientNames().isEmpty()) {
             int count = Math.min(3, result.ingredientNames().size());
@@ -462,17 +485,6 @@ public class RecipeSearchView {
     }
 
     /**
-     * OLD: Create recipe card (for sample data)
-     */
-    private VBox createRecipeCard(String name, String ingredients,
-                                  String calories, String time, String imageUrl) {
-        // Keep your existing implementation (not used anymore but won't hurt)
-        VBox card = new VBox(15);
-        // ... (same as before)
-        return card;
-    }
-
-    /**
      * Handle filter change
      */
     private void handleFilterChange() {
@@ -513,10 +525,10 @@ public class RecipeSearchView {
      * Handle favorite button click
      */
     private void handleFavorite(RecipeSearchResult result) {
-        System.out.println("➕ Adding to favorites: " + result.recipeName());
+        System.out.println("Adding to favorites: " + result.recipeName());
 
         if (addFavoriteController == null || userId == null) {
-            System.err.println("❌ Favorites not configured");
+            System.err.println("Favorites not configured");
             showAlert("Error", "Unable to add to favorites. Please sign in.");
             return;
         }
