@@ -41,7 +41,7 @@ public class SingleMacroPage {
     private ComboBox<String> servingComboBox;
     private TextField servingsCountField;
     private ComboBox<String> mealComboBox;
-    private VBox chartSection;
+    private HBox chartSection;
     private VBox contentWrapper;
     private FoodItem foodItem;
     private ServingInfo currentServing;
@@ -311,8 +311,8 @@ public class SingleMacroPage {
         return mealBox;
     }
 
-    private VBox createChartSection(double multiplier) {
-        VBox chartBox = new VBox(30);
+    private HBox createChartSection(double multiplier) {
+        HBox chartBox = new HBox(30);
         chartBox.setAlignment(Pos.TOP_CENTER);
         chartBox.setPrefWidth(500);
 
@@ -329,7 +329,7 @@ public class SingleMacroPage {
             multiplier = 1.0;
         }
 
-        VBox newChartSection = createChartSection(multiplier);
+        HBox newChartSection = createChartSection(multiplier);
 
         HBox parent = (HBox) chartSection.getParent();
         int index = parent.getChildren().indexOf(chartSection);
@@ -389,19 +389,19 @@ public class SingleMacroPage {
         double thickness = 40;
 
         if (proteinPercent > 0) {
-            gc.setFill(Color.web("#0891B2"));
+            gc.setFill(Color.web("#1B9DBB"));
             gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2,
                     90, proteinPercent, javafx.scene.shape.ArcType.ROUND);
         }
 
         if (fatPercent > 0) {
-            gc.setFill(Color.web("#F59E0B"));
+            gc.setFill(Color.web("#B26B00"));
             gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2,
                     90 + proteinPercent, fatPercent, javafx.scene.shape.ArcType.ROUND);
         }
 
         if (carbsPercent > 0) {
-            gc.setFill(Color.web("#DC2626"));
+            gc.setFill(Color.web("#B91C1C"));
             gc.fillArc(centerX - radius, centerY - radius, radius * 2, radius * 2,
                     90 + proteinPercent + fatPercent, carbsPercent, javafx.scene.shape.ArcType.ROUND);
         }
@@ -444,22 +444,26 @@ public class SingleMacroPage {
         HBox carbsRow = createMacroRow(
                 carbsPercent + "%",
                 String.format("%.1f g Carbs", carbs),
-                "#DC2626"
+                "#B91C1C"
         );
 
         HBox fatsRow = createMacroRow(
                 fatPercent + "%",
                 String.format("%.1f g Fats", fat),
-                "#F59E0B"
+                "#B26B00"
         );
 
         HBox proteinRow = createMacroRow(
                 proteinPercent + "%",
                 String.format("%.1f g Protein", protein),
-                "#0891B2"
+                "#1B9DBB"
         );
 
         macroBox.getChildren().addAll(carbsRow, fatsRow, proteinRow);
+
+        VBox.setVgrow(macroBox, Priority.NEVER);
+        macroBox.setMinWidth(Region.USE_PREF_SIZE);
+
         return macroBox;
     }
 
@@ -470,25 +474,32 @@ public class SingleMacroPage {
         Label percentLabel = new Label(percentage);
         percentLabel.setFont(Font.font("Inter", FontWeight.BOLD, 24));
         percentLabel.setTextFill(Color.web(colorHex));
-        percentLabel.setPrefWidth(80);
+        percentLabel.setMinWidth(50);
+        percentLabel.setPrefWidth(50);
+        percentLabel.setMaxWidth(50);
 
         Label descLabel = new Label(description);
         descLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 24));
         descLabel.setTextFill(Color.web("#111827"));
 
         row.getChildren().addAll(percentLabel, descLabel);
+        row.setMinWidth(Region.USE_COMPUTED_SIZE);
+
         return row;
     }
 
     private VBox createMicronutrientSection() {
-        VBox box = new VBox(12);
+        VBox box = new VBox(0);
         box.setPadding(new Insets(20, 0, 0, 0));
+        box.setMaxWidth(400);
 
+        // Header
         HBox headingBox = new HBox(12);
         headingBox.setAlignment(Pos.BASELINE_LEFT);
+        headingBox.setPadding(new Insets(0, 0, 15, 0));
 
-        Label heading = new Label("Additional nutrients");
-        heading.setFont(Font.font("Inter", FontWeight.BOLD, 22));
+        Label heading = new Label("Nutrition Facts");
+        heading.setFont(Font.font("Inter", FontWeight.BOLD, 28));
         heading.setTextFill(Color.web("#111827"));
 
         if (currentServing == null) {
@@ -500,48 +511,186 @@ public class SingleMacroPage {
             return box;
         }
 
-        Label servingSizeNote = new Label("(for " + currentServing.servingDescription + ")");
-        servingSizeNote.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
-        servingSizeNote.setTextFill(Color.web("#6B7280"));
-
-        headingBox.getChildren().addAll(heading, servingSizeNote);
+        headingBox.getChildren().add(heading);
         box.getChildren().add(headingBox);
 
-        GridPane micros = new GridPane();
-        micros.setHgap(22);
-        micros.setVgap(12);
+        // Serving size
+        VBox servingBox = new VBox(3);
+        servingBox.setPadding(new Insets(8, 12, 8, 12));
+        servingBox.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-border-color: #000000; " +
+                        "-fx-border-width: 0 0 8 0;"
+        );
 
-        int row = 0;
-        int col = 0;
+        Label servingLabel = new Label("Serving size");
+        servingLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
+        servingLabel.setTextFill(Color.web("#374151"));
 
-        if (currentServing.fiber != null) {
-            micros.add(createStat("Fiber", String.format("%.1f g", currentServing.fiber)), col, row);
-            col++;
-            if (col >= 2) { col = 0; row++; }
+        Label servingValue = new Label(currentServing.servingDescription);
+        servingValue.setFont(Font.font("Inter", FontWeight.BOLD, 16));
+        servingValue.setTextFill(Color.web("#111827"));
+
+        servingBox.getChildren().addAll(servingLabel, servingValue);
+        box.getChildren().add(servingBox);
+
+        // Main nutrition panel
+        VBox nutritionPanel = new VBox(0);
+        nutritionPanel.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-border-color: #000000; " +
+                        "-fx-border-width: 0 2 2 2; " +
+                        "-fx-padding: 0;"
+        );
+
+        if (currentServing.calories != null) {
+            nutritionPanel.getChildren().add(createNutritionRow(
+                    "Calories",
+                    String.format("%.0f", currentServing.calories),
+                    "",
+                    true,
+                    false
+            ));
         }
 
-        if (currentServing.sugar != null) {
-            micros.add(createStat("Sugar", String.format("%.1f g", currentServing.sugar)), col, row);
-            col++;
-            if (col >= 2) { col = 0; row++; }
+        nutritionPanel.getChildren().add(createDivider(5));
+
+        Label dvLabel = new Label("% Daily Value*");
+        dvLabel.setFont(Font.font("Inter", FontWeight.BOLD, 12));
+        dvLabel.setPadding(new Insets(5, 12, 5, 12));
+        nutritionPanel.getChildren().add(dvLabel);
+
+        // Fat
+        double fat = foodItem.getFat();
+        if (fat > 0) {
+            String fatDV = String.format("%.0f%%", (fat / 78) * 100); // Based on 78g daily value
+            nutritionPanel.getChildren().add(createNutritionRow(
+                    "Total Fat",
+                    String.format("%.1fg", fat),
+                    fatDV,
+                    true,
+                    false
+            ));
         }
 
-        if (currentServing.sodium != null) {
-            micros.add(createStat("Sodium", String.format("%.1f mg", currentServing.sodium)), col, row);
-            col++;
-            if (col >= 2) { col = 0; row++; }
+        // Carbs
+        double carbs = foodItem.getCarbs();
+        if (carbs > 0) {
+            String carbsDV = String.format("%.0f%%", (carbs / 275) * 100); // Based on 275g daily value
+            nutritionPanel.getChildren().add(createNutritionRow(
+                    "Total Carbohydrate",
+                    String.format("%.1fg", carbs),
+                    carbsDV,
+                    true,
+                    false
+            ));
+
+            // Sugar as indent
+            if (currentServing.sugar != null && currentServing.sugar > 0) {
+                nutritionPanel.getChildren().add(createNutritionRow(
+                        "  Sugars",
+                        String.format("%.1fg", currentServing.sugar),
+                        "",
+                        false,
+                        true
+                ));
+            }
+
+            // Fiber as indent
+            if (currentServing.fiber != null && currentServing.fiber > 0) {
+                String fiberDV = String.format("%.0f%%", (currentServing.fiber / 28) * 100);
+                nutritionPanel.getChildren().add(createNutritionRow(
+                        "  Dietary Fiber",
+                        String.format("%.1fg", currentServing.fiber),
+                        fiberDV,
+                        false,
+                        true
+                ));
+            }
         }
 
-        if (micros.getChildren().isEmpty()) {
-            Label missing = new Label("Additional nutrient data not available.");
-            missing.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
-            missing.setTextFill(Color.web("#6B7280"));
-            box.getChildren().add(missing);
-        } else {
-            box.getChildren().add(micros);
+        // Protein
+        double protein = foodItem.getProtein();
+        if (protein > 0) {
+            String proteinDV = String.format("%.0f%%", (protein / 50) * 100); // Based on 50g daily value
+            nutritionPanel.getChildren().add(createNutritionRow(
+                    "Protein",
+                    String.format("%.1fg", protein),
+                    proteinDV,
+                    true,
+                    false
+            ));
         }
+
+        // Medium divider
+        nutritionPanel.getChildren().add(createDivider(8));
+
+        // Sodium
+        if (currentServing.sodium != null && currentServing.sodium > 0) {
+            String sodiumDV = String.format("%.0f%%", (currentServing.sodium / 2300) * 100);
+            nutritionPanel.getChildren().add(createNutritionRow(
+                    "Sodium",
+                    String.format("%.0fmg", currentServing.sodium),
+                    sodiumDV,
+                    false,
+                    false
+            ));
+        }
+
+        box.getChildren().add(nutritionPanel);
+
+        // Footer note
+        Label footer = new Label("* The % Daily Value tells you how much a nutrient in a serving contributes to a daily diet.");
+        footer.setFont(Font.font("Inter", FontWeight.NORMAL, 10));
+        footer.setTextFill(Color.web("#6B7280"));
+        footer.setWrapText(true);
+        footer.setMaxWidth(380);
+        footer.setPadding(new Insets(10, 0, 0, 0));
+        box.getChildren().add(footer);
 
         return box;
+    }
+
+    private HBox createNutritionRow(String label, String value, String dailyValue, boolean bold, boolean isIndented) {
+        HBox row = new HBox();
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setPadding(new Insets(6, 12, 6, isIndented ? 24 : 12));
+        row.setStyle("-fx-border-color: #D1D5DB; -fx-border-width: 0 0 1 0;");
+
+        Label nameLabel = new Label(label);
+        if (bold) {
+            nameLabel.setFont(Font.font("Inter", FontWeight.BOLD, 14));
+        } else {
+            nameLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
+        }
+        nameLabel.setTextFill(Color.web("#111827"));
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label valueLabel = new Label(value);
+        valueLabel.setFont(Font.font("Inter", FontWeight.BOLD, 14));
+        valueLabel.setTextFill(Color.web("#111827"));
+
+        row.getChildren().addAll(nameLabel, spacer, valueLabel);
+
+        if (!dailyValue.isEmpty()) {
+            Label dvLabel = new Label("  " + dailyValue);
+            dvLabel.setFont(Font.font("Inter", FontWeight.BOLD, 14));
+            dvLabel.setTextFill(Color.web("#111827"));
+            dvLabel.setMinWidth(50);
+            dvLabel.setAlignment(Pos.CENTER_RIGHT);
+            row.getChildren().add(dvLabel);
+        }
+
+        return row;
+    }
+
+    private Region createDivider(int height) {
+        Region divider = new Region();
+        divider.setPrefHeight(height);
+        divider.setStyle("-fx-background-color: #000000;");
+        return divider;
     }
 
     private VBox createStat(String labelText, String valueText) {

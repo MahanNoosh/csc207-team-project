@@ -15,6 +15,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 public class ActivityLogView {
-    Scene scene;
+    private Scene scene;
 
+    public Scene getScene() {
+        return scene;
+    }
 }

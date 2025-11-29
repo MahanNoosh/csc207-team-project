@@ -27,6 +27,7 @@ public class MacroSearchView {
     private Scene scene;
     private TextField searchField;
     private VBox resultsContainer;
+    private Button healthzButton;
 
     // Sample data
 //    private static final FoodItem[] SAMPLE_HISTORY = {
@@ -80,13 +81,11 @@ public class MacroSearchView {
 
         Label macroSubTitle = new Label("Search for a food to see its nutritional information.");
         macroSubTitle.setFont(Font.font("Inter", FontWeight.NORMAL, 18));
-        macroSubTitle.setTextFill(Color.web("#059669"));
+        macroSubTitle.setTextFill(Color.web("#27692A"));
 
         HBox searchBar = createSearchBar();
 
-        HBox navBar = createNavBar();
-
-        header.getChildren().addAll(profileSection, macroTitle, macroSubTitle, searchBar, navBar);
+        header.getChildren().addAll(profileSection, macroTitle, macroSubTitle, searchBar);
         return header;
     }
 
@@ -96,16 +95,19 @@ public class MacroSearchView {
     private HBox createProfileSection() {
         HBox profileSection = new HBox();
         profileSection.setAlignment(Pos.CENTER_LEFT);
+        profileSection.setSpacing(10);
         HBox.setHgrow(profileSection, Priority.ALWAYS);
 
-        // HealthZ logo on the left
-        Label healthzLogo = new Label("HealthZ");
-        healthzLogo.setFont(Font.font("Inter", FontWeight.BOLD, 32));
-        healthzLogo.setTextFill(Color.web("#059669"));
-
-        // Spacer to push profile to the right
+        // Spacer to push healthz logo + profile to the right
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        // HealthZ logo on the left
+        healthzButton = new Button("Healthz");
+        healthzButton.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        healthzButton.setTextFill(Color.web("#27692A"));
+        healthzButton.setStyle("-fx-background-color: transparent;");
+        healthzButton.setOnAction(e -> {navigator.showDashboard();});
 
         // Profile picture (circle) on the right
         Circle profilePic = new Circle(25);
@@ -113,7 +115,7 @@ public class MacroSearchView {
         profilePic.setStroke(Color.web("#9CA3AF"));
         profilePic.setStrokeWidth(2);
 
-        profileSection.getChildren().addAll(healthzLogo, spacer, profilePic);
+        profileSection.getChildren().addAll(spacer, healthzButton, profilePic);
         return profileSection;
     }
 
@@ -151,33 +153,6 @@ public class MacroSearchView {
 
         searchContainer.getChildren().addAll(searchIcon, searchField);
         return searchContainer;
-    }
-
-    /**
-     * Create navigation bar with HOME/RECIPES/MACROS buttons
-     */
-    private HBox createNavBar() {
-        HBox navBar = new HBox(40);
-        navBar.setAlignment(Pos.CENTER_LEFT);
-        navBar.setPadding(new Insets(15, 0, 0, 0));
-
-        Button homeButton = createNavTab("HOME", false);
-        homeButton.setOnAction(e -> {
-            System.out.println("Navigating to Dashboard...");
-            navigator.showDashboard();
-        });
-
-        Button recipesButton = createNavTab("RECIPES", false);
-        recipesButton.setOnAction(e -> {
-            System.out.println("Navigating to Recipe Search...");
-            navigator.showRecipeSearch();
-        });
-
-        Button macrosButton = createNavTab("MACROS", true);
-        // MACROS button is active (we're already on this page)
-
-        navBar.getChildren().addAll(homeButton, recipesButton, macrosButton);
-        return navBar;
     }
 
     /**
@@ -255,7 +230,7 @@ public class MacroSearchView {
 
         Label title = new Label("Results");
         title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
-        title.setStyle("-fx-text-fill: #059669;");
+        title.setStyle("-fx-text-fill: #27692A;");
 
         Label helper = new Label("Showing the first 20 matches from FatSecret");
         helper.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
