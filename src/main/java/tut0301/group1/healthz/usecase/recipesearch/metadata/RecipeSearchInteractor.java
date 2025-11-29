@@ -1,6 +1,7 @@
 package tut0301.group1.healthz.usecase.recipesearch.metadata;
 
 import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
+import tut0301.group1.healthz.entities.nutrition.RecipeFilter;
 
 import java.util.List;
 
@@ -14,14 +15,15 @@ public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
     }
 
     @Override
-    public void search(String query) {
+    public void search(String query, RecipeFilter filter) {
         if (query == null || query.isBlank()) {
-            presenter.presentFailure("Please enter a food name to search.");
+            presenter.presentFailure("Please enter a recipe name to search for.");
             return;
         }
 
         try {
-            List<RecipeSearchResult> results = gateway.search(query.trim());
+            List<RecipeSearchResult> results = gateway.search(
+                    query.trim(), filter);
             presenter.presentSuccess(results);
         } catch (Exception e) {
             presenter.presentFailure("Could not fetch recipe data: " + e.getMessage());

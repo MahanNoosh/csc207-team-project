@@ -1,14 +1,17 @@
 package tut0301.group1.healthz.dataaccess.API;
 
+import tut0301.group1.healthz.dataaccess.API.OAuth.OAuth;
+import tut0301.group1.healthz.dataaccess.API.OAuth.OAuthDataAccessObject;
+import tut0301.group1.healthz.dataaccess.config.EnvConfig;
 import tut0301.group1.healthz.entities.nutrition.RecipeDetails;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
 import static tut0301.group1.healthz.dataaccess.API.RecipeJsonParser.parseRecipeDetails;
 
-public class FatSecretRecipeDetailGateway implements RecipeDetailGateway {
-    private final FatSecretRecipeSearchGateway recipeGateway;
+public class FatSecretRecipeDetailDataAccessObject implements RecipeDetailGateway {
+    private final FatSecretRecipeSearchDataAccessObject recipeGateway;
 
-    public FatSecretRecipeDetailGateway() {
-        this.recipeGateway = new FatSecretRecipeSearchGateway();
+    public FatSecretRecipeDetailDataAccessObject() {
+        this.recipeGateway = new FatSecretRecipeSearchDataAccessObject();
     }
 
     @Override
@@ -22,14 +25,13 @@ public class FatSecretRecipeDetailGateway implements RecipeDetailGateway {
         String clientId = EnvConfig.getClientId();
         String clientSecret = EnvConfig.getClientSecret();
 
-        FatSecretOAuthTokenFetcher fetcher = new FatSecretOAuthTokenFetcher(clientId, clientSecret);
+        OAuth fetcher = new OAuth(clientId, clientSecret);
         String raw = fetcher.getAccessTokenRaw("basic");
-        String token = FatSecretOAuthTokenFetcher.TokenParser.extractAccessToken(raw);
+        String token = OAuthDataAccessObject.extractAccessToken(raw);
 
         if (token == null) {
             throw new Exception("Unable to retrieve FatSecret access token");
         }
-
         return token;
     }
 }

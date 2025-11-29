@@ -1,8 +1,5 @@
 package tut0301.group1.healthz.usecase.recipesearch.detailed;
 
-import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputData;
-import tut0301.group1.healthz.usecase.macrosearch.MacroDetailOutputData;
-
 public class RecipeDetailInteractor implements RecipeDetailInputBoundary {
     private final RecipeDetailGateway gateway;
     private final RecipeDetailOutputBoundary presenter;
@@ -15,7 +12,7 @@ public class RecipeDetailInteractor implements RecipeDetailInputBoundary {
     @Override
     public void execute(RecipeDetailInputData inputData) {
         if (inputData == null || inputData.getRecipeId() <= 0) {
-            presenter.prepareFailView("Missing recipe id for nutrition lookup.");
+            presenter.prepareFailView("Missing recipe id.");
             return;
         }
 
