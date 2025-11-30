@@ -8,7 +8,13 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import tut0301.group1.healthz.entities.*;
+
+import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Sex;
+import tut0301.group1.healthz.entities.Dashboard.Goal;
+import tut0301.group1.healthz.entities.Dashboard.HealthCondition;
+import tut0301.group1.healthz.entities.Dashboard.DietPreference;
+
 import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserController;
 import tut0301.group1.healthz.navigation.Navigator;
 import tut0301.group1.healthz.view.components.Sidebar;
@@ -47,7 +53,7 @@ public class SettingsView {
     private TextField weightField;
     private ComboBox<String> genderCombo;
     private ComboBox<String> activityLevelCombo;
-    private TextField dietField;
+    private ComboBox<String> dietCombo;
 
     // Goals fields
     private TextField targetWeightField;
@@ -170,12 +176,14 @@ public class SettingsView {
 
         Label phoneLabel = new Label("Phone Number");
         phoneLabel.getStyleClass().add("field-label");
-        phoneField = new TextField("+1 477 466 3344"); // TODO: map from profile if you store it
+        phoneField = new TextField("");
+        phoneField.setPromptText("Enter your phone number");
         phoneField.getStyleClass().add("form-field");
 
         Label billingLabel = new Label("Billing Address");
         billingLabel.getStyleClass().add("field-label");
-        billingAddressField = new TextField("st. Fake Address"); // TODO: map from profile if you store it
+        billingAddressField = new TextField();
+        billingAddressField.setPromptText("Enter your billing address");
         billingAddressField.getStyleClass().add("form-field");
 
         grid.add(fullNameLabel, 0, 0);
@@ -264,8 +272,23 @@ public class SettingsView {
 
         Label dietLabel = new Label("Diet");
         dietLabel.getStyleClass().add("field-label");
-        dietField = new TextField("Vegan"); // TODO: map from DietPreference if you store it
-        dietField.getStyleClass().add("form-field");
+
+        dietCombo = new ComboBox<>();
+        dietCombo.getItems().addAll(
+                "None",
+                "Vegetarian",
+                "Vegan",
+                "Pescetarian",
+                "Gluten Free",
+                "Dairy Free",
+                "Halal",
+                "Kosher"
+        );
+
+        DietPreference dietPref = (currentProfile != null) ? currentProfile.getDietPreference() : null;
+        dietCombo.setValue(mapDietPreferenceToString(dietPref));
+        dietCombo.getStyleClass().add("form-combo");
+        dietCombo.setMaxWidth(Double.MAX_VALUE);
 
         // Add to grid
         grid.add(ageLabel, 0, 0);
@@ -279,7 +302,7 @@ public class SettingsView {
         grid.add(activityLabel, 0, 4);
         grid.add(activityLevelCombo, 0, 5);
         grid.add(dietLabel, 1, 4);
-        grid.add(dietField, 1, 5);
+        grid.add(dietCombo, 1, 5);
 
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
@@ -289,6 +312,26 @@ public class SettingsView {
 
         section.getChildren().addAll(sectionTitle, grid);
         return section;
+    }
+
+    /**
+     * Map DietPreference enum to user-friendly string
+     */
+    private String mapDietPreferenceToString(DietPreference pref) {
+        if (pref == null) return "None";
+
+        switch (pref) {
+            case VEGETARIAN: return "Vegetarian";
+            case VEGAN: return "Vegan";
+            case PESCETARIAN: return "Pescetarian";
+            case GLUTEN_FREE: return "Gluten Free";
+            case DAIRY_FREE: return "Dairy Free";
+            case HALAL: return "Halal";
+            case KOSHER: return "Kosher";
+            case NONE:
+            default:
+                return "None";
+        }
     }
 
     // Goals section (pre-filled from currentProfile if available)
@@ -467,25 +510,17 @@ public class SettingsView {
 
     private DietPreference mapDietToDietPreference(String dietText) {
         if (dietText == null) return DietPreference.NONE;
-        String value = dietText.trim().toLowerCase();
-        switch (value) {
-            case "vegetarian":
-                return DietPreference.VEGETARIAN;
-            case "vegan":
-                return DietPreference.VEGAN;
-            case "pescetarian":
-                return DietPreference.PESCETARIAN;
-            case "gluten free":
-            case "gluten-free":
-                return DietPreference.GLUTEN_FREE;
-            case "dairy free":
-            case "dairy-free":
-                return DietPreference.DAIRY_FREE;
-            case "halal":
-                return DietPreference.HALAL;
-            case "kosher":
-                return DietPreference.KOSHER;
+        switch (dietText.trim().toLowerCase()) {
+            case "none":          return DietPreference.NONE;
+            case "vegetarian":    return DietPreference.VEGETARIAN;
+            case "vegan":         return DietPreference.VEGAN;
+            case "pescetarian":   return DietPreference.PESCETARIAN;
+            case "gluten free":   return DietPreference.GLUTEN_FREE;
+            case "dairy free":    return DietPreference.DAIRY_FREE;
+            case "halal":         return DietPreference.HALAL;
+            case "kosher":        return DietPreference.KOSHER;
             default:
+                System.out.println("Unknown diet preference: " + dietText);
                 return DietPreference.NONE;
         }
     }
@@ -533,7 +568,7 @@ public class SettingsView {
             double dailyCalorie = Double.parseDouble(dailyCalorieField.getText());
             Optional<Double> dailyCalorieOpt = Optional.of(dailyCalorie);
 
-            DietPreference dietPreference = mapDietToDietPreference(dietField.getText());
+            DietPreference dietPreference = mapDietToDietPreference(dietCombo.getValue());
             // Currently not stored on Profile in your DAO; kept for future use
             HealthCondition healthCondition = (currentProfile != null)
                     ? currentProfile.getHealthCondition()
@@ -549,7 +584,8 @@ public class SettingsView {
                     activityMET,
                     targetWeight,
                     dailyCalorieOpt,
-                    healthCondition
+                    healthCondition,
+                    dietPreference
             );
 
             updateUserController.updateUser(newProfile);

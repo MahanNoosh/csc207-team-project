@@ -14,7 +14,7 @@ import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseFavoriteRecipeDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject;
-import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
@@ -22,6 +22,9 @@ import tut0301.group1.healthz.interfaceadapter.auth.mapping.SignupProfileMapper;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupController;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupViewModel;
+import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
+import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardPresenter;
+import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.AddFavoriteController;
 import tut0301.group1.healthz.interfaceadapter.food.FoodDetailPresenter;
 import tut0301.group1.healthz.interfaceadapter.food.FoodSearchPresenter;
@@ -51,6 +54,9 @@ import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
 import tut0301.group1.healthz.usecase.auth.signup.SignupInputBoundary;
 import tut0301.group1.healthz.usecase.auth.signup.SignupInteractor;
+import tut0301.group1.healthz.usecase.dashboard.DashboardInputBoundary;
+import tut0301.group1.healthz.usecase.dashboard.DashboardInteractor;
+import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
 import tut0301.group1.healthz.usecase.favoriterecipe.*;
 import tut0301.group1.healthz.usecase.food.detail.FoodDetailGateway;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInputBoundary;
@@ -486,13 +492,38 @@ public class Navigator {
      * Navigate to Dashboard page
      */
     public void showDashboard() {
-        String userName = getUserDisplayName();
-        DashboardView dashboardView = new DashboardView(userName);
+        String userId = getCurrentUserId();
+        String userName = getUserDisplayName(); // Use existing method!
+
+        if (userId == null) {
+            System.err.println("Cannot show dashboard: No user logged in");
+            showLogin();
+            return;
+        }
+
+        System.out.println("Navigator: Showing dashboard for user " + userId);
+
+        DashboardViewModel viewModel = new DashboardViewModel();
+        DashboardPresenter presenter = new DashboardPresenter(viewModel);
+
+        UserDataDataAccessInterface userDataAccess =
+                new SupabaseUserDataDataAccessObject(authenticatedClient);
+
+        DashboardInputBoundary interactor = new DashboardInteractor(userDataAccess, presenter);
+        DashboardController controller = new DashboardController(interactor);
+
+        // Create view with Clean Architecture components
+        DashboardView dashboardView = new DashboardView(controller, viewModel, userId, userName);
+
         setupDashboardNavigation(dashboardView);
+
         primaryStage.setScene(dashboardView.getScene());
         primaryStage.setTitle("HealthZ - Dashboard");
     }
 
+    /**
+     * Displays User's Name
+     */
     private String getUserDisplayName() {
         if (authenticatedClient != null) {
             String displayName = authenticatedClient.getDisplayName();
@@ -915,6 +946,4 @@ public class Navigator {
             showRecipeSearch();
         });
     }
-
-
 }
