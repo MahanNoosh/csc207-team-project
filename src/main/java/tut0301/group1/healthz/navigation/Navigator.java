@@ -529,10 +529,14 @@ public class Navigator {
         // Food log gateway for calorie consumption data
         FoodLogGateway foodLogGateway = new SupabaseFoodLogGateway(authenticatedClient);
 
-        // DashboardInteractor with food log integration
+        // Activity data access
+        ActivityLogDataAccessInterface activityLogDataAccess = new SupabaseActivityLogDataAccessObject(authenticatedClient);
+
+        // DashboardInteractor with food log and activity integration
         DashboardInputBoundary interactor = new DashboardInteractor(
                 userDataAccess,
                 foodLogGateway,
+                activityLogDataAccess,
                 presenter
         );
         DashboardController controller = new DashboardController(interactor);
@@ -540,9 +544,6 @@ public class Navigator {
         // GetDailyCalorieSummary - NEW for calorie/macro display
         GetDailyMacroSummaryViewModel summaryViewModel = new GetDailyMacroSummaryViewModel();
         GetDailyMacroSummaryPresenter summaryPresenter = new GetDailyMacroSummaryPresenter(summaryViewModel);
-
-        // Activity data access
-        ActivityLogDataAccessInterface activityLogDataAccess = new SupabaseActivityLogDataAccessObject(authenticatedClient);
 
         // Summary interactor
         GetDailyCalorieSummaryInputBoundary summaryInteractor = new GetDailyCalorieSummaryInteractor(
