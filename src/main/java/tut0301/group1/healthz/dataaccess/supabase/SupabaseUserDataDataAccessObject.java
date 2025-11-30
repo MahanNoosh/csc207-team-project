@@ -68,7 +68,8 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
         return ProfileJsonMapper.fromRow(arr.getJSONObject(0));
     }
 
-    public Profile upsertProfile(Profile profile) throws Exception {
+    @Override
+    public Profile updateCurrentUserProfile(Profile profile) throws Exception {
         // Ensure we use the current user's id
         String currentUserId = client.getUserId();
         Profile toSave = new Profile(
@@ -105,47 +106,6 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
             return loadCurrentUserProfile()
                     .orElseThrow(() -> new IllegalStateException("Profile not returned after upsert"));
         }
-        return ProfileJsonMapper.fromRow(arr.getJSONObject(0));
-    }
-
-    public Profile updateCurrentUserProfile(Profile profile) throws Exception {
-        String currentUserId = client.getUserId();
-
-        // Force the userId to match the current user
-        Profile toSave = new Profile(
-                currentUserId,
-                profile.getWeightKg(),
-                profile.getHeightCm(),
-                profile.getAgeYears(),
-                profile.getSex(),
-                profile.getGoal(),
-                profile.getActivityLevelMET(),
-                profile.getTargetWeightKg(),
-                profile.getDailyCalorieTarget(),
-                profile.getHealthCondition()
-        );
-
-        String endpoint = "user_data?userId=eq." + currentUserId;
-
-        JSONObject body = ProfileJsonMapper.toRow(toSave);
-
-        HttpRequest req = client.rest(endpoint)
-                .header("Authorization", "Bearer " + client.getAccessToken())
-                .header("Content-Type", "application/json")
-                .header("Prefer", "return=representation")
-                .method("PATCH", HttpRequest.BodyPublishers.ofString(body.toString(), StandardCharsets.UTF_8))
-                .build();
-
-        HttpResponse<String> res = client.send(req);
-        if (res.statusCode() >= 400) {
-            throw new RuntimeException("Update user_data failed: " + res.body());
-        }
-
-        JSONArray arr = new JSONArray(res.body());
-        if (arr.length() == 0) {
-            throw new IllegalStateException("No profile row returned after update");
-        }
-
         return ProfileJsonMapper.fromRow(arr.getJSONObject(0));
     }
 

@@ -147,35 +147,4 @@ public class FatSecret {
         }
     }
 
-    public List<String> searchFoodByNameToList(String token, String foodName) throws IOException {
-        // ✅ Build query URL
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(SEARCH_URL).newBuilder()
-                .addQueryParameter("method", "foods.search")
-                .addQueryParameter("search_expression", foodName)
-                .addQueryParameter("format", "json")
-                .addQueryParameter("max_results", "20");
-
-        // ✅ Create HTTP GET request
-        Request request = new Request.Builder()
-                .url(urlBuilder.build())
-                .addHeader("Authorization", "Bearer " + token)
-                .get()
-                .build();
-
-        // ✅ Send request
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response: " + response.code() + " - " + response.message());
-            }
-
-            String jsonBody = response.body() != null ? response.body().string() : "{}";
-
-
-            FoodJsonParser foodJsonParser = new FoodJsonParser();
-
-            return foodJsonParser.parseFoodsList(jsonBody);
-        }
-    }
-
 }
-

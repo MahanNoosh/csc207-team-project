@@ -1,7 +1,8 @@
-package tut0301.group1.healthz.dataaccess.supabase;
+package tut0301.group1.healthz.dataaccess.supabase.food;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.entities.nutrition.ServingInfo;
@@ -88,7 +89,6 @@ public class SupabaseFoodLogGateway implements FoodLogGateway {
             foodLogs.add(jsonToFoodLog(row));
         }
 
-        System.out.println("✅ [Supabase] Loaded " + foodLogs.size() + " logs for " + date);
         return foodLogs;
     }
 
@@ -162,11 +162,8 @@ public class SupabaseFoodLogGateway implements FoodLogGateway {
         double servingAmount = row.getDouble(FoodLogFields.SERVING_AMOUNT);
         String servingUnit = row.getString(FoodLogFields.SERVING_UNIT);
 
-        // Get serving multiplier first (needed to convert total values back to per-serving values)
         double servingMultiplier = row.getDouble(FoodLogFields.SERVING_MULTIPLIER);
 
-        // Database stores TOTAL values (already multiplied). Convert back to per-serving values.
-        // Divide by servingMultiplier to get the original per-serving nutrition values.
         Double totalCalories = row.isNull(FoodLogFields.CALORIES) ? null : row.getDouble(FoodLogFields.CALORIES);
         Double totalProtein = row.isNull(FoodLogFields.PROTEIN) ? null : row.getDouble(FoodLogFields.PROTEIN);
         Double totalFat = row.isNull(FoodLogFields.FAT) ? null : row.getDouble(FoodLogFields.FAT);

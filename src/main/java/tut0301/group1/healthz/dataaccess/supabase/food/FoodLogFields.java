@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.dataaccess.supabase;
+package tut0301.group1.healthz.dataaccess.supabase.food;
 
 /**
  * Field names for the food_logs table in Supabase.
@@ -7,7 +7,6 @@ package tut0301.group1.healthz.dataaccess.supabase;
 public final class FoodLogFields {
 
     private FoodLogFields() {
-        // Utility class - prevent instantiation
     }
 
     // Primary fields

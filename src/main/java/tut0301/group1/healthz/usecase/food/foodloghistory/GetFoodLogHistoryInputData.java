@@ -1,23 +1,23 @@
-package tut0301.group1.healthz.usecase.dailysummary;
+package tut0301.group1.healthz.usecase.food.foodloghistory;
 
 import java.time.LocalDate;
 
 /**
- * Input Data for Get Daily Summary use case.
+ * Input Data for Get Food Log History use case.
  *
- * Contains the data required to execute the use case.
+ * Contains the information needed to retrieve food logs for a specific date.
  */
-public class GetDailySummaryInputData {
+public class GetFoodLogHistoryInputData {
     private final String userId;
     private final LocalDate date;
 
     /**
-     * Constructor for GetDailySummaryInputData.
+     * Constructor for GetFoodLogHistoryInputData.
      *
-     * @param userId The user's unique identifier
-     * @param date The date to get the summary for
+     * @param userId The ID of the user
+     * @param date The date to retrieve logs for
      */
-    public GetDailySummaryInputData(String userId, LocalDate date) {
+    public GetFoodLogHistoryInputData(String userId, LocalDate date) {
         if (userId == null || userId.trim().isEmpty()) {
             throw new IllegalArgumentException("User ID cannot be null or empty");
         }

@@ -1,12 +1,12 @@
-package tut0301.group1.healthz.interfaceadapter.dailysummary;
+package tut0301.group1.healthz.interfaceadapter.caloriesummary;
 
-import tut0301.group1.healthz.usecase.dailysummary.GetDailySummaryInputBoundary;
-import tut0301.group1.healthz.usecase.dailysummary.GetDailySummaryInputData;
+import tut0301.group1.healthz.usecase.caloriesummary.GetDailyCalorieSummaryInputBoundary;
+import tut0301.group1.healthz.usecase.caloriesummary.GetDailyCalorieSummaryInputData;
 
 import java.time.LocalDate;
 
 /**
- * Controller for Get Daily Summary functionality.
+ * Controller for Get Daily Calorie Summary functionality.
  *
  * Responsibilities:
  * - Receives user input from the View
@@ -18,11 +18,11 @@ import java.time.LocalDate;
  * - Controller only knows about Interactor (through InputBoundary interface)
  * - Data flow: Controller -> Interactor -> Presenter -> ViewModel -> View
  */
-public class GetDailySummaryController {
+public class GetDailyCalorieSummaryController {
 
-    private final GetDailySummaryInputBoundary interactor;
+    private final GetDailyCalorieSummaryInputBoundary interactor;
 
-    public GetDailySummaryController(GetDailySummaryInputBoundary interactor) {
+    public GetDailyCalorieSummaryController(GetDailyCalorieSummaryInputBoundary interactor) {
         if (interactor == null) {
             throw new IllegalArgumentException("Interactor cannot be null");
         }
@@ -45,7 +45,7 @@ public class GetDailySummaryController {
             throw new IllegalArgumentException("Date cannot be null");
         }
 
-        GetDailySummaryInputData inputData = new GetDailySummaryInputData(userId, date);
+        GetDailyCalorieSummaryInputData inputData = new GetDailyCalorieSummaryInputData(userId, date);
         interactor.execute(inputData);
     }
 

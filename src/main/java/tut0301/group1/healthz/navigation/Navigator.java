@@ -46,16 +46,12 @@ import tut0301.group1.healthz.usecase.favoriterecipe.*;
 import tut0301.group1.healthz.usecase.food.detail.FoodDetailGateway;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInputBoundary;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInteractor;
+import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInputBoundary;
+import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInteractor;
 import tut0301.group1.healthz.usecase.food.search.FoodSearchDataAccessInterface;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodInputBoundary;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodInteractor;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodOutputBoundary;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailGateway;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputBoundary;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInteractor;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
@@ -85,7 +81,7 @@ import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeViewModel;
 import tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInputBoundary;
 import tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInteractor;
 import tut0301.group1.healthz.usecase.food.logging.FoodLogGateway;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseFoodLogGateway;
+import tut0301.group1.healthz.dataaccess.supabase.food.SupabaseFoodLogGateway;
 import javafx.concurrent.Task;
 
 import java.util.Optional;
@@ -461,20 +457,30 @@ public class Navigator {
         String userName = getUserDisplayName();
         String userId = getCurrentUserId();
 
-        tut0301.group1.healthz.interfaceadapter.dailysummary.GetDailySummaryViewModel summaryViewModel =
-                new tut0301.group1.healthz.interfaceadapter.dailysummary.GetDailySummaryViewModel();
+        tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryViewModel summaryViewModel =
+                new tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryViewModel();
 
-        tut0301.group1.healthz.interfaceadapter.dailysummary.GetDailySummaryPresenter summaryPresenter =
-                new tut0301.group1.healthz.interfaceadapter.dailysummary.GetDailySummaryPresenter(summaryViewModel);
+        tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryPresenter summaryPresenter =
+                new tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryPresenter(summaryViewModel);
 
         tut0301.group1.healthz.usecase.food.logging.FoodLogGateway foodLogGateway =
-                new tut0301.group1.healthz.dataaccess.supabase.SupabaseFoodLogGateway(authenticatedClient);
+                new SupabaseFoodLogGateway(authenticatedClient);
 
-        tut0301.group1.healthz.usecase.dailysummary.GetDailySummaryInputBoundary summaryInteractor =
-                new tut0301.group1.healthz.usecase.dailysummary.GetDailySummaryInteractor(foodLogGateway, summaryPresenter);
+        tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogDataAccessInterface activityLogDataAccess =
+                new tut0301.group1.healthz.dataaccess.supabase.SupabaseActivityLogDataAccessObject(authenticatedClient);
 
-        tut0301.group1.healthz.interfaceadapter.dailysummary.GetDailySummaryController summaryController =
-                new tut0301.group1.healthz.interfaceadapter.dailysummary.GetDailySummaryController(summaryInteractor);
+        tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface userDataAccess =
+                new tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject(authenticatedClient);
+
+        tut0301.group1.healthz.usecase.caloriesummary.GetDailyCalorieSummaryInputBoundary summaryInteractor =
+                new tut0301.group1.healthz.usecase.caloriesummary.GetDailyCalorieSummaryInteractor(
+                        foodLogGateway,
+                        activityLogDataAccess,
+                        userDataAccess,
+                        summaryPresenter);
+
+        tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryController summaryController =
+                new tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryController(summaryInteractor);
 
         DashboardView dashboardView = new DashboardView(userName, summaryController, summaryViewModel, userId);
 
@@ -677,7 +683,7 @@ public class Navigator {
         tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakePresenter logFoodPresenter =
             new tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakePresenter(logFoodViewModel);
         tut0301.group1.healthz.usecase.food.logging.FoodLogGateway foodLogGateway =
-            new tut0301.group1.healthz.dataaccess.supabase.SupabaseFoodLogGateway(authenticatedClient);
+            new SupabaseFoodLogGateway(authenticatedClient);
         tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInputBoundary logFoodInteractor =
             new tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInteractor(foodLogGateway, logFoodPresenter);
         tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeController logFoodController =
@@ -689,6 +695,19 @@ public class Navigator {
         FoodDetailGateway detailGateway = new FatSecretFoodDetailDataAccessObject();
         GetFoodDetailInputBoundary detailInteractor = new GetFoodDetailInteractor(detailGateway, detailPresenter);
         MacroDetailController macroDetailController = new MacroDetailController(detailInteractor);
+
+        // GetFoodLogHistory dependencies (for loading saved food logs by date)
+        tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryViewModel foodLogHistoryViewModel =
+            new tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryViewModel();
+        tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryPresenter foodLogHistoryPresenter =
+            new tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryPresenter(foodLogHistoryViewModel);
+        // Reuse the same foodLogGateway instance from above
+        GetFoodLogHistoryInputBoundary foodLogHistoryInteractor =
+            new GetFoodLogHistoryInteractor(
+                    foodLogGateway,
+                    foodLogHistoryPresenter);
+        tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryController foodLogHistoryController =
+            new tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryController(foodLogHistoryInteractor);
 
         // Get current user ID
         String userId = getCurrentUserId();
@@ -705,8 +724,13 @@ public class Navigator {
             logFoodViewModel,
             macroDetailController,
             detailViewModel,
+            foodLogHistoryController,
+            foodLogHistoryViewModel,
             userId
         );
+
+        // Load today's food logs
+        foodLogHistoryController.execute(userId, java.time.LocalDate.now());
 
         primaryStage.setScene(foodLogView.getScene());
         primaryStage.setTitle("HealthZ - Food Log");
@@ -801,7 +825,7 @@ public class Navigator {
 
             // Save profile
             SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
-            userDataGateway.upsertProfile(profile);
+            userDataGateway.updateCurrentUserProfile(profile);
 
             System.out.println("💾 Profile saved successfully. Navigating to main app...");
 

@@ -14,8 +14,8 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import tut0301.group1.healthz.interfaceadapter.dailysummary.GetDailySummaryController;
-import tut0301.group1.healthz.interfaceadapter.dailysummary.GetDailySummaryViewModel;
+import tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryController;
+import tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryViewModel;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -28,22 +28,18 @@ public class DashboardView {
     private Scene scene;
     private String userName;
 
-    // GetDailySummary dependencies
-    private final GetDailySummaryController summaryController;
-    private final GetDailySummaryViewModel summaryViewModel;
+    private final GetDailyCalorieSummaryController summaryController;
+    private final GetDailyCalorieSummaryViewModel summaryViewModel;
     private final String userId;
 
-    // Calorie target (from user profile - hardcoded for now, could be dynamic later)
     private int caloriesTotal = 2000;
 
-    // UI Components references for data binding
     private Label caloriesValueLabel;
     private Canvas caloriesChartCanvas;
     private Label carbsPercentLabel, carbsGramsLabel;
     private Label fatPercentLabel, fatGramsLabel;
     private Label proteinPercentLabel, proteinGramsLabel;
 
-    // Navigation buttons
     private Button settingsButton;
     private Button homeButton;
     private Button recipesButton;
@@ -56,8 +52,8 @@ public class DashboardView {
      * Constructor with real data dependencies
      */
     public DashboardView(String userName,
-                         GetDailySummaryController summaryController,
-                         GetDailySummaryViewModel summaryViewModel,
+                         GetDailyCalorieSummaryController summaryController,
+                         GetDailyCalorieSummaryViewModel summaryViewModel,
                          String userId) {
         this.userName = userName != null ? userName : "User";
         this.summaryController = summaryController;
@@ -67,7 +63,6 @@ public class DashboardView {
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 1200);
 
-        // [NEW] Setup Data Binding to listen for changes
         setupDataBinding();
     }
 
@@ -75,7 +70,6 @@ public class DashboardView {
      * Listen to changes in the ViewModel and update UI accordingly.
      */
     private void setupDataBinding() {
-        // When totalMacro property changes (data loaded from Supabase), update the UI
         summaryViewModel.totalMacroProperty().addListener((obs, oldVal, newVal) -> {
             Platform.runLater(this::updateDashboardUI);
         });
@@ -89,11 +83,9 @@ public class DashboardView {
         double fat = summaryViewModel.getTotalFat();
         double protein = summaryViewModel.getTotalProtein();
 
-        // Use actual calories from database instead of recalculating with 4-9-4 formula
-        // Database stores real calorie values from the API which are more accurate
         double totalCalories = summaryViewModel.getTotalCalories();
 
-        int caloriesRemaining = Math.max(0, (int) (caloriesTotal - totalCalories));
+        int caloriesRemaining = Math.max(0, (int) summaryViewModel.getNetRemainingCalories());
 
         if (caloriesValueLabel != null) {
             caloriesValueLabel.setText(String.valueOf(caloriesRemaining));
@@ -102,7 +94,6 @@ public class DashboardView {
             drawCaloriesChart(caloriesChartCanvas.getGraphicsContext2D(), totalCalories);
         }
 
-        // Calculate total macros in grams for percentage calculation
         double totalMacroGrams = carbs + fat + protein;
 
         updateMacroColumn(carbsPercentLabel, carbsGramsLabel, carbs, totalMacroGrams);
@@ -117,7 +108,6 @@ public class DashboardView {
     private void updateMacroColumn(Label pctLabel, Label gLabel, double grams, double totalMacroGrams) {
         if (pctLabel == null || gLabel == null) return;
 
-        // Calculate percentage of total macro grams (not calories)
         double pct = totalMacroGrams > 0 ? (grams / totalMacroGrams) * 100 : 0;
 
         pctLabel.setText(String.format("%.0f%%", pct));
@@ -356,8 +346,8 @@ public class DashboardView {
         VBox centerText = new VBox(2);
         centerText.setAlignment(Pos.CENTER);
 
-        // Value Label
-        int remaining = (int) (caloriesTotal - summaryViewModel.getTotalCalories());
+        // Value Label - use net remaining calories (target - consumed + burned)
+        int remaining = (int) summaryViewModel.getNetRemainingCalories();
         caloriesValueLabel = new Label(String.valueOf(remaining));
         caloriesValueLabel.setFont(Font.font("Inter", FontWeight.BOLD, 48));
         caloriesValueLabel.setTextFill(Color.web("#111827"));
@@ -375,8 +365,9 @@ public class DashboardView {
 
     // [UPDATED] Logic to draw the donut chart
     private void drawCaloriesChart(GraphicsContext gc, double consumed) {
-        double remaining = Math.max(0, caloriesTotal - consumed);
-        double progress = remaining / caloriesTotal;
+        // Use net remaining calories (target - consumed + burned)
+        double remaining = Math.max(0, summaryViewModel.getNetRemainingCalories());
+        double progress = remaining / summaryViewModel.getDailyCalorieTarget();
         double angle = progress * 360;
 
         gc.clearRect(0, 0, 200, 200);

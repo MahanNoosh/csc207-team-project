@@ -15,47 +15,6 @@ import java.util.regex.Pattern;
  */
 public class FoodJsonParser {
 
-    /**
-     * Pa the
-    API .*
-    raw servinges the JSON response from FatSecret foods.search API and extracts
-     * all food_id and food_name pairs.
-     *
-     * @param jsonResponse the JSON string returned from API
-     * @return a list of "food_id - food_name" strings
-     */
-    public static List<String> parseFoodsList(String jsonResponse) {
-        List<String> foodsList = new ArrayList<>();
-
-        try {
-            JSONObject root = new JSONObject(jsonResponse);
-
-            if (!root.has("foods")) {
-                System.err.println("❌ Invalid JSON: missing 'foods' object.");
-                return foodsList;
-            }
-
-            JSONObject foodsObj = root.getJSONObject("foods");
-            JSONArray foodArray = foodsObj.optJSONArray("food");
-
-            if (foodArray == null) {
-                System.err.println("⚠️ No 'food' array found in JSON.");
-                return foodsList;
-            }
-
-            for (int i = 0; i < foodArray.length(); i++) {
-                JSONObject food = foodArray.getJSONObject(i);
-                long id = food.optLong("food_id", -1);
-                String name = food.optString("food_name", "unknown");
-                foodsList.add(id + " - " + name);
-            }
-
-        } catch (Exception e) {
-            System.err.println("❌ Failed to parse foods list: " + e.getMessage());
-        }
-
-        return foodsList;
-    }
 
     /**
      * Helper: Parses "Calories: 89kcal | Fat: 0.3g | Carbs: 23g | Protein: 1.1g"
@@ -100,19 +59,14 @@ public class FoodJsonParser {
             if (split.length < 2) return 0;
             String afterColon = split[1];
 
-            // Use regex to find the first number after colon
             java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("(\\d+(\\.\\d+)?)").matcher(afterColon);
             if (matcher.find()) {
                 return Double.parseDouble(matcher.group(1));
             }
         } catch (Exception e) {
-            // ignore
         }
         return 0;
     }
-
-    // java/tut0301/group1/healthz/dataaccess/API/FoodJsonParser.java
-
     /**
      * Parse a full food detail response from FatSecret into a rich
      * nutrition model.
@@ -143,11 +97,9 @@ public class FoodJsonParser {
             String unit;
 
             if (s.has("measurement_description") && s.has("number_of_units")) {
-                // Case 1: API provides explicit natural units (common for standard measures)
                 unit = s.getString("measurement_description");
                 amount = s.getDouble("number_of_units");
             } else {
-                // Case 2: Try to parse from description string (e.g., "1 slice" or "1/2 apple")
                 String desc = s.getString("serving_description");
                 ParsedServing parsed = parseUnitFromDescription(desc);
 
@@ -160,17 +112,14 @@ public class FoodJsonParser {
                     unit = s.optString("metric_serving_unit", "g");
                 }
             }
-            // [FIX END]
 
             ServingInfo info = new ServingInfo(
                     s.getLong("serving_id"),
                     s.getString("serving_description"),
 
-                    // Use the resolved amount and unit
                     amount,
                     unit,
 
-                    // Nutrition fields (use opt to handle missing values)
                     parseDouble(s, "calories"),
                     parseDouble(s, "protein"),
                     parseDouble(s, "fat"),
@@ -191,10 +140,8 @@ public class FoodJsonParser {
     private static ParsedServing parseUnitFromDescription(String description) {
         if (description == null || description.isBlank()) return null;
         try {
-            // Simplify fractions for regex (very basic handling)
             String cleanDesc = description.trim();
 
-            // Match pattern: Number (int/decimal) + Space + Text
             java.util.regex.Pattern p = java.util.regex.Pattern.compile("^([0-9]+(?:\\.[0-9]+)?)\\s+(.+)");
             java.util.regex.Matcher m = p.matcher(cleanDesc);
 
@@ -202,7 +149,6 @@ public class FoodJsonParser {
                 double val = Double.parseDouble(m.group(1));
                 String text = m.group(2);
 
-                // Clean up the unit text (remove anything after " (" or " -")
                 int bracketIdx = text.indexOf("(");
                 if (bracketIdx > 0) text = text.substring(0, bracketIdx).trim();
 
