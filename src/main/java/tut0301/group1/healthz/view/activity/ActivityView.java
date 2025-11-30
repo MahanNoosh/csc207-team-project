@@ -1,3 +1,4 @@
+
 package tut0301.group1.healthz.view.activity;
 
 import javafx.geometry.Insets;
@@ -6,323 +7,498 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.interfaceadapter.activity.ActivityHistoryViewModel;
 import tut0301.group1.healthz.interfaceadapter.activity.ActivityItem;
 import tut0301.group1.healthz.interfaceadapter.activity.ActivityPageController;
 import tut0301.group1.healthz.interfaceadapter.activity.ExerciseListViewModel;
+import tut0301.group1.healthz.navigation.Navigator;
+import tut0301.group1.healthz.view.components.Sidebar;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-
+/**
+ * ActivityView
+ * - UI styled like teammate's design (rounded white cards, green accents, large headers)
+ * - Keeps YOUR logic intact:
+ *    - controller.onSearchQuery(...)
+ *    - controller.onDurationOrActivityChange(...)
+ *    - controller.logActivity(...)
+ *    - calories pulled from ExerciseListViewModel
+ *    - history bound to ActivityHistoryViewModel
+ */
 public class ActivityView {
 
-    private static Scene scene;
+    private Scene scene;
     private final ActivityPageController controller;
     private final ExerciseListViewModel exerciseListViewModel;
     private final ActivityHistoryViewModel historyViewModel;
-
-    // Add Activity Fields
-    private String selectedActivity;
-    private TextField durationField;
-    private TextField caloriesField;
-
-    // History list
-    private ListView<ActivityItem> historyListView;
-    private ListView<String> exerciseListView;
-
-
     private final Profile currentProfile;
 
+    // Inputs
+    private String selectedActivity;
+    private TextField searchField;
+    private ListView<String> exerciseListView;
+    private TextField durationField;
+    private TextField caloriesField;
+    private final Navigator navigator;
+    private LocalDate currentDate = LocalDate.now();
 
-    public ActivityView(ActivityPageController controller, ExerciseListViewModel exerciseListViewModel, ActivityHistoryViewModel historyViewModel, Profile currentProfile) {
+
+    // History
+    private ListView<ActivityItem> historyListView;
+
+    public ActivityView(ActivityPageController controller,
+                        ExerciseListViewModel exerciseListViewModel,
+                        ActivityHistoryViewModel historyViewModel,
+                        Profile currentProfile, Navigator navigator) {
         this.controller = controller;
         this.exerciseListViewModel = exerciseListViewModel;
         this.historyViewModel = historyViewModel;
         this.currentProfile = currentProfile;
-        BorderPane root = createMainLayout();
-        scene = new Scene(root, 1200, 800);
+        this.navigator = navigator;
 
-        // Load CSS
-        scene.getStylesheets().add(getClass().getResource("/styles/settings.css").toExternalForm());
+        BorderPane root = createMainLayout();
+        scene = new Scene(root, 1280, 900);
     }
 
-    public static Scene getScene() {
+    public Scene getScene() {
         return scene;
     }
 
-    // ---------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------
     // MAIN LAYOUT
-    // ---------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------
     private BorderPane createMainLayout() {
         BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: #F5F5F5;");
 
         // Sidebar
-        VBox sidebar = createSidebar();
+        Sidebar sidebar = new Sidebar(navigator, "Activity Tracker", "Bob Dylan", "bob.dylan@gmail.com");
         root.setLeft(sidebar);
 
-        // Content
-        ScrollPane scrollPane = new ScrollPane(createContentArea());
+        // Main content
+        VBox content = createContentArea();
+
+        ScrollPane scrollPane = new ScrollPane(content);
         scrollPane.setFitToWidth(true);
-        scrollPane.getStyleClass().add("content-scroll");
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setStyle("-fx-background-color: #F5F5F5;");
 
         root.setCenter(scrollPane);
+
         return root;
     }
 
-    // ---------------------------------------------------------------------------------------------
-    // SIDEBAR + PROFILE SECTION
-    // ---------------------------------------------------------------------------------------------
-    private VBox createSidebar() {
-        VBox sidebar = new VBox(0);
-        sidebar.getStyleClass().add("sidebar");
-        sidebar.setPrefWidth(220);
-
-        VBox profileSection = createProfileSection();
-        VBox navigation = createNavigation();
-
-        Button logoutButton = new Button("Log Out");
-        logoutButton.getStyleClass().addAll("nav-item", "logout-button");
-        logoutButton.setMaxWidth(Double.MAX_VALUE);
-
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
-
-        sidebar.getChildren().addAll(profileSection, navigation, spacer, logoutButton);
-        return sidebar;
-    }
-
-    private VBox createProfileSection() {
-        VBox profileBox = new VBox(8);
-        profileBox.getStyleClass().add("profile-section");
-        profileBox.setAlignment(Pos.CENTER);
-        profileBox.setPadding(new Insets(30, 20, 20, 20));
-
-        Circle profilePic = new Circle(30);
-        profilePic.setFill(Color.web("#CCCCCC"));
-
-        Label nameLabel = new Label("Bob Dylan");
-        nameLabel.getStyleClass().add("profile-name");
-
-        Label emailLabel = new Label("bob.dylan@gmail.com");
-        emailLabel.getStyleClass().add("profile-email");
-
-        profileBox.getChildren().addAll(profilePic, nameLabel, emailLabel);
-        return profileBox;
-    }
-
-    private VBox createNavigation() {
-        VBox nav = new VBox(0);
-        nav.getStyleClass().add("navigation");
-
-        nav.getChildren().addAll(
-                createNavButton("Dashboard", "📊", false),
-                createNavButton("Meal Tracker", "🍴", false),
-                createNavButton("Activity Tracker", "🏃", true), // ACTIVE
-                createNavButton("Settings", "⚙", false),
-                createNavButton("Notifications", "🔔", false)
-        );
-
-        return nav;
-    }
-
-    private Button createNavButton(String text, String icon, boolean active) {
-        Button b = new Button(icon + "  " + text);
-        b.getStyleClass().add("nav-item");
-        if (active) b.getStyleClass().add("nav-item-active");
-        b.setAlignment(Pos.CENTER_LEFT);
-        b.setMaxWidth(Double.MAX_VALUE);
-        return b;
-    }
-
-    // ---------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------
     // CONTENT AREA
-    // ---------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------
+
+
     private VBox createContentArea() {
         VBox content = new VBox(30);
-        content.getStyleClass().add("content-area");
         content.setPadding(new Insets(40, 60, 40, 60));
+        content.setStyle("-fx-background-color: #F5F5F5;");
 
-        Label headerTitle = new Label("Activity Tracker");
-        headerTitle.getStyleClass().add("content-header");
+        // Header
+        HBox header = createHeader();
 
-        VBox activityCard = createActivityCard();
+        // Activity form
+        VBox activityForm = createActivityForm();
+
+        // History section
         VBox historySection = createHistorySection();
 
-        content.getChildren().addAll(headerTitle, activityCard, historySection);
+        content.getChildren().addAll(header, activityForm, historySection);
+
         return content;
     }
+    private HBox createHeader() {
+        HBox header = new HBox(20);
+        header.setAlignment(Pos.CENTER_LEFT);
 
-    // ---------------------------------------------------------------------------------------------
-    // ADD ACTIVITY CARD
-    // ---------------------------------------------------------------------------------------------
-    private VBox createActivityCard() {
-        VBox card = new VBox(20);
-        card.getStyleClass().add("activity-card");
-        card.setPadding(new Insets(25));
+        // Title section
+        VBox titleBox = new VBox(5);
 
-        // Card Title with "+ Activity" button
-        HBox cardHeader = new HBox();
-        Label title = new Label("Activity");
-        title.getStyleClass().add("section-title");
+        Label title = new Label("Activity Tracker");
+        title.setFont(Font.font("Inter", FontWeight.BOLD, 48));
+        title.setTextFill(Color.web("#111827"));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM");
+
+        Label dateLabel = new Label(currentDate.format(formatter));
+        dateLabel.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 20));
+        dateLabel.setTextFill(Color.web("#27692A"));
+
+        titleBox.getChildren().addAll(title, dateLabel);
+
+        // Spacer
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        // HealthZ logo
+        Label healthzLabel = new Label("HealthZ");
+        healthzLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        healthzLabel.setTextFill(Color.web("#27692A"));
+
+        header.getChildren().addAll(titleBox, spacer, healthzLabel);
+        return header;
+    }
+
+    private VBox createActivityForm() {
+        VBox formContainer = new VBox(25);
+        formContainer.setPadding(new Insets(30));
+        formContainer.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-background-radius: 15px; " +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
+        );
+
+        // Header row with title and add button
+        HBox headerRow = new HBox(20);
+        headerRow.setAlignment(Pos.CENTER_LEFT);
+
+        Label formTitle = new Label("Activity");
+        formTitle.setFont(Font.font("Inter", FontWeight.BOLD, 28));
+        formTitle.setTextFill(Color.web("#111827"));
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         Button addButton = new Button("+ Activity");
-        addButton.getStyleClass().add("add-activity-button");
+        addButton.setFont(Font.font("Inter", FontWeight.BOLD, 15));
+        addButton.setTextFill(Color.WHITE);
+        addButton.setPrefHeight(45);
+        addButton.setPadding(new Insets(0, 25, 0, 25));
+        addButton.setStyle(
+                "-fx-background-color: #27692A; " +
+                        "-fx-background-radius: 10px; " +
+                        "-fx-cursor: hand;"
+        );
         addButton.setOnAction(e -> handleAddActivity());
 
-        cardHeader.getChildren().addAll(title, spacer, addButton);
+        headerRow.getChildren().addAll(formTitle, spacer, addButton);
 
-        // FORM
-        GridPane form = new GridPane();
-        form.setHgap(20);
-        form.setVgap(15);
+        // --- Form fields container ---
+        VBox fieldsBox = new VBox(20);
+        fieldsBox.setPadding(new Insets(20, 0, 0, 0));
 
-        // Select Activity
+        // -------------------------------------
+        // Select Activity (replaces ComboBox)
+        // -------------------------------------
         Label activityLabel = new Label("Select Activity");
-        activityLabel.getStyleClass().add("field-label");
+        activityLabel.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 14));
+        activityLabel.setTextFill(Color.web("#374151"));
 
         // Search field
-        TextField searchField = new TextField();
+        searchField = new TextField();
         searchField.setPromptText("Search activities...");
+        searchField.setPrefHeight(45);
+        searchField.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-border-color: #D1D5DB; " +
+                        "-fx-border-width: 2px; " +
+                        "-fx-border-radius: 8px; " +
+                        "-fx-background-radius: 8px; " +
+                        "-fx-font-size: 15px; " +
+                        "-fx-padding: 10px 15px;"
+        );
 
-        controller.loadAllExercises();
-
-        // Scrollable list view
+        // Search result list (hidden until clicked)
         exerciseListView = new ListView<>();
         exerciseListView.setPrefHeight(200);
+        exerciseListView.setVisible(false);
+        exerciseListView.setManaged(false); // ⬅️ prevents empty space when hidden
         exerciseListView.setItems(exerciseListViewModel.getExerciseList());
-        exerciseListView.getStyleClass().add("activity-list");
+        exerciseListView.setStyle("-fx-border-color: #E5E7EB; -fx-background-radius: 8;");
 
-        exerciseListView.setVisible(false); // hidden by default
+        // Load all exercises from Supabase
+        controller.loadAllExercises();
 
-        searchField.setOnMouseClicked(e -> exerciseListView.setVisible(true));
-
-        // When user types, ask controller to update results
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-            controller.onSearchQuery(newVal);
+        // Show list when user clicks
+        searchField.setOnMouseClicked(e -> {
+            exerciseListView.setVisible(true);
+            exerciseListView.setManaged(true);
         });
 
-        VBox activitySelector = new VBox(8, searchField, exerciseListView);
-        activitySelector.setAlignment(Pos.CENTER_LEFT);
 
-        form.add(activityLabel, 0, 0);
-        form.add(activitySelector, 0, 1);
+        // Filter dynamically
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> controller.onSearchQuery(newVal));
 
-        // Duration
-        Label durationLabel = new Label("Duration (min)");
-        durationLabel.getStyleClass().add("field-label");
-
-        durationField = new TextField();
-        durationField.setPromptText("e.g., 60");
-        durationField.getStyleClass().add("form-field");
-
-        // Calories
-        Label calLabel = new Label("Calories burned");
-        calLabel.getStyleClass().add("field-label");
-
-        caloriesField = new TextField("0");
-        caloriesField.setEditable(false);
-        caloriesField.getStyleClass().add("form-field");
-
-        // Add to grid
-
-        form.add(durationLabel, 1, 0);
-        form.add(durationField, 1, 1);
-
-        form.add(calLabel, 2, 0);
-        form.add(caloriesField, 2, 1);
-
-        // When user selects an activity, update calories immediately
+        // On activity selection
         exerciseListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             selectedActivity = newVal;
-            if (selectedActivity != null && !durationField.getText().isEmpty()) {
-                try {
-                    searchField.setText(selectedActivity);
-                    controller.onDurationOrActivityChange(selectedActivity, durationField.getText(), currentProfile);
+            if (selectedActivity != null) {
+                searchField.setText(selectedActivity);
+                exerciseListView.setVisible(false);
+                exerciseListView.setManaged(false);
+
+                // If duration exists, recalc calories
+                String dur = durationField != null ? durationField.getText() : "";
+                if (dur != null && !dur.isBlank()) {
+                    try {
+                        controller.onDurationOrActivityChange(selectedActivity, dur, currentProfile);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                     caloriesField.setText(String.format("%.1f", exerciseListViewModel.getCurrentCalories()));
-                } catch (Exception e) {
-                    caloriesField.setText("0");
                 }
             }
         });
 
-// Duration field — updates calories when user types a number
+        VBox activityBox = new VBox(8, searchField, exerciseListView);
+        fieldsBox.getChildren().addAll(activityLabel, activityBox);
+
+        // -------------------------------------
+        // Duration
+        // -------------------------------------
+        Label durationLabel = new Label("Duration (minutes)");
+        durationLabel.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 14));
+        durationLabel.setTextFill(Color.web("#374151"));
+
+        durationField = new TextField();
+        durationField.setPromptText("e.g., 60");
+        durationField.setPrefHeight(45);
+        durationField.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-border-color: #D1D5DB; " +
+                        "-fx-border-width: 2px; " +
+                        "-fx-border-radius: 8px; " +
+                        "-fx-background-radius: 8px; " +
+                        "-fx-font-size: 15px; " +
+                        "-fx-padding: 10px 15px;"
+        );
         durationField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (selectedActivity != null && !newVal.isEmpty()) {
+            if (selectedActivity != null && !newVal.isBlank()) {
                 try {
-                    controller.onDurationOrActivityChange(selectedActivity, durationField.getText(), currentProfile);
+                    controller.onDurationOrActivityChange(selectedActivity, newVal, currentProfile);
                     caloriesField.setText(String.format("%.1f", exerciseListViewModel.getCurrentCalories()));
-                } catch (Exception e) {
+                } catch (Exception ex) {
                     caloriesField.setText("0");
                 }
             } else {
                 caloriesField.setText("0");
             }
         });
-        card.getChildren().addAll(cardHeader, form);
 
-        controller.loadAllExercises();
+        fieldsBox.getChildren().addAll(durationLabel, durationField);
 
-        return card;
+        // -------------------------------------
+        // Calories burned (auto-calculated)
+        // -------------------------------------
+        Label caloriesLabel = new Label("Calories burned");
+        caloriesLabel.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 14));
+        caloriesLabel.setTextFill(Color.web("#374151"));
+
+        caloriesField = new TextField("0");
+        caloriesField.setEditable(false);
+        caloriesField.setPrefHeight(45);
+        caloriesField.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-border-color: #D1D5DB; " +
+                        "-fx-border-width: 2px; " +
+                        "-fx-border-radius: 8px; " +
+                        "-fx-background-radius: 8px; " +
+                        "-fx-font-size: 15px; " +
+                        "-fx-padding: 10px 15px; " +
+                        "-fx-text-fill: #27692A; " +
+                        "-fx-font-weight: bold;"
+        );
+
+        fieldsBox.getChildren().addAll(caloriesLabel, caloriesField);
+
+        formContainer.getChildren().addAll(headerRow, fieldsBox);
+
+        return formContainer;
     }
 
-    // ---------------------------------------------------------------------------------------------
-    // HISTORY SECTION
-    // ---------------------------------------------------------------------------------------------
+
     private VBox createHistorySection() {
-        VBox section = new VBox(15);
-        section.getStyleClass().add("history-section");
+        VBox historySection = new VBox(20);
+        historySection.setPadding(new Insets(10, 0, 0, 0));
 
-        Label title = new Label("History");
-        title.getStyleClass().add("section-title");
+        // Title
+        Label historyTitle = new Label("History");
+        historyTitle.setFont(Font.font("Inter", FontWeight.BOLD, 28));
+        historyTitle.setTextFill(Color.web("#111827"));
 
+        // White card container
+        VBox historyCard = new VBox();
+        historyCard.setStyle(
+                "-fx-background-color: white; " +
+                        "-fx-background-radius: 15px; " +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
+        );
+        historyCard.setPadding(new Insets(20, 25, 25, 25));
+
+        // Your dynamic ListView of ActivityItem (from ViewModel)
         historyListView = new ListView<>(historyViewModel.getHistory());
-        historyListView.getStyleClass().add("history-list");
+        historyListView.setPrefHeight(400);
+        historyListView.setStyle(
+                "-fx-background-color: transparent; " +
+                        "-fx-border-color: transparent;"
+        );
 
-        // Custom cell
+        // Your custom cell renderer (keeps nice layout and hover effects)
         historyListView.setCellFactory(list -> new ActivityHistoryCell());
 
+        historyCard.getChildren().add(historyListView);
 
-        section.getChildren().add(historyListView);
-        return section;
+        historySection.getChildren().addAll(historyTitle, historyCard);
+        return historySection;
     }
 
-    // ---------------------------------------------------------------------------------------------
-    // HANDLE ADD ACTIVITY
-    // ---------------------------------------------------------------------------------------------
     private void handleAddActivity() {
-        if (selectedActivity == null || selectedActivity.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Please select an activity first!");
-            alert.showAndWait();
+        if (selectedActivity == null || selectedActivity.isBlank()) {
+            info("Missing Information", "Please select an activity first!");
+            return;
+        }
+        if (durationField.getText().isBlank()) {
+            info("Missing Information", "Please enter a duration.");
             return;
         }
 
-        if (durationField.getText().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Please enter a duration.");
-            alert.showAndWait();
-            return;
-        }
         try {
-            // now safe to proceed
-            String name = selectedActivity;
-            String duration = durationField.getText();
-            String date = LocalDate.now().format(DateTimeFormatter.ofPattern("d MMM"));
-            controller.logActivity(selectedActivity, duration, currentProfile);
+            // Your use-case call: logs to DB and presenter updates historyViewModel
+            controller.logActivity(selectedActivity, durationField.getText(), currentProfile);
+
+            // UX niceties
             exerciseListView.setVisible(false);
             durationField.clear();
             caloriesField.setText("0");
-        }
-        catch (Exception e) {
-            System.err.println("Error adding activity: " + e.getMessage());
 
+            info("Activity Logged", selectedActivity + " has been logged successfully!");
+        } catch (Exception e) {
+            error("Failed to save activity: " + e.getMessage());
+        }
+    }
+
+    // ------------------------------------------------------------
+    // SMALL UI HELPERS
+    // ------------------------------------------------------------
+    private Label label(String text) {
+        Label l = new Label(text);
+        l.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 14));
+        l.setTextFill(Color.web("#374151"));
+        return l;
+    }
+
+    private TextField input(String prompt) {
+        TextField tf = new TextField();
+        tf.setPromptText(prompt);
+        tf.setPrefHeight(45);
+        tf.setStyle("""
+            -fx-background-color: white;
+            -fx-border-color: #D1D5DB;
+            -fx-border-width: 2px;
+            -fx-border-radius: 8px;
+            -fx-background-radius: 8px;
+            -fx-font-size: 15px;
+            -fx-padding: 10px 15px;
+        """);
+        tf.focusedProperty().addListener((obs, was, isNow) -> {
+            if (isNow) {
+                tf.setStyle("""
+                    -fx-background-color: white;
+                    -fx-border-color: #27692A;
+                    -fx-border-width: 2px;
+                    -fx-border-radius: 8px;
+                    -fx-background-radius: 8px;
+                    -fx-font-size: 15px;
+                    -fx-padding: 10px 15px;
+                """);
+            } else {
+                tf.setStyle("""
+                    -fx-background-color: white;
+                    -fx-border-color: #D1D5DB;
+                    -fx-border-width: 2px;
+                    -fx-border-radius: 8px;
+                    -fx-background-radius: 8px;
+                    -fx-font-size: 15px;
+                    -fx-padding: 10px 15px;
+                """);
+            }
+        });
+        return tf;
+    }
+
+    private void info(String title, String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
+
+    private void error(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
+
+    // ------------------------------------------------------------
+    // HISTORY CELL (pretty row for ActivityItem)
+    // ------------------------------------------------------------
+    private static class ActivityHistoryCell extends ListCell<ActivityItem> {
+        @Override
+        protected void updateItem(ActivityItem item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty || item == null) {
+                setGraphic(null);
+                return;
+            }
+
+            // Left: name + duration
+            Label name = new Label(item.getName());
+            name.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 18));
+            name.setTextFill(Color.web("#111827"));
+
+            Label duration = new Label(item.getDuration());
+            duration.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            duration.setTextFill(Color.web("#27692A"));
+
+            Label calories = new Label(item.getCalories() + " cal");
+            calories.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            calories.setTextFill(Color.web("#27692A")); // soft green tone
+
+            VBox left = new VBox(4, name, new HBox(10, duration, calories));
+            HBox.setHgrow(left, Priority.ALWAYS);
+
+
+            // Right: date
+            Label date = new Label(item.getDate());
+            date.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            date.setTextFill(Color.web("#6B7280"));
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+            HBox row = new HBox(20, left, spacer, date);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.setPadding(new Insets(18, 10, 18, 10));
+            row.setStyle("""
+                -fx-border-color: #E5E7EB;
+                -fx-border-width: 0 0 1 0;
+            """);
+
+            row.setOnMouseEntered(e -> row.setStyle("""
+                -fx-border-color: #E5E7EB;
+                -fx-border-width: 0 0 1 0;
+                -fx-background-color: #F9FAFB;
+                -fx-cursor: hand;
+            """));
+            row.setOnMouseExited(e -> row.setStyle("""
+                -fx-border-color: #E5E7EB;
+                -fx-border-width: 0 0 1 0;
+            """));
+
+            setGraphic(row);
         }
     }
 }
-
