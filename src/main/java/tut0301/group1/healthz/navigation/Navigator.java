@@ -7,8 +7,6 @@ import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAc
 //import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailDataAccessObject;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchDataAccessObject;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchGateway;
 import tut0301.group1.healthz.dataaccess.supabase.*;
 import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.interfaceadapter.activity.*;
