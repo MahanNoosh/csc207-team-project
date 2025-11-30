@@ -8,4 +8,8 @@ public interface RecipeSearchOutputBoundary {
     void presentSuccess(List<RecipeSearchResult> results);
 
     void presentFailure(String errorMessage);
+
+    void presentError(String pleaseEnterASearchTerm);
+
+    void presentResults(List<RecipeSearchResult> results);
 }

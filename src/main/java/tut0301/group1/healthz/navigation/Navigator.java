@@ -4,6 +4,9 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodDetailDataAccessObject;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAccessObject;
+//import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailDataAccessObject;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchDataAccessObject;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchGateway;
 import tut0301.group1.healthz.dataaccess.supabase.*;
@@ -49,18 +52,19 @@ import tut0301.group1.healthz.usecase.food.search.FoodSearchDataAccessInterface;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodInputBoundary;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodInteractor;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodOutputBoundary;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailGateway;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputBoundary;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInteractor;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
+//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
-import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
-import tut0301.group1.healthz.usecase.favoriterecipe.FavoriteRecipeGateway;
-import tut0301.group1.healthz.usecase.favoriterecipe.DeleteFavoriteInteractor;
-import tut0301.group1.healthz.usecase.favoriterecipe.DeleteFavoriteInputBoundary;
-import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesInteractor;
-import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesInputBoundary;
 import tut0301.group1.healthz.view.activity.ActivityView;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
 import tut0301.group1.healthz.view.auth.SignupView;
@@ -224,7 +228,7 @@ public class Navigator {
         // Recipe Search setup
         RecipeSearchViewModel recipeSearchViewModel = new RecipeSearchViewModel();
         RecipeSearchPresenter recipeSearchPresenter = new RecipeSearchPresenter(recipeSearchViewModel);
-        RecipeSearchGateway recipeSearchGateway = new FatSecretRecipeSearchGateway();
+        RecipeSearchGateway recipeSearchGateway = new FatSecretRecipeSearchDataAccessObject();
         RecipeSearchInputBoundary recipeSearchInteractor = new RecipeSearchInteractor(recipeSearchGateway, recipeSearchPresenter);
         RecipeSearchController recipeSearchController = new RecipeSearchController(recipeSearchInteractor, recipeSearchPresenter);
 
@@ -273,7 +277,7 @@ public class Navigator {
 
         FavoriteRecipeView view = new FavoriteRecipeView(userName, userId, controller, viewModel, this);
 
-        setupFavoriteRecipes(view);
+        setupFavoriteRecipesNavigation(view);
 
         primaryStage.setScene(view.getScene());
         primaryStage.setTitle("HealthZ - Favorite Recipes");
@@ -326,7 +330,7 @@ public class Navigator {
         // Create Presenter
         RecipeDetailPresenter presenter = new RecipeDetailPresenter(viewModel);
 
-        RecipeDetailGateway gateway = new FatSecretRecipeDetailGateway();
+        RecipeDetailGateway gateway = new FatSecretRecipeDetailDataAccessObject();
 
         // Create Interactor
         RecipeDetailInputBoundary interactor = new RecipeDetailInteractor(gateway, presenter);
@@ -829,9 +833,25 @@ public class Navigator {
     }
 
     /**
+     * Setup navigation for Recipe Details page
+     */
+    private void setupRecipeDetailNavigation(RecipeDetailView recipeDetailView) {
+        recipeDetailView.getBackButton().setOnAction(e -> {
+            System.out.println("Going back from recipe detail...");
+            showRecipeSearch();
+        });
+
+        recipeDetailView.getFavoriteButton().setOnAction(e -> {
+            System.out.println("Navigating to favorite recipe page...");
+            showFavoriteRecipes();
+        });
+    }
+
+
+    /**
      * Setup navigation for Favorite Recipe page
      */
-    private void setupFavoriteRecipes(FavoriteRecipeView favoriteRecipeView) {
+    private void setupFavoriteRecipesNavigation(FavoriteRecipeView favoriteRecipeView) {
         favoriteRecipeView.getBackButton().setOnAction(e -> {
             System.out.println("Navigating to Back button...");
             showRecipeSearch();

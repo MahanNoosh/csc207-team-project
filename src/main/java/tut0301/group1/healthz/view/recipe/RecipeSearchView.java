@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -14,6 +15,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import tut0301.group1.healthz.entities.nutrition.RecipeFilter;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.AddFavoriteController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
@@ -38,13 +40,19 @@ public class RecipeSearchView {
     private final AddFavoriteController addFavoriteController;
     private final String userId;
 
-    // Filter controls
+    // Filter state
+    private FlowPane categoryChipsContainer;
+    private FlowPane calorieChipsContainer;
     private Slider carbSlider;
     private Slider proteinSlider;
     private Slider fatSlider;
     private Label carbValueLabel;
     private Label proteinValueLabel;
     private Label fatValueLabel;
+
+    // Current search query
+    private String currentSearchQuery = "";
+
 
     public RecipeSearchView(RecipeSearchController controller,
                             RecipeSearchViewModel viewModel,
@@ -148,7 +156,7 @@ public class RecipeSearchView {
                         "-fx-padding: 30px;"
         );
 
-        // Search bar
+        // Search bar (always visible)
         HBox searchBar = new HBox(15);
         searchBar.setAlignment(Pos.CENTER_LEFT);
         searchBar.setPrefHeight(60);
@@ -172,7 +180,6 @@ public class RecipeSearchView {
                         "-fx-border-color: transparent;"
         );
         HBox.setHgrow(searchField, Priority.ALWAYS);
-
         searchField.setOnAction(e -> handleSearch());
 
         searchBar.getChildren().addAll(searchIcon, searchField);
@@ -181,17 +188,107 @@ public class RecipeSearchView {
         statusLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
         statusLabel.setTextFill(Color.web("#6B7280"));
 
-        // Categories
-        VBox categoriesSection = createCategoriesSection();
+        // ✅ Collapsible sections
+        VBox categoriesCollapsible = createCollapsibleSection(
+                "Categories",
+                createCategoriesSection()
+        );
 
-        // Calorie Range
         VBox calorieSection = createCalorieRangeSection();
-
-        // Macro Sliders
+        calorieSection.setPrefWidth(350);
         VBox macroSection = createMacroSlidersSection();
+        HBox.setHgrow(macroSection, Priority.ALWAYS);
 
-        container.getChildren().addAll(searchBar, statusLabel, categoriesSection, calorieSection, macroSection);
+        HBox filterRow = new HBox(30);
+        filterRow.setAlignment(Pos.TOP_LEFT);
+        filterRow.getChildren().addAll(calorieSection, macroSection);
+
+        VBox filtersCollapsible = createCollapsibleSection(
+                "Calorie & Macro Filters",
+                filterRow
+        );
+
+        container.getChildren().addAll(
+                searchBar,
+                statusLabel,
+                categoriesCollapsible,
+                filtersCollapsible
+        );
+
         return container;
+    }
+
+    /**
+     * Create a collapsible section with toggle button
+     */
+    private VBox createCollapsibleSection(String title, javafx.scene.Node content) {
+        VBox section = new VBox(10);
+
+        // Header with toggle
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setStyle(
+                "-fx-cursor: hand; " +
+                        "-fx-padding: 10px; " +
+                        "-fx-background-color: white; " +
+                        "-fx-background-radius: 8px;"
+        );
+
+        Label arrow = new Label("▼");
+        arrow.setFont(Font.font(14));
+        arrow.setTextFill(Color.web("#27692A"));
+
+        Label titleLabel = new Label(title);
+        titleLabel.setFont(Font.font("Inter", FontWeight.BOLD, 16));
+        titleLabel.setTextFill(Color.web("#111827"));
+
+        header.getChildren().addAll(arrow, titleLabel);
+
+        // Content container
+        VBox contentContainer = new VBox();
+        contentContainer.setPadding(new Insets(10, 0, 0, 0));
+        contentContainer.getChildren().add(content);
+        contentContainer.setVisible(true);
+        contentContainer.setManaged(true);
+
+        // Toggle action
+        header.setOnMouseClicked(e -> {
+            boolean isVisible = contentContainer.isVisible();
+
+            if (isVisible) {
+                // Collapse
+                contentContainer.setVisible(false);
+                contentContainer.setManaged(false);
+                arrow.setText("▶");
+            } else {
+                // Expand
+                contentContainer.setVisible(true);
+                contentContainer.setManaged(true);
+                arrow.setText("▼");
+            }
+        });
+
+        // Hover effect
+        header.setOnMouseEntered(e ->
+                header.setStyle(
+                        "-fx-cursor: hand; " +
+                                "-fx-padding: 10px; " +
+                                "-fx-background-color: #F0F7F3; " +
+                                "-fx-background-radius: 8px;"
+                )
+        );
+
+        header.setOnMouseExited(e ->
+                header.setStyle(
+                        "-fx-cursor: hand; " +
+                                "-fx-padding: 10px; " +
+                                "-fx-background-color: white; " +
+                                "-fx-background-radius: 8px;"
+                )
+        );
+
+        section.getChildren().addAll(header, contentContainer);
+        return section;
     }
 
     /**
@@ -204,8 +301,8 @@ public class RecipeSearchView {
         label.setFont(Font.font("Inter", FontWeight.BOLD, 16));
         label.setTextFill(Color.web("#111827"));
 
-        FlowPane categoryChips = new FlowPane(10, 10);
-        categoryChips.getChildren().addAll(
+        categoryChipsContainer = new FlowPane(10, 10);
+        categoryChipsContainer.getChildren().addAll(
                 createFilterChip("Breakfast", false),
                 createFilterChip("Lunch", false),
                 createFilterChip("Dinner", false),
@@ -213,7 +310,7 @@ public class RecipeSearchView {
                 createFilterChip("Dessert", false)
         );
 
-        section.getChildren().addAll(label, categoryChips);
+        section.getChildren().addAll(label, categoryChipsContainer);
         return section;
     }
 
@@ -227,15 +324,15 @@ public class RecipeSearchView {
         label.setFont(Font.font("Inter", FontWeight.BOLD, 16));
         label.setTextFill(Color.web("#111827"));
 
-        FlowPane calorieChips = new FlowPane(10, 10);
-        calorieChips.getChildren().addAll(
+        calorieChipsContainer = new FlowPane(10, 10);
+        calorieChipsContainer.getChildren().addAll(
                 createFilterChip("Under 100", false),
                 createFilterChip("100 to 250", false),
                 createFilterChip("250 to 500", false),
                 createFilterChip("Over 500", false)
         );
 
-        section.getChildren().addAll(label, calorieChips);
+        section.getChildren().addAll(label, calorieChipsContainer);
         return section;
     }
 
@@ -373,7 +470,23 @@ public class RecipeSearchView {
     }
 
     /**
-     * Handle search input
+     * Get selected calorie range from chips
+     */
+    private String getSelectedCalorieRange() {
+        // You'll need to store references to calorie chips
+        for (Node node : calorieChipsContainer.getChildren()) {
+            if (node instanceof Button) {
+                Button chip = (Button) node;
+                if (chip.getStyle().contains("#7CAF8D")) { // Selected style
+                    return chip.getText();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Update handleSearch to use filters
      */
     private void handleSearch() {
         String query = searchField.getText();
@@ -385,6 +498,19 @@ public class RecipeSearchView {
             return;
         }
 
+        currentSearchQuery = query;
+
+        // Perform search with filters
+        performSearchWithFilters(query);
+    }
+
+    /**
+     * Perform search with current filters
+     */
+    private void performSearchWithFilters(String query) {
+        // Build filter from UI
+        RecipeFilter filter = buildFilterFromUI();
+
         // Show loading state
         statusLabel.setText("Searching for \"" + query + "\"...");
         statusLabel.setTextFill(Color.web("#27692A"));
@@ -393,7 +519,7 @@ public class RecipeSearchView {
         Task<Void> searchTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                controller.search(query);
+                controller.search(query, filter);
                 Thread.sleep(500);
                 return null;
             }
@@ -413,6 +539,97 @@ public class RecipeSearchView {
         };
 
         new Thread(searchTask).start();
+    }
+
+    /**
+     * Build RecipeFilter from current UI state
+     */
+    private RecipeFilter buildFilterFromUI() {
+        RecipeFilter filter = new RecipeFilter();
+
+        // Get calorie range from selected chip
+        String selectedCalorieRange = getSelectedChip(calorieChipsContainer);
+        if (selectedCalorieRange != null) {
+            switch (selectedCalorieRange) {
+                case "Under 100":
+                    filter.caloriesFrom = 0L;
+                    filter.caloriesTo = 100L;
+                    break;
+                case "100 to 250":
+                    filter.caloriesFrom = 100L;
+                    filter.caloriesTo = 250L;
+                    break;
+                case "250 to 500":
+                    filter.caloriesFrom = 250L;
+                    filter.caloriesTo = 500L;
+                    break;
+                case "Over 500":
+                    filter.caloriesFrom = 500L;
+                    filter.caloriesTo = null; // No upper limit
+                    break;
+            }
+        }
+
+        // Get macro percentages from sliders
+        int carbValue = (int) carbSlider.getValue();
+        int proteinValue = (int) proteinSlider.getValue();
+        int fatValue = (int) fatSlider.getValue();
+
+        // Add macro filters (±10% range)
+        if (carbValue > 0 && carbValue < 100) {
+            filter.carbsFrom = (long) Math.max(0, carbValue - 10);
+            filter.carbsTo = (long) Math.min(100, carbValue + 10);
+        }
+
+        if (proteinValue > 0 && proteinValue < 100) {
+            filter.proteinFrom = (long) Math.max(0, proteinValue - 10);
+            filter.proteinTo = (long) Math.min(100, proteinValue + 10);
+        }
+
+        if (fatValue > 0 && fatValue < 100) {
+            filter.fatFrom = (long) Math.max(0, fatValue - 10);
+            filter.fatTo = (long) Math.min(100, fatValue + 10);
+        }
+
+        System.out.println("🔍 Built filter: " + formatFilterDebug(filter));
+
+        return filter;
+    }
+
+    /**
+     * Get selected chip text from a FlowPane
+     */
+    private String getSelectedChip(FlowPane container) {
+        for (javafx.scene.Node node : container.getChildren()) {
+            if (node instanceof Button) {
+                Button chip = (Button) node;
+                // Selected chips have the green background (#7CAF8D)
+                if (chip.getStyle().contains("#7CAF8D")) {
+                    return chip.getText();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Format filter for debug output
+     */
+    private String formatFilterDebug(RecipeFilter filter) {
+        StringBuilder sb = new StringBuilder();
+        if (filter.caloriesFrom != null || filter.caloriesTo != null) {
+            sb.append("Calories: ").append(filter.caloriesFrom).append("-").append(filter.caloriesTo).append(", ");
+        }
+        if (filter.carbsFrom != null || filter.carbsTo != null) {
+            sb.append("Carbs: ").append(filter.carbsFrom).append("-").append(filter.carbsTo).append("%, ");
+        }
+        if (filter.proteinFrom != null || filter.proteinTo != null) {
+            sb.append("Protein: ").append(filter.proteinFrom).append("-").append(filter.proteinTo).append("%, ");
+        }
+        if (filter.fatFrom != null || filter.fatTo != null) {
+            sb.append("Fat: ").append(filter.fatFrom).append("-").append(filter.fatTo).append("%");
+        }
+        return sb.length() > 0 ? sb.toString() : "No filters";
     }
 
     /**
@@ -572,11 +789,18 @@ public class RecipeSearchView {
      * Handle filter change
      */
     private void handleFilterChange() {
-        System.out.println("Filters changed:");
+        System.out.println("  Filters changed:");
         System.out.println("  Carbs: " + (int)carbSlider.getValue() + "%");
         System.out.println("  Protein: " + (int)proteinSlider.getValue() + "%");
         System.out.println("  Fat: " + (int)fatSlider.getValue() + "%");
-        // TODO: Apply filters to search results
+
+        // If there's a current search, re-run it with new filters
+        if (currentSearchQuery != null && !currentSearchQuery.isEmpty()) {
+            System.out.println("Re-running search with new filters...");
+            performSearchWithFilters(currentSearchQuery);
+        } else {
+            System.out.println("No search query yet - filters will apply on next search");
+        }
     }
 
     /**
