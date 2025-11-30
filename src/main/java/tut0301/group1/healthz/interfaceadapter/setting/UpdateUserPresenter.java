@@ -1,6 +1,6 @@
 package tut0301.group1.healthz.interfaceadapter.setting;
 
-import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.usecase.setting.UpdateUserOutputBoundary;
 import tut0301.group1.healthz.usecase.setting.UpdateUserOutputData;
 

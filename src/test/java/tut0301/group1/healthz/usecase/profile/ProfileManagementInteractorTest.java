@@ -1,6 +1,6 @@
 //package tut0301.group1.healthz.usecase.profile;
 //
-//import tut0301.group1.healthz.entities.Profile;
+//import tut0301.group1.healthz.entities.Dashboard.Profile;
 //
 //import java.util.HashMap;
 //import java.util.Map;
