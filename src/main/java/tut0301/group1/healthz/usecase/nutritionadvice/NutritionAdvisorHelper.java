@@ -1,5 +1,5 @@
 package tut0301.group1.healthz.usecase.nutritionadvice;
-import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
 
 public class NutritionAdvisorHelper {
 

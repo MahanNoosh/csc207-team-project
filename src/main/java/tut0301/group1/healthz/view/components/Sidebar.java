@@ -232,7 +232,7 @@ public class Sidebar extends VBox {
                 navigator.showMainApp();
                 break;
             case "Activity Log":
-                navigator.showActivityLog();
+                navigator.showActivityTracker();
                 break;
             case "Food Log":
                 navigator.showFoodLog();

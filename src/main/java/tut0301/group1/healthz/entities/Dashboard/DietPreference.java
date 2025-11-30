@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.entities;
+package tut0301.group1.healthz.entities.Dashboard;
 
 public enum DietPreference {
     VEGETARIAN,

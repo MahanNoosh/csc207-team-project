@@ -1,9 +1,9 @@
 package tut0301.group1.healthz.usecase.profile;
 
 import java.util.Optional;
-import tut0301.group1.healthz.entities.Sex;
-import tut0301.group1.healthz.entities.Goal;
-import tut0301.group1.healthz.entities.HealthCondition;
+import tut0301.group1.healthz.entities.Dashboard.Sex;
+import tut0301.group1.healthz.entities.Dashboard.Goal;
+import tut0301.group1.healthz.entities.Dashboard.HealthCondition;
 
 /**
  * Input DTO for updating a user profile.

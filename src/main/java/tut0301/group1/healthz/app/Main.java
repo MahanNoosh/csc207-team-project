@@ -22,7 +22,7 @@ import tut0301.group1.healthz.view.auth.SignupView;
 import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
 import tut0301.group1.healthz.usecase.dashboard.ProfileInputBoundary;
 import tut0301.group1.healthz.usecase.dashboard.ProfileInteractor;
-import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.view.dashboard.ProfileCliRenderer;
 
 public class Main {
