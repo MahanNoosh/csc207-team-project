@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface UserDataDataAccessInterface {
     Optional<Profile> loadCurrentUserProfile() throws Exception;
     Profile createBlankForCurrentUserIfMissing() throws Exception;
+    Profile updateCurrentUserProfile(Profile profile) throws Exception;
 }
