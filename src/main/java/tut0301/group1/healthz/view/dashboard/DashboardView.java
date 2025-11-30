@@ -13,8 +13,6 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
-import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,15 +25,11 @@ import java.util.stream.Collectors;
 public class DashboardView {
 
     private Scene scene;
-    private String userName;
+    private String userName; // TODO: Get from user profile
 
-    private final DashboardViewModel viewModel;
-    private final DashboardController controller;
-
-    private Label caloriesValueLabel;
-    private Canvas caloriesCanvas;
-
-    // TODO: Get from actual data sources
+    // TODO: Get from actual data sources)
+    private int caloriesRemaining = 425;
+    private int caloriesTotal = 2000;
     private double carbsPercent = 42;
     private double carbsGrams = 32.6;
     private double fatPercent = 15;
@@ -43,7 +37,7 @@ public class DashboardView {
     private double proteinPercent = 20;
     private double proteinGrams = 22.5;
 
-    // Navigation buttons
+    // for navigation logic
     private Button settingsButton;
     private Button homeButton;
     private Button recipesButton;
@@ -53,35 +47,10 @@ public class DashboardView {
     private Button logOutButton;
 
     /**
-     * Constructor with Clean Architecture
+     * Constructor
      */
-    public DashboardView(DashboardController controller,
-                         DashboardViewModel viewModel,
-                         String userId) {
-        this.controller = controller;
-        this.viewModel = viewModel;
-
-        // Load dashboard data
-        System.out.println("DashboardView: Loading data...");
-        controller.loadDashboard(userId);
-
-        // Wait for data to load (simple approach)
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            // ignore
-        }
-
-        // Get user name from ViewModel
-        this.userName = viewModel.getUserName();
-        if (this.userName == null || this.userName.isEmpty()) {
-            this.userName = "User";
-        }
-
-        System.out.println("   DashboardView: Data loaded");
-        System.out.println("   Daily Goal: " + viewModel.getDailyCalorieGoal());
-        System.out.println("   Remaining: " + viewModel.getCaloriesRemaining());
-
+    public DashboardView(String userName) {
+        this.userName = userName != null ? userName : "User";
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 1200);
     }
@@ -332,50 +301,11 @@ public class DashboardView {
         chartStack.setPrefSize(200, 200);
         chartStack.setPadding(new Insets(20, 0, 20, 0));
 
-        // Create canvas and store reference
-        caloriesCanvas = new Canvas(200, 200);
-        updateCaloriesChart(); // Draw chart with ViewModel data
-
-        // Center text
-        VBox centerText = new VBox(2);
-        centerText.setAlignment(Pos.CENTER);
-
-        // Use ViewModel data
-        caloriesValueLabel = new Label(String.valueOf(viewModel.getCaloriesRemaining()));
-        caloriesValueLabel.setFont(Font.font("Inter", FontWeight.BOLD, 48));
-        caloriesValueLabel.setTextFill(Color.web("#111827"));
-
-        Label remainingLabel = new Label("remaining");
-        remainingLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
-        remainingLabel.setTextFill(Color.web("#6B7280"));
-
-        centerText.getChildren().addAll(caloriesValueLabel, remainingLabel);
-
-        chartStack.getChildren().addAll(caloriesCanvas, centerText);
-
-        widget.getChildren().addAll(header, chartStack);
-        return widget;
-    }
-
-    /**
-     * Update calories chart based on ViewModel data
-     */
-    private void updateCaloriesChart() {
-        GraphicsContext gc = caloriesCanvas.getGraphicsContext2D();
-
-        // Clear canvas
-        gc.clearRect(0, 0, 200, 200);
-
-        // Get values from ViewModel
-        int remaining = viewModel.getCaloriesRemaining();
-        int total = viewModel.getDailyCalorieGoal();
-
-        if (total == 0) {
-            total = 2000; // Fallback to prevent division by zero
-        }
+        Canvas canvas = new Canvas(200, 200);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
 
         // Calculate progress
-        double progress = (double) remaining / total;
+        double progress = (double) caloriesRemaining / caloriesTotal;
         double angle = progress * 360;
 
         // Draw background circle
@@ -388,6 +318,25 @@ public class DashboardView {
         gc.setLineWidth(25);
         gc.setLineCap(StrokeLineCap.ROUND);
         gc.strokeArc(25, 25, 150, 150, 90, -angle, javafx.scene.shape.ArcType.OPEN);
+
+        // Center text
+        VBox centerText = new VBox(2);
+        centerText.setAlignment(Pos.CENTER);
+
+        Label caloriesValue = new Label(String.valueOf(caloriesRemaining));
+        caloriesValue.setFont(Font.font("Inter", FontWeight.BOLD, 48));
+        caloriesValue.setTextFill(Color.web("#111827"));
+
+        Label remainingLabel = new Label("remaining");
+        remainingLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+        remainingLabel.setTextFill(Color.web("#6B7280"));
+
+        centerText.getChildren().addAll(caloriesValue, remainingLabel);
+
+        chartStack.getChildren().addAll(canvas, centerText);
+
+        widget.getChildren().addAll(header, chartStack);
+        return widget;
     }
 
     /**

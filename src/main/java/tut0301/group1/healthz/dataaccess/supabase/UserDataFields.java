@@ -5,7 +5,6 @@ public final class UserDataFields {
 
     // As named in supabase
     public static final String USER_ID = "userId";
-    public static final String DISPLAY_NAME = "displayName";
     public static final String WEIGHT_KG = "weightKg";
     public static final String HEIGHT_CM = "heightCm";
     public static final String AGE_YEARS = "ageYears";
@@ -18,7 +17,7 @@ public final class UserDataFields {
 
     public static String projection() {
         return String.join(",",
-                USER_ID, DISPLAY_NAME, WEIGHT_KG, HEIGHT_CM, AGE_YEARS, SEX, GOAL,
+                USER_ID, WEIGHT_KG, HEIGHT_CM, AGE_YEARS, SEX, GOAL,
                 ACTIVITY_MET, TARGET_WEIGHT_KG, DAILY_CAL_TARGET, HEALTH_COND
         );
     }

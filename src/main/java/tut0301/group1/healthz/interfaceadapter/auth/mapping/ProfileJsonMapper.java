@@ -15,7 +15,6 @@ public final class ProfileJsonMapper {
 
     public static Profile fromRow(JSONObject r) {
         String userId = optString(r, UserDataFields.USER_ID);
-        String displayName = optString(r, UserDataFields.DISPLAY_NAME);
 
         Double weightKg = optDouble(r, UserDataFields.WEIGHT_KG);
         Double heightCm = optDouble(r, UserDataFields.HEIGHT_CM);
@@ -44,14 +43,10 @@ public final class ProfileJsonMapper {
                 optString(r, UserDataFields.HEALTH_COND)
         );
 
-        Profile profile = new Profile(
+        return new Profile(
                 userId, weightKg, heightCm, ageYears, sex, goal,
                 activityLevelMET, targetWeightKg, dailyCalorieTarget, hc
         );
-
-        profile.setDisplayName(displayName);
-
-        return profile;
     }
 
     public static JSONObject toRow(Profile p) {
@@ -59,11 +54,6 @@ public final class ProfileJsonMapper {
 
         // Required
         obj.put(UserDataFields.USER_ID, p.getUserId());
-
-        // Display name
-        if (p.getDisplayName() != null && !p.getDisplayName().isEmpty()) {
-            obj.put(UserDataFields.DISPLAY_NAME, p.getDisplayName());
-        }
 
         // Optional numeric fields
         if (p.getWeightKg() != null) {
