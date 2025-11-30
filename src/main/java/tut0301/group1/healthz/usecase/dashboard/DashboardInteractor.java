@@ -1,17 +1,25 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
 import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tut0301.group1.healthz.entities.nutrition.FoodLog;
+import tut0301.group1.healthz.usecase.food.logging.FoodLogGateway;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Interactor for Dashboard Use Case
  */
 public class DashboardInteractor implements DashboardInputBoundary {
     private final UserDataDataAccessInterface userDataAccess;
+    private final FoodLogGateway foodLogGateway;
     private final DashboardOutputBoundary presenter;
 
     public DashboardInteractor(UserDataDataAccessInterface userDataAccess,
+                               FoodLogGateway foodLogGateway,
                                DashboardOutputBoundary presenter) {
         this.userDataAccess = userDataAccess;
+        this.foodLogGateway = foodLogGateway;
         this.presenter = presenter;
     }
 
@@ -31,21 +39,21 @@ public class DashboardInteractor implements DashboardInputBoundary {
                         }
                     });
 
-            // Log profile details
-            System.out.println("   Profile loaded:");
-            System.out.println("   Weight: " + profile.getWeightKg() + " kg");
-            System.out.println("   Height: " + profile.getHeightCm() + " cm");
-            System.out.println("   Age: " + profile.getAgeYears());
-            System.out.println("   Sex: " + profile.getSex());
-            System.out.println("   Goal: " + profile.getGoal());
-            System.out.println("   Activity: " + profile.getActivityLevelMET());
+            // Get daily calorie goal from profile (use CalorieCalculator as fallback)
+            int dailyCalorieGoal = profile.getDailyCalorieTarget()
+                    .map(Double::intValue)
+                    .orElseGet(() -> CalorieCalculator.calculateDailyCalorieGoal(profile));
+            System.out.println("🔥 Daily calorie goal: " + dailyCalorieGoal);
 
-            // Calculate daily calorie goal
-            int dailyCalorieGoal = CalorieCalculator.calculateDailyCalorieGoal(profile);
-            System.out.println("🔥 Calculated daily calorie goal: " + dailyCalorieGoal);
+            // Get food logs for today and calculate calories consumed
+            LocalDate today = LocalDate.now();
+            List<FoodLog> foodLogs = foodLogGateway.getFoodLogsByDate(userId, today);
 
-            // Get calories consumed (TODO: implement food log integration)
-            int caloriesConsumed = 0;
+            int caloriesConsumed = foodLogs.stream()
+                    .mapToInt(log -> (int) log.getActualMacro().calories())
+                    .sum();
+
+            // Calculate remaining calories
             int caloriesRemaining = dailyCalorieGoal - caloriesConsumed;
 
             // User name will be set by Navigator

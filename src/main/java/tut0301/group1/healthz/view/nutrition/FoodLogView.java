@@ -76,6 +76,9 @@ public class FoodLogView {
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
         setupDataBinding();
+
+        // Load initial food logs for today
+        refreshDataForCurrentDate();
     }
 
     private BorderPane createMainLayout() {
@@ -269,43 +272,6 @@ public class FoodLogView {
         addButton.setOnAction(e -> navigator.showMacroSearch());
 
         sectionHeader.getChildren().addAll(mealLabel, spacer, addButton);
-        section.getChildren().add(sectionHeader);
-
-        return section;
-    }
-
-
-    private VBox createWaterSection() {
-        VBox section = new VBox(0);
-        section.setStyle(
-                "-fx-background-color: white; " +
-                        "-fx-background-radius: 15px; " +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
-        );
-
-        HBox sectionHeader = new HBox(20);
-        sectionHeader.setPadding(new Insets(25, 30, 25, 30));
-        sectionHeader.setAlignment(Pos.CENTER_LEFT);
-
-        Label waterLabel = new Label("Water");
-        waterLabel.setFont(Font.font("Inter", FontWeight.BOLD, 28));
-        waterLabel.setTextFill(Color.web("#111827"));
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        Button addButton = new Button("+ Add Water");
-        addButton.setFont(Font.font("Inter", FontWeight.BOLD, 15));
-        addButton.setTextFill(Color.WHITE);
-        addButton.setPrefHeight(45);
-        addButton.setPadding(new Insets(0, 25, 0, 25));
-        addButton.setStyle(
-                "-fx-background-color: #27692A; " +
-                        "-fx-background-radius: 10px; " +
-                        "-fx-cursor: hand;"
-        );
-
-        sectionHeader.getChildren().addAll(waterLabel, spacer, addButton);
         section.getChildren().add(sectionHeader);
 
         return section;

@@ -1,7 +1,7 @@
 package tut0301.group1.healthz.interfaceadapter.caloriesummary;
 
-import tut0301.group1.healthz.usecase.caloriesummary.GetDailyCalorieSummaryOutputBoundary;
-import tut0301.group1.healthz.usecase.caloriesummary.GetDailyCalorieSummaryOutputData;
+import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryOutputBoundary;
+import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryOutputData;
 
 /**
  * Presenter for Get Daily Calorie Summary functionality.

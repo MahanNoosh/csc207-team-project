@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.usecase.caloriesummary;
+package tut0301.group1.healthz.usecase.macrosummary;
 
 /**
  * Input Boundary for Get Daily Calorie Summary use case.

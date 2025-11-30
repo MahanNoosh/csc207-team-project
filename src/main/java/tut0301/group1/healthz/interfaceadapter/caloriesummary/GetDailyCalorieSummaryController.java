@@ -1,7 +1,7 @@
 package tut0301.group1.healthz.interfaceadapter.caloriesummary;
 
-import tut0301.group1.healthz.usecase.caloriesummary.GetDailyCalorieSummaryInputBoundary;
-import tut0301.group1.healthz.usecase.caloriesummary.GetDailyCalorieSummaryInputData;
+import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInputBoundary;
+import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInputData;
 
 import java.time.LocalDate;
 
