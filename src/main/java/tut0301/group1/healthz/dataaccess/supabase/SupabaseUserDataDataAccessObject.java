@@ -68,8 +68,7 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
         return ProfileJsonMapper.fromRow(arr.getJSONObject(0));
     }
 
-    @Override
-    public Profile updateCurrentUserProfile(Profile profile) throws Exception {
+    public Profile upsertProfile(Profile profile) throws Exception {
         // Ensure we use the current user's id
         String currentUserId = client.getUserId();
         Profile toSave = new Profile(
@@ -148,4 +147,5 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
 
         return ProfileJsonMapper.fromRow(arr.getJSONObject(0));
     }
+
 }
