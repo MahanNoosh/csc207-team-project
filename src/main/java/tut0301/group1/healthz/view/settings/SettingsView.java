@@ -1,3 +1,4 @@
+
 package tut0301.group1.healthz.view.settings;
 
 import javafx.geometry.Insets;
@@ -6,34 +7,25 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import tut0301.group1.healthz.entities.*;
-import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserController;
-import tut0301.group1.healthz.navigation.Navigator;
 import tut0301.group1.healthz.view.components.Sidebar;
-
-import java.util.Optional;
+import tut0301.group1.healthz.navigation.Navigator;
 
 /**
  * Settings View includes:
  * - Sidebar navigation
+ * - Profile header
  * - Personal details section
  * - Biometrics section
  * - Goals section
  * - Delete account button
  */
+
 public class SettingsView {
-
-    private final Navigator navigator;
-    private final UpdateUserController updateUserController;
-    private final Profile currentProfile;
-
-    // User identity (from login)
-    private final String displayName;
-    private final String email;
-
     private Scene scene;
+    private final Navigator navigator;
 
     // Personal details fields
     private TextField fullNameField;
@@ -58,17 +50,8 @@ public class SettingsView {
     // save settings button
     private Button saveButton;
 
-    public SettingsView(Navigator navigator,
-                        UpdateUserController updateUserController,
-                        Profile currentProfile,
-                        String displayName,
-                        String email) {
+    public SettingsView(Navigator navigator) {
         this.navigator = navigator;
-        this.updateUserController = updateUserController;
-        this.currentProfile = currentProfile;
-        this.displayName = (displayName != null && !displayName.isEmpty()) ? displayName : "User";
-        this.email = email != null ? email : "";
-
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1200, 800);
 
@@ -82,8 +65,9 @@ public class SettingsView {
         BorderPane root = new BorderPane();
         root.getStylesheets().add("root");
 
-        // left sidebar with real user info
-        Sidebar sidebar = new Sidebar(navigator, "Settings", displayName, email);
+        // left sidebar
+        // TODO: get actual user credentials
+        Sidebar sidebar = new Sidebar(navigator, "Settings", "Bob Dylan", "bob.dylan@gmail.com");
         root.setLeft(sidebar);
 
         // main content area
@@ -95,7 +79,7 @@ public class SettingsView {
         return root;
     }
 
-    // content area = header + 3 sections + delete account button + save
+    // content area = header + 3 sections + delete account button
     private VBox createContentArea() {
         VBox content = new VBox(30);
         content.getStyleClass().add("content-area");
@@ -106,7 +90,7 @@ public class SettingsView {
         headerTitle.getStyleClass().add("content-header");
         headerTitle.setWrapText(true);
 
-        // Sections
+        // Three main sections
         VBox personalDetailsSection = createPersonalDetailsSection();
         VBox biometricsSection = createBiometricsSection();
         VBox goalsSection = createGoalsSection();
@@ -126,8 +110,6 @@ public class SettingsView {
                 "    -fx-cursor: hand;" +
                 "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.3), 10, 0, 0, 4);");
 
-        saveButton.setOnAction(e -> saveSettings());
-
         HBox buttonArea = new HBox(20);
         buttonArea.setAlignment(Pos.CENTER);
         buttonArea.setPadding(new Insets(20, 20, 0, 0));
@@ -144,7 +126,7 @@ public class SettingsView {
         return content;
     }
 
-    // Personal details section (uses displayName + email)
+    // personal details section
     private VBox createPersonalDetailsSection() {
         VBox section = new VBox(20);
         section.getStyleClass().add("form-section");
@@ -157,27 +139,30 @@ public class SettingsView {
         grid.setHgap(20);
         grid.setVgap(15);
 
+        // Row 1: Full Name and Email
         Label fullNameLabel = new Label("Full Name");
         fullNameLabel.getStyleClass().add("field-label");
-        fullNameField = new TextField(displayName);
+        fullNameField = new TextField("Bob Dylan");
         fullNameField.getStyleClass().add("form-field");
 
         Label emailLabel = new Label("Email");
         emailLabel.getStyleClass().add("field-label");
-        emailField = new TextField(email);
+        emailField = new TextField("bob.dylan@gmail.com");
         emailField.getStyleClass().addAll("form-field", "disabled-field");
         emailField.setDisable(true);
 
+        // Row 2: Phone Number and Billing Address
         Label phoneLabel = new Label("Phone Number");
         phoneLabel.getStyleClass().add("field-label");
-        phoneField = new TextField("+1 477 466 3344"); // TODO: map from profile if you store it
+        phoneField = new TextField("+1 477 466 3344");
         phoneField.getStyleClass().add("form-field");
 
         Label billingLabel = new Label("Billing Address");
         billingLabel.getStyleClass().add("field-label");
-        billingAddressField = new TextField("st. Fake Address"); // TODO: map from profile if you store it
+        billingAddressField = new TextField("st. Fake Address");
         billingAddressField.getStyleClass().add("form-field");
 
+        // Add to grid
         grid.add(fullNameLabel, 0, 0);
         grid.add(fullNameField, 0, 1);
         grid.add(emailLabel, 1, 0);
@@ -187,6 +172,7 @@ public class SettingsView {
         grid.add(billingLabel, 1, 2);
         grid.add(billingAddressField, 1, 3);
 
+        // Make columns equal width
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
         ColumnConstraints col2 = new ColumnConstraints();
@@ -194,10 +180,11 @@ public class SettingsView {
         grid.getColumnConstraints().addAll(col1, col2);
 
         section.getChildren().addAll(sectionTitle, grid);
+
         return section;
     }
 
-    // Biometrics section (pre-filled from currentProfile if available)
+    // Biometrics section
     private VBox createBiometricsSection() {
         VBox section = new VBox(20);
         section.getStyleClass().add("form-section");
@@ -213,30 +200,25 @@ public class SettingsView {
         // Row 1: Age and Height
         Label ageLabel = new Label("Age");
         ageLabel.getStyleClass().add("field-label");
-        Integer ageVal = (currentProfile != null) ? currentProfile.getAgeYears() : null;
-        ageField = new TextField(ageVal != null ? String.valueOf(ageVal) : "24");
+        ageField = new TextField("24");
         ageField.getStyleClass().add("form-field");
 
         Label heightLabel = new Label("Height (cm)");
         heightLabel.getStyleClass().add("field-label");
-        Double heightVal = (currentProfile != null) ? currentProfile.getHeightCm() : null;
-        heightField = new TextField(heightVal != null ? String.valueOf(heightVal) : "175");
+        heightField = new TextField("175");
         heightField.getStyleClass().add("form-field");
 
         // Row 2: Weight and Gender
         Label weightLabel = new Label("Weight (kg)");
         weightLabel.getStyleClass().add("field-label");
-        Double weightVal = (currentProfile != null) ? currentProfile.getWeightKg() : null;
-        weightField = new TextField(weightVal != null ? String.valueOf(weightVal) : "82");
+        weightField = new TextField("82");
         weightField.getStyleClass().add("form-field");
 
         Label genderLabel = new Label("Gender");
         genderLabel.getStyleClass().add("field-label");
         genderCombo = new ComboBox<>();
         genderCombo.getItems().addAll("Male", "Female", "Other", "Prefer not to say");
-        genderCombo.setValue(
-                currentProfile != null ? mapSexToCombo(currentProfile.getSex()) : "Male"
-        );
+        genderCombo.setValue("Male");
         genderCombo.getStyleClass().add("form-combo");
         genderCombo.setMaxWidth(Double.MAX_VALUE);
 
@@ -251,20 +233,13 @@ public class SettingsView {
                 "Very Active",
                 "Extremely Active"
         );
-
-        Double metVal = null;
-        if (currentProfile != null) {
-            // getActivityLevelMET() is a Double (nullable)
-            metVal = currentProfile.getActivityLevelMET();
-        }
-        String activityInitial = mapMETToActivityLevel(metVal);
-        activityLevelCombo.setValue(activityInitial);
+        activityLevelCombo.setValue("Moderately Active");
         activityLevelCombo.getStyleClass().add("form-combo");
         activityLevelCombo.setMaxWidth(Double.MAX_VALUE);
 
         Label dietLabel = new Label("Diet");
         dietLabel.getStyleClass().add("field-label");
-        dietField = new TextField("Vegan"); // TODO: map from DietPreference if you store it
+        dietField = new TextField("Vegan");
         dietField.getStyleClass().add("form-field");
 
         // Add to grid
@@ -281,6 +256,7 @@ public class SettingsView {
         grid.add(dietLabel, 1, 4);
         grid.add(dietField, 1, 5);
 
+        // Make columns equal width
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
         ColumnConstraints col2 = new ColumnConstraints();
@@ -291,7 +267,7 @@ public class SettingsView {
         return section;
     }
 
-    // Goals section (pre-filled from currentProfile if available)
+    // goals section
     private VBox createGoalsSection() {
         VBox section = new VBox(20);
         section.getStyleClass().add("form-section");
@@ -304,14 +280,12 @@ public class SettingsView {
         grid.setHgap(20);
         grid.setVgap(15);
 
+        // Row 1: Target Weight and Daily Calorie Target
         Label targetWeightLabel = new Label("Target Weight");
         targetWeightLabel.getStyleClass().add("field-label");
 
         HBox targetWeightBox = new HBox(10);
-        Double targetVal = (currentProfile != null) ? currentProfile.getTargetWeightKg() : null;
-        targetWeightField = new TextField(
-                targetVal != null ? String.valueOf(targetVal) : "82"
-        );
+        targetWeightField = new TextField("82");
         targetWeightField.getStyleClass().add("form-field");
         Label kgLabel = new Label("kg");
         kgLabel.getStyleClass().add("unit-label");
@@ -320,18 +294,10 @@ public class SettingsView {
 
         Label dailyCalorieLabel = new Label("Daily Calorie Target");
         dailyCalorieLabel.getStyleClass().add("field-label");
-
-        Optional<Double> caloriesOpt =
-                (currentProfile != null && currentProfile.getDailyCalorieTarget() != null)
-                        ? currentProfile.getDailyCalorieTarget()
-                        : Optional.empty();
-        Double caloriesVal = caloriesOpt.orElse(null);
-
-        dailyCalorieField = new TextField(
-                caloriesVal != null ? String.valueOf(caloriesVal) : "2200"
-        );
+        dailyCalorieField = new TextField("2200");
         dailyCalorieField.getStyleClass().add("form-field");
 
+        // Row 2: Goal and Daily Activity Target
         Label goalLabel = new Label("Goal");
         goalLabel.getStyleClass().add("field-label");
         goalCombo = new ComboBox<>();
@@ -341,11 +307,7 @@ public class SettingsView {
                 "Gain Weight",
                 "Build Muscle"
         );
-        goalCombo.setValue(
-                currentProfile != null
-                        ? mapGoalEnumToString(currentProfile.getGoal())
-                        : "Maintain Weight"
-        );
+        goalCombo.setValue("Maintain Weight");
         goalCombo.getStyleClass().add("form-combo");
         goalCombo.setMaxWidth(Double.MAX_VALUE);
 
@@ -354,6 +316,7 @@ public class SettingsView {
         dailyActivityField = new TextField("2 hours");
         dailyActivityField.getStyleClass().add("form-field");
 
+        // Add to grid
         grid.add(targetWeightLabel, 0, 0);
         grid.add(targetWeightBox, 0, 1);
         grid.add(dailyCalorieLabel, 1, 0);
@@ -363,6 +326,7 @@ public class SettingsView {
         grid.add(dailyActivityLabel, 1, 2);
         grid.add(dailyActivityField, 1, 3);
 
+        // Make columns equal width
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
         ColumnConstraints col2 = new ColumnConstraints();
@@ -371,6 +335,21 @@ public class SettingsView {
 
         section.getChildren().addAll(sectionTitle, grid);
         return section;
+    }
+
+    // EVENT HANDLERS
+    private void handleLogout() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Log Out");
+        alert.setHeaderText("Are you sure you want to log out?");
+        alert.setContentText("You will need to log in again to access your account.");
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                // TODO: Navigate to login screen
+                System.out.println("Logging out...");
+            }
+        });
     }
 
     private void handleDeleteAccount() {
@@ -391,171 +370,35 @@ public class SettingsView {
         });
     }
 
+    /**
+     * Returns the scene for this view
+     */
     public Scene getScene() {
         return scene;
     }
 
-    // --- mapping helpers ---
-
-    private String mapSexToCombo(Sex sex) {
-        if (sex == null) return "Other";
-        switch (sex) {
-            case MALE:
-                return "Male";
-            case FEMALE:
-                return "Female";
-            case OTHER:
-            default:
-                return "Other";
-        }
-    }
-
-    private String mapMETToActivityLevel(Double met) {
-        if (met == null) {
-            return "Moderately Active"; // default for blank profiles
-        }
-        if (met <= 1.2) return "Sedentary";
-        if (met <= 1.375) return "Lightly Active";
-        if (met <= 1.55) return "Moderately Active";
-        if (met <= 1.725) return "Very Active";
-        return "Extremely Active";
-    }
-
-    private String mapGoalEnumToString(Goal goal) {
-        if (goal == null) return "Maintain Weight";
-        switch (goal) {
-            case WEIGHT_LOSS:
-                return "Lose Weight";
-            case WEIGHT_GAIN:
-                return "Gain Weight";
-            case MUSCLE_GAIN:
-                return "Build Muscle";
-            case GENERAL_HEALTH:
-            default:
-                return "Maintain Weight";
-        }
-    }
-
-    private Sex mapGenderToSex(String gender) {
-        if (gender == null) return Sex.OTHER;
-        switch (gender.toLowerCase()) {
-            case "male":
-                return Sex.MALE;
-            case "female":
-                return Sex.FEMALE;
-            case "other":
-            case "prefer not to say":
-            default:
-                return Sex.OTHER;
-        }
-    }
-
-    private Goal mapGoalStringToEnum(String goalText) {
-        if (goalText == null) return Goal.GENERAL_HEALTH;
-        switch (goalText.toLowerCase()) {
-            case "lose weight":
-                return Goal.WEIGHT_LOSS;
-            case "gain weight":
-                return Goal.WEIGHT_GAIN;
-            case "build muscle":
-                return Goal.MUSCLE_GAIN;
-            case "maintain weight":
-            default:
-                return Goal.GENERAL_HEALTH;
-        }
-    }
-
-    private DietPreference mapDietToDietPreference(String dietText) {
-        if (dietText == null) return DietPreference.NONE;
-        String value = dietText.trim().toLowerCase();
-        switch (value) {
-            case "vegetarian":
-                return DietPreference.VEGETARIAN;
-            case "vegan":
-                return DietPreference.VEGAN;
-            case "pescetarian":
-                return DietPreference.PESCETARIAN;
-            case "gluten free":
-            case "gluten-free":
-                return DietPreference.GLUTEN_FREE;
-            case "dairy free":
-            case "dairy-free":
-                return DietPreference.DAIRY_FREE;
-            case "halal":
-                return DietPreference.HALAL;
-            case "kosher":
-                return DietPreference.KOSHER;
-            default:
-                return DietPreference.NONE;
-        }
-    }
-
-    private double mapActivityLevelToMET(String level) {
-        if (level == null) return 1.2;
-        switch (level) {
-            case "Sedentary":
-                return 1.2;
-            case "Lightly Active":
-                return 1.375;
-            case "Moderately Active":
-                return 1.55;
-            case "Very Active":
-                return 1.725;
-            case "Extremely Active":
-                return 1.9;
-            default:
-                return 1.2;
-        }
-    }
-
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     /**
-     * Collect form values and call UpdateUser use case via controller.
+     * Public method to get form values (for saving)
      */
     public void saveSettings() {
-        try {
-            int age = Integer.parseInt(ageField.getText());
-            double height = Double.parseDouble(heightField.getText());
-            double weight = Double.parseDouble(weightField.getText());
+        // TODO: Collect all values and call UpdateUserSettingsUseCase
+        String fullName = fullNameField.getText();
+        String phone = phoneField.getText();
+        String billingAddress = billingAddressField.getText();
 
-            Sex sex = mapGenderToSex(genderCombo.getValue());
-            Goal goal = mapGoalStringToEnum(goalCombo.getValue());
-            double activityMET = mapActivityLevelToMET(activityLevelCombo.getValue());
+        int age = Integer.parseInt(ageField.getText());
+        int height = Integer.parseInt(heightField.getText());
+        int weight = Integer.parseInt(weightField.getText());
+        String gender = genderCombo.getValue();
+        String activityLevel = activityLevelCombo.getValue();
+        String diet = dietField.getText();
 
-            double targetWeight = Double.parseDouble(targetWeightField.getText());
-            double dailyCalorie = Double.parseDouble(dailyCalorieField.getText());
-            Optional<Double> dailyCalorieOpt = Optional.of(dailyCalorie);
+        int targetWeight = Integer.parseInt(targetWeightField.getText());
+        int dailyCalorie = Integer.parseInt(dailyCalorieField.getText());
+        String goal = goalCombo.getValue();
+        String dailyActivity = dailyActivityField.getText();
 
-            DietPreference dietPreference = mapDietToDietPreference(dietField.getText());
-            // Currently not stored on Profile in your DAO; kept for future use
-            HealthCondition healthCondition = (currentProfile != null)
-                    ? currentProfile.getHealthCondition()
-                    : HealthCondition.NONE;
-
-            Profile newProfile = new Profile(
-                    null,            // userId (DAO will override with current userId)
-                    weight,
-                    height,
-                    age,
-                    sex,
-                    goal,
-                    activityMET,
-                    targetWeight,
-                    dailyCalorieOpt,
-                    healthCondition
-            );
-
-            updateUserController.updateUser(newProfile);
-
-        } catch (NumberFormatException e) {
-            showError("Please check that age, height, weight, target weight, and daily calories are valid numbers.");
-        }
+        System.out.println("Saving settings...");
+        // updateSettingsUseCase.execute(new UpdateSettingsRequest(...));
     }
 }
