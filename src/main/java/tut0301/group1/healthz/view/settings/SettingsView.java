@@ -8,7 +8,13 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import tut0301.group1.healthz.entities.*;
+
+import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Sex;
+import tut0301.group1.healthz.entities.Dashboard.Goal;
+import tut0301.group1.healthz.entities.Dashboard.HealthCondition;
+import tut0301.group1.healthz.entities.Dashboard.DietPreference;
+
 import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserController;
 import tut0301.group1.healthz.navigation.Navigator;
 import tut0301.group1.healthz.view.components.Sidebar;
@@ -47,7 +53,7 @@ public class SettingsView {
     private TextField weightField;
     private ComboBox<String> genderCombo;
     private ComboBox<String> activityLevelCombo;
-    private TextField dietField;
+    private ComboBox<String> dietCombo;
 
     // Goals fields
     private TextField targetWeightField;
@@ -125,6 +131,30 @@ public class SettingsView {
                 "    -fx-background-radius: 25px;" +
                 "    -fx-cursor: hand;" +
                 "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.3), 10, 0, 0, 4);");
+        saveButton.setOnMouseClicked(e -> {
+                saveButton.setStyle("-fx-background-color: #205425;" +
+                        "    -fx-padding: 14px 40px;" +
+                        "    -fx-background-radius: 25px;" +
+                        "    -fx-cursor: hand;" +
+                        "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 15, 0, 0, 6);"
+                );
+        });
+        saveButton.setOnMouseEntered(e -> {
+            saveButton.setStyle("-fx-background-color: #205425;" +
+                    "    -fx-padding: 14px 40px;" +
+                    "    -fx-background-radius: 25px;" +
+                    "    -fx-cursor: hand;" +
+                    "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 15, 0, 0, 6);"
+            );
+        });
+        saveButton.setOnMouseExited(e -> {
+            saveButton.setStyle("-fx-background-color: #27692A;" +
+                    "    -fx-padding: 14px 40px;" +
+                    "    -fx-background-radius: 25px;" +
+                    "    -fx-cursor: hand;" +
+                    "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 15, 0, 0, 6);"
+            );
+        });
 
         saveButton.setOnAction(e -> saveSettings());
 
@@ -170,12 +200,14 @@ public class SettingsView {
 
         Label phoneLabel = new Label("Phone Number");
         phoneLabel.getStyleClass().add("field-label");
-        phoneField = new TextField("+1 477 466 3344"); // TODO: map from profile if you store it
+        phoneField = new TextField("");
+        phoneField.setPromptText("Enter your phone number");
         phoneField.getStyleClass().add("form-field");
 
         Label billingLabel = new Label("Billing Address");
         billingLabel.getStyleClass().add("field-label");
-        billingAddressField = new TextField("st. Fake Address"); // TODO: map from profile if you store it
+        billingAddressField = new TextField();
+        billingAddressField.setPromptText("Enter your billing address");
         billingAddressField.getStyleClass().add("form-field");
 
         grid.add(fullNameLabel, 0, 0);
@@ -264,8 +296,23 @@ public class SettingsView {
 
         Label dietLabel = new Label("Diet");
         dietLabel.getStyleClass().add("field-label");
-        dietField = new TextField("Vegan"); // TODO: map from DietPreference if you store it
-        dietField.getStyleClass().add("form-field");
+
+        dietCombo = new ComboBox<>();
+        dietCombo.getItems().addAll(
+                "None",
+                "Vegetarian",
+                "Vegan",
+                "Pescetarian",
+                "Gluten Free",
+                "Dairy Free",
+                "Halal",
+                "Kosher"
+        );
+
+        DietPreference dietPref = (currentProfile != null) ? currentProfile.getDietPreference() : null;
+        dietCombo.setValue(mapDietPreferenceToString(dietPref));
+        dietCombo.getStyleClass().add("form-combo");
+        dietCombo.setMaxWidth(Double.MAX_VALUE);
 
         // Add to grid
         grid.add(ageLabel, 0, 0);
@@ -279,7 +326,7 @@ public class SettingsView {
         grid.add(activityLabel, 0, 4);
         grid.add(activityLevelCombo, 0, 5);
         grid.add(dietLabel, 1, 4);
-        grid.add(dietField, 1, 5);
+        grid.add(dietCombo, 1, 5);
 
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
@@ -289,6 +336,26 @@ public class SettingsView {
 
         section.getChildren().addAll(sectionTitle, grid);
         return section;
+    }
+
+    /**
+     * Map DietPreference enum to user-friendly string
+     */
+    private String mapDietPreferenceToString(DietPreference pref) {
+        if (pref == null) return "None";
+
+        switch (pref) {
+            case VEGETARIAN: return "Vegetarian";
+            case VEGAN: return "Vegan";
+            case PESCETARIAN: return "Pescetarian";
+            case GLUTEN_FREE: return "Gluten Free";
+            case DAIRY_FREE: return "Dairy Free";
+            case HALAL: return "Halal";
+            case KOSHER: return "Kosher";
+            case NONE:
+            default:
+                return "None";
+        }
     }
 
     // Goals section (pre-filled from currentProfile if available)
@@ -467,25 +534,17 @@ public class SettingsView {
 
     private DietPreference mapDietToDietPreference(String dietText) {
         if (dietText == null) return DietPreference.NONE;
-        String value = dietText.trim().toLowerCase();
-        switch (value) {
-            case "vegetarian":
-                return DietPreference.VEGETARIAN;
-            case "vegan":
-                return DietPreference.VEGAN;
-            case "pescetarian":
-                return DietPreference.PESCETARIAN;
-            case "gluten free":
-            case "gluten-free":
-                return DietPreference.GLUTEN_FREE;
-            case "dairy free":
-            case "dairy-free":
-                return DietPreference.DAIRY_FREE;
-            case "halal":
-                return DietPreference.HALAL;
-            case "kosher":
-                return DietPreference.KOSHER;
+        switch (dietText.trim().toLowerCase()) {
+            case "none":          return DietPreference.NONE;
+            case "vegetarian":    return DietPreference.VEGETARIAN;
+            case "vegan":         return DietPreference.VEGAN;
+            case "pescetarian":   return DietPreference.PESCETARIAN;
+            case "gluten free":   return DietPreference.GLUTEN_FREE;
+            case "dairy free":    return DietPreference.DAIRY_FREE;
+            case "halal":         return DietPreference.HALAL;
+            case "kosher":        return DietPreference.KOSHER;
             default:
+                System.out.println("Unknown diet preference: " + dietText);
                 return DietPreference.NONE;
         }
     }
@@ -519,43 +578,53 @@ public class SettingsView {
     /**
      * Collect form values and call UpdateUser use case via controller.
      */
-    public void saveSettings() {
+    private void saveSettings() {
         try {
+            // Read text fields
             int age = Integer.parseInt(ageField.getText());
             double height = Double.parseDouble(heightField.getText());
             double weight = Double.parseDouble(weightField.getText());
-
-            Sex sex = mapGenderToSex(genderCombo.getValue());
-            Goal goal = mapGoalStringToEnum(goalCombo.getValue());
-            double activityMET = mapActivityLevelToMET(activityLevelCombo.getValue());
-
             double targetWeight = Double.parseDouble(targetWeightField.getText());
-            double dailyCalorie = Double.parseDouble(dailyCalorieField.getText());
-            Optional<Double> dailyCalorieOpt = Optional.of(dailyCalorie);
+            double dailyCalories = Double.parseDouble(dailyCalorieField.getText());
 
-            DietPreference dietPreference = mapDietToDietPreference(dietField.getText());
-            // Currently not stored on Profile in your DAO; kept for future use
-            HealthCondition healthCondition = (currentProfile != null)
-                    ? currentProfile.getHealthCondition()
-                    : HealthCondition.NONE;
+            // Read dropdowns
+            Sex sex = mapGenderToSex(genderCombo.getValue());
+            DietPreference dietPref = mapDietToDietPreference(dietCombo.getValue());
+            Goal goal = mapGoalStringToEnum(goalCombo.getValue());
+            double activityLevel = mapActivityLevelToMET(activityLevelCombo.getValue());
 
-            Profile newProfile = new Profile(
-                    null,            // userId (DAO will override with current userId)
-                    weight,
-                    height,
-                    age,
-                    sex,
-                    goal,
-                    activityMET,
-                    targetWeight,
-                    dailyCalorieOpt,
-                    healthCondition
+            // Create updated profile
+            Profile updatedProfile = new Profile(
+                    null,                // userId
+                    weight,              // weightKg
+                    height,              // heightCm
+                    age,                 // ageYears
+                    sex,                 // sex
+                    goal,                // goal
+                    activityLevel,         // activityLevelMET
+                    targetWeight,        // targetWeightKg
+                    Optional.of(dailyCalories),     // dailyCalorieTarget
+                    HealthCondition.NONE,     // healthCondition   (10)
+                    dietPref       // dietPreference    (11)
             );
 
-            updateUserController.updateUser(newProfile);
+            // Pass to controller
+            updateUserController.updateUser(updatedProfile);
 
-        } catch (NumberFormatException e) {
-            showError("Please check that age, height, weight, target weight, and daily calories are valid numbers.");
+            // Notify user
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText("Profile Updated");
+            alert.setContentText("Your settings have been saved.");
+            alert.show();
+
+        } catch (Exception ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not save settings");
+            alert.setContentText(ex.getMessage());
+            alert.show();
         }
     }
+
 }

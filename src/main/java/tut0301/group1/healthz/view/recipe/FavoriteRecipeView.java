@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import tut0301.group1.healthz.entities.nutrition.Recipe;
@@ -298,12 +299,33 @@ public class FavoriteRecipeView {
                 "-fx-background-color: #E5E7EB; " +
                         "-fx-background-radius: 15px 15px 0 0;"
         );
+        String imageUrl = recipe.getImageUrl();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                ImageView recipeImage = new ImageView(new Image(imageUrl));
+                recipeImage.setFitWidth(380);
+                recipeImage.setFitHeight(280);
+                recipeImage.setPreserveRatio(false);
+                recipeImage.setSmooth(true);
 
-        Label placeholder = new Label("🍽");
-        placeholder.setFont(Font.font(80));
+                Rectangle clip = new Rectangle(380, 280);
+                clip.setArcWidth(15);
+                clip.setArcHeight(15);
+                recipeImage.setClip(clip);
+                imageContainer.getChildren().add(recipeImage);
+            } catch (Exception e) {
+                Label placeholder = new Label("🍽");
+                placeholder.setFont(Font.font(80));
+                imageContainer.getChildren().add(placeholder);
+            }
+        } else {
+            Label placeholder = new Label("🍽");
+            placeholder.setFont(Font.font(80));
+            imageContainer.getChildren().add(placeholder);
+        }
 
         // Delete button
-        Button deleteBtn = new Button("🗑️");
+        Button deleteBtn = new Button("x");
         deleteBtn.setFont(Font.font(20));
         deleteBtn.setTextFill(Color.web("#DC2626"));
         deleteBtn.setPrefSize(45, 45);
@@ -346,7 +368,7 @@ public class FavoriteRecipeView {
                 )
         );
 
-        imageContainer.getChildren().addAll(placeholder, deleteBtn);
+        imageContainer.getChildren().add(deleteBtn);
 
         // Card content
         VBox content = new VBox(10);

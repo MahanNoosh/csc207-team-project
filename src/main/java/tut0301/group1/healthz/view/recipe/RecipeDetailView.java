@@ -14,7 +14,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import tut0301.group1.healthz.entities.nutrition.RecipeDetails;
-import tut0301.group1.healthz.interfaceadapter.favoriterecipe.AddFavoriteController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
@@ -31,7 +30,6 @@ public class RecipeDetailView {
 
     // Navigation buttons
     private Button backButton;
-    private Button favoriteButton;
 
     private final RecipeDetailController controller;
     private final RecipeDetailViewModel viewModel;
@@ -39,7 +37,6 @@ public class RecipeDetailView {
     private final long recipeId;
     private String currentRecipeName;
 
-    private final AddFavoriteController addFavoriteController;
     private final String userId;
 
     /**
@@ -49,17 +46,14 @@ public class RecipeDetailView {
                             RecipeDetailController controller,
                             RecipeDetailViewModel viewModel,
                             Navigator navigator,
-                            AddFavoriteController addFavoriteController,
                             String userId) {
         this.recipeId = recipeId;
         this.controller = controller;
         this.viewModel = viewModel;
         this.navigator = navigator;
-        this.addFavoriteController = addFavoriteController;
         this.userId = userId;
 
-        this.backButton = new Button("⬅️");
-        this.favoriteButton = new Button("♥");
+        this.backButton = new Button("⬅");
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
@@ -136,7 +130,7 @@ public class RecipeDetailView {
 
         contentContainer.getChildren().clear();
 
-        // Header with back button, title, and favorite
+        // Header with back button and title
         HBox header = createHeader(details);
 
         // Two-column layout: Image + Details
@@ -224,7 +218,7 @@ public class RecipeDetailView {
     }
 
     /**
-     * Create header with back button, title, and favorite button
+     * Create header with back button and title
      */
     private HBox createHeader(RecipeDetails details) {
         HBox header = new HBox(20);
@@ -266,20 +260,7 @@ public class RecipeDetailView {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // Favorite button
-        favoriteButton = new Button("❤️");
-        favoriteButton.setFont(Font.font(32));
-        favoriteButton.setTextFill(Color.WHITE);
-        favoriteButton.setPrefSize(70, 70);
-        favoriteButton.setStyle(
-                "-fx-background-color: #27692A; " +
-                        "-fx-background-radius: 15px; " +
-                        "-fx-cursor: hand;"
-        );
-
-        favoriteButton.setOnAction(e -> handleFavorite(details));
-
-        header.getChildren().addAll(backButton, title, spacer, favoriteButton);
+        header.getChildren().addAll(backButton, title, spacer);
         return header;
     }
 
@@ -506,37 +487,6 @@ public class RecipeDetailView {
         return section;
     }
 
-    /**
-     * Handle favorite button click
-     */
-    private void handleFavorite(RecipeDetails result) {
-        System.out.println("➕ Adding to favorites: " + result.recipeName());
-
-        if (addFavoriteController == null || userId == null) {
-            System.err.println("Favorites not configured");
-            showAlert("Error", "Unable to add to favorites. Please sign in.");
-            return;
-        }
-
-        try {
-            addFavoriteController.addFavorite(userId, result.recipeName());
-
-            showAlert("Added to Favorites", result.recipeName() + " has been added to your favorites! ♥");
-
-        } catch (Exception e) {
-            System.err.println("Failed to add favorite: " + e.getMessage());
-            showAlert("Error", "Failed to add to favorites: " + e.getMessage());
-        }
-    }
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     // Getters for navigation
     public Scene getScene() {
         return scene;
@@ -544,10 +494,6 @@ public class RecipeDetailView {
 
     public Button getBackButton() {
         return backButton;
-    }
-
-    public Button getFavoriteButton() {
-        return favoriteButton;
     }
 
 }

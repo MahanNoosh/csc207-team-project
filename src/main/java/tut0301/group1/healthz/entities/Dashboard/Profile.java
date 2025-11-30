@@ -19,7 +19,7 @@ public class Profile {
     public Profile(String userId, Double weightKg, Double heightCm, Integer ageYears,
                        Sex sex, Goal goal, Double activityLevelMET,
                        Double targetWeightKg, Optional<Double> dailyCalorieTarget,
-                       HealthCondition healthCondition/*,  int targetWeeks, DietPreference dietPreference */) {
+                       HealthCondition healthCondition, DietPreference dietPreference) {
         this.userId = userId;
         this.weightKg = weightKg;
         this.heightCm = heightCm;
@@ -30,8 +30,27 @@ public class Profile {
         this.targetWeightKg = targetWeightKg;
         this.dailyCalorieTarget = dailyCalorieTarget;
         this.healthCondition = healthCondition;
-        //this.targetWeeks = targetWeeks;
-        //this.dietPreference = dietPreference;
+        this.targetWeeks = 0;
+        this.dietPreference = dietPreference;
+    }
+
+    // overloading method with default diet preference value
+    public Profile(String userId, Double weightKg, Double heightCm, Integer ageYears,
+                   Sex sex, Goal goal, Double activityLevelMET,
+                   Double targetWeightKg, Optional<Double> dailyCalorieTarget,
+                   HealthCondition healthCondition) {
+        this.userId = userId;
+        this.weightKg = weightKg;
+        this.heightCm = heightCm;
+        this.ageYears = ageYears;
+        this.sex = sex;
+        this.goal = goal;
+        this.activityLevelMET = activityLevelMET;
+        this.targetWeightKg = targetWeightKg;
+        this.dailyCalorieTarget = dailyCalorieTarget;
+        this.healthCondition = healthCondition;
+        this.targetWeeks = 0;
+        this.dietPreference = DietPreference.NONE;
     }
 
     public String getUserId() {
