@@ -11,12 +11,6 @@ public class RecipeSearchInputData {
         this.filter = filter;
     }
 
-    // Constructor for backward compatibility
-    public RecipeSearchInputData(String query) {
-        this.query = query;
-        this.filter = new RecipeFilter(); // Empty filter
-    }
-
     public String getQuery() {
         return query;
     }

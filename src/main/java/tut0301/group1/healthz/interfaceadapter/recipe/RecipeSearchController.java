@@ -12,12 +12,10 @@ public class RecipeSearchController {
         this.presenter = presenter;
     }
 
-    public void search(String query) {
+    public void search(String query, RecipeFilter filter) {
         presenter.getViewModel().setMessage(null);
         presenter.getViewModel().setResults(java.util.List.of());
         presenter.getViewModel().setLoading(true);
-
-        RecipeFilter filter = new RecipeFilter();
         interactor.execute(query, filter);
     }
 

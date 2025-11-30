@@ -26,7 +26,11 @@ public class RecipeSearchTest {
         RecipeSearchController controller = new RecipeSearchController(interactor, presenter);
 
         try {
-            controller.search("vegetarian");
+            // Specify calorie, carbs, protein, and fat
+            RecipeFilter filter = new RecipeFilter(100L, 250L, 10L, 50L,
+                    10L, 50L, 10L, 50L);
+
+            controller.search("vegetarian", filter);
 
             System.out.println("\n=== ViewModel Output ===");
             System.out.println("Message: " + viewModel.getMessage());
@@ -41,10 +45,6 @@ public class RecipeSearchTest {
             });
 
             System.out.println("Searching for vegetarian recipes ...");
-
-            // Specify calorie, carbs, protein, and fat
-            RecipeFilter filter = new RecipeFilter(100L, 250L, 10L, 50L,
-                    10L, 50L, 10L, 50L);
 
             List<RecipeSearchResult> results = gateway.search("vegetarian", filter);
 

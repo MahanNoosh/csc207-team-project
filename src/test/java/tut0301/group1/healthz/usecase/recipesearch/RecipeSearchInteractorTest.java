@@ -3,10 +3,7 @@ package tut0301.group1.healthz.usecase.recipesearch;
 import org.junit.jupiter.api.Test;
 import tut0301.group1.healthz.entities.nutrition.RecipeFilter;
 import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
-import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchDataAccessInterface;
-import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
-import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
-import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchOutputBoundary;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.*;
 
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,6 +16,7 @@ class RecipeSearchInteractorTest {
         String query = "vegetarian";
         RecipeFilter recipeFilter = new RecipeFilter(100L, 250L, 10L, 50L,
                 10L, 50L, 10L, 50L);
+        RecipeSearchInputData inputData = new RecipeSearchInputData(query, recipeFilter);
 
         // Create a mock gateway
         RecipeSearchDataAccessInterface gateway = (q, f) -> List.of(
@@ -49,7 +47,7 @@ class RecipeSearchInteractorTest {
         };
 
         RecipeSearchInputBoundary interactor = new RecipeSearchInteractor(gateway, successPresenter);
-        interactor.execute(query, recipeFilter);
+        interactor.execute(inputData.getQuery(), inputData.getFilter());
     }
 
     @Test
@@ -57,6 +55,7 @@ class RecipeSearchInteractorTest {
         // Input data (no query)
         RecipeFilter recipeFilter = new RecipeFilter(100L, 250L, 10L, 50L,
                 10L, 50L, 10L, 50L);
+        RecipeSearchInputData inputData = new RecipeSearchInputData("", recipeFilter);
 
         RecipeSearchDataAccessInterface gateway = (q, f) -> {
             fail("Gateway should not be called when query is invalid");
@@ -77,7 +76,7 @@ class RecipeSearchInteractorTest {
         };
 
         RecipeSearchInputBoundary interactor = new RecipeSearchInteractor(gateway, failurePresenter);
-        interactor.execute("", recipeFilter);
+        interactor.execute(inputData.getQuery(), inputData.getFilter());
     }
 
     @Test
@@ -86,6 +85,7 @@ class RecipeSearchInteractorTest {
         String query = "vegetarian";
         RecipeFilter filter = new RecipeFilter(10L, 50L, 10L, 50L,
                 10L, 50L, 10L, 50L);
+        RecipeSearchInputData inputData = new RecipeSearchInputData(query, filter);
 
         // Gateway that throws an exception
         RecipeSearchDataAccessInterface gateway = (q, f) -> {
@@ -106,6 +106,6 @@ class RecipeSearchInteractorTest {
         };
 
         RecipeSearchInputBoundary interactor = new RecipeSearchInteractor(gateway, presenter);
-        interactor.execute(query, filter);
+        interactor.execute(inputData.getQuery(), inputData.getFilter());
     }
 }
