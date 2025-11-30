@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.interfaceadapter.caloriesummary;
+package tut0301.group1.healthz.interfaceadapter.macrosummary;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -12,7 +12,7 @@ import java.time.LocalDate;
  * Holds the presentation state for displaying calorie summary statistics.
  * This includes macronutrients, activity calories, and daily target.
  */
-public class GetDailyCalorieSummaryViewModel {
+public class GetDailyMacroSummaryViewModel {
     private LocalDate date;
 
     private final ObjectProperty<Macro> totalMacro = new SimpleObjectProperty<>(Macro.ZERO);
@@ -22,7 +22,7 @@ public class GetDailyCalorieSummaryViewModel {
     private String errorMessage;
     private boolean loading;
 
-    public GetDailyCalorieSummaryViewModel() {
+    public GetDailyMacroSummaryViewModel() {
         // totalMacro is initialized to ZERO above
         this.totalActivityCalories = 0.0;
         this.dailyCalorieTarget = 2000.0;

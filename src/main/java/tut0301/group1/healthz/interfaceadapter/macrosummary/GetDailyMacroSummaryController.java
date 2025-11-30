@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.interfaceadapter.caloriesummary;
+package tut0301.group1.healthz.interfaceadapter.macrosummary;
 
 import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInputBoundary;
 import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInputData;
@@ -18,11 +18,11 @@ import java.time.LocalDate;
  * - Controller only knows about Interactor (through InputBoundary interface)
  * - Data flow: Controller -> Interactor -> Presenter -> ViewModel -> View
  */
-public class GetDailyCalorieSummaryController {
+public class GetDailyMacroSummaryController {
 
     private final GetDailyCalorieSummaryInputBoundary interactor;
 
-    public GetDailyCalorieSummaryController(GetDailyCalorieSummaryInputBoundary interactor) {
+    public GetDailyMacroSummaryController(GetDailyCalorieSummaryInputBoundary interactor) {
         if (interactor == null) {
             throw new IllegalArgumentException("Interactor cannot be null");
         }

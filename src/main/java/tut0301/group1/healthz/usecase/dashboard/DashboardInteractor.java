@@ -39,11 +39,9 @@ public class DashboardInteractor implements DashboardInputBoundary {
                         }
                     });
 
-            // Get daily calorie goal from profile (use CalorieCalculator as fallback)
-            int dailyCalorieGoal = profile.getDailyCalorieTarget()
-                    .map(Double::intValue)
-                    .orElseGet(() -> CalorieCalculator.calculateDailyCalorieGoal(profile));
-            System.out.println("🔥 Daily calorie goal: " + dailyCalorieGoal);
+            // Calculate daily calorie goal
+            int dailyCalorieGoal = CalorieCalculator.calculateDailyCalorieGoal(profile);
+            System.out.println("🔥 Calculated daily calorie goal: " + dailyCalorieGoal);
 
             // Get food logs for today and calculate calories consumed
             LocalDate today = LocalDate.now();

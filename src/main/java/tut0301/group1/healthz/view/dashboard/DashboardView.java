@@ -13,13 +13,13 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryController;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
 import tut0301.group1.healthz.interfaceadapter.activity.ActivityHistoryViewModel;
 import tut0301.group1.healthz.interfaceadapter.activity.ActivityItem;
+import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryViewModel;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -38,8 +38,8 @@ public class DashboardView {
     private final ActivityHistoryViewModel activityHistoryViewModel;
 
     // GetDailyCalorieSummary components
-    private final tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryController summaryController;
-    private final tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryViewModel summaryViewModel;
+    private final GetDailyMacroSummaryController summaryController;
+    private final GetDailyMacroSummaryViewModel summaryViewModel;
 
     // Store references for updating
     private Label caloriesValueLabel;
@@ -69,8 +69,8 @@ public class DashboardView {
     public DashboardView(DashboardController controller,
                          DashboardViewModel viewModel,
                          ActivityHistoryViewModel activityHistoryViewModel,
-                         tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryController summaryController,
-                         tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryViewModel summaryViewModel,
+                         GetDailyMacroSummaryController summaryController,
+                         GetDailyMacroSummaryViewModel summaryViewModel,
                          String userId,
                          String userName) {
         this.controller = controller;

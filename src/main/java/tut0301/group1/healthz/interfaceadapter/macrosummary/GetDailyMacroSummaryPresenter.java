@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.interfaceadapter.caloriesummary;
+package tut0301.group1.healthz.interfaceadapter.macrosummary;
 
 import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryOutputBoundary;
 import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryOutputData;
@@ -14,11 +14,11 @@ import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryOutputD
  * - Presenter converts OutputData to ViewModel format
  * - Presenter does not know about Controller or View
  */
-public class GetDailyCalorieSummaryPresenter implements GetDailyCalorieSummaryOutputBoundary {
+public class GetDailyMacroSummaryPresenter implements GetDailyCalorieSummaryOutputBoundary {
 
-    private final GetDailyCalorieSummaryViewModel viewModel;
+    private final GetDailyMacroSummaryViewModel viewModel;
 
-    public GetDailyCalorieSummaryPresenter(GetDailyCalorieSummaryViewModel viewModel) {
+    public GetDailyMacroSummaryPresenter(GetDailyMacroSummaryViewModel viewModel) {
         if (viewModel == null) {
             throw new IllegalArgumentException("ViewModel cannot be null");
         }
@@ -44,7 +44,7 @@ public class GetDailyCalorieSummaryPresenter implements GetDailyCalorieSummaryOu
         System.err.println("❌ Daily calorie summary error: " + errorMessage);
     }
 
-    public GetDailyCalorieSummaryViewModel getViewModel() {
+    public GetDailyMacroSummaryViewModel getViewModel() {
         return viewModel;
     }
 }

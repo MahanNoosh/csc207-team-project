@@ -32,9 +32,9 @@ import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeController;
 import tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryViewModel;
 import tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryPresenter;
 import tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryController;
-import tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryViewModel;
-import tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryPresenter;
-import tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryController;
+import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryViewModel;
+import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryPresenter;
+import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailViewModel;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
@@ -538,8 +538,8 @@ public class Navigator {
         DashboardController controller = new DashboardController(interactor);
 
         // GetDailyCalorieSummary - NEW for calorie/macro display
-        GetDailyCalorieSummaryViewModel summaryViewModel = new GetDailyCalorieSummaryViewModel();
-        GetDailyCalorieSummaryPresenter summaryPresenter = new GetDailyCalorieSummaryPresenter(summaryViewModel);
+        GetDailyMacroSummaryViewModel summaryViewModel = new GetDailyMacroSummaryViewModel();
+        GetDailyMacroSummaryPresenter summaryPresenter = new GetDailyMacroSummaryPresenter(summaryViewModel);
 
         // Activity data access
         ActivityLogDataAccessInterface activityLogDataAccess = new SupabaseActivityLogDataAccessObject(authenticatedClient);
@@ -553,7 +553,7 @@ public class Navigator {
         );
 
         // Controller
-        GetDailyCalorieSummaryController summaryController = new GetDailyCalorieSummaryController(summaryInteractor);
+        GetDailyMacroSummaryController summaryController = new GetDailyMacroSummaryController(summaryInteractor);
 
         // Reuse setup from showActivityTracker()
         ActivityHistoryViewModel activityHistoryVM = setupActivityHistory();
