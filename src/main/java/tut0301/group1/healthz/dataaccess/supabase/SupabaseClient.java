@@ -2,10 +2,10 @@ package tut0301.group1.healthz.dataaccess.supabase;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import tut0301.group1.healthz.entities.Goal;
-import tut0301.group1.healthz.entities.HealthCondition;
-import tut0301.group1.healthz.entities.Profile;
-import tut0301.group1.healthz.entities.Sex;
+import tut0301.group1.healthz.entities.Dashboard.Goal;
+import tut0301.group1.healthz.entities.Dashboard.HealthCondition;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Sex;
 
 import java.net.URI;
 import java.net.http.HttpClient;

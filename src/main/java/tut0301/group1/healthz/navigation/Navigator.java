@@ -7,6 +7,9 @@ import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAc
 //import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailDataAccessObject;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchDataAccessObject;
+import tut0301.group1.healthz.dataaccess.supabase.*;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tut0301.group1.healthz.interfaceadapter.activity.*;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseFavoriteRecipeDataAccessObject;
@@ -30,6 +33,16 @@ import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeView
 import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserController;
 import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserPresenter;
 import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserViewModel;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogInputBoundary;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogInteractor;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogLoadOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogSaveOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorInputBoundary;
+import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorInteractor;
+import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderInputBoundary;
+import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderInteractor;
+import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderOutputBoundary;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
@@ -52,6 +65,7 @@ import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBou
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
+import tut0301.group1.healthz.view.activity.ActivityView;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
 import tut0301.group1.healthz.usecase.setting.UpdateUserInteractor;
 import tut0301.group1.healthz.view.auth.LandingView;
@@ -67,10 +81,11 @@ import tut0301.group1.healthz.view.dashboard.DashboardView;
 import tut0301.group1.healthz.view.recipe.RecipeSearchView;
 import tut0301.group1.healthz.view.recipe.FavoriteRecipeView;
 import tut0301.group1.healthz.view.nutrition.FoodLogView;
-import tut0301.group1.healthz.view.activity.ActivityLogView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+
+import java.util.Optional;
 
 /**
  * Navigator - Handles all navigation between views
@@ -417,6 +432,51 @@ public class Navigator {
     }
 
 
+    public void showActivityTracker(){
+
+        SupabaseExerciseDataAccessObject exerciseDAO = new SupabaseExerciseDataAccessObject(authenticatedClient);
+        SupabaseActivityLogDataAccessObject activityLogDAO = new SupabaseActivityLogDataAccessObject(authenticatedClient);
+
+        ExerciseListViewModel exerciseListVM = new ExerciseListViewModel();
+        ActivityHistoryViewModel historyVM = new ActivityHistoryViewModel();
+
+        ExerciseFinderOutputBoundary exercisePresenter = new ExerciseFinderPresenter(exerciseListVM);
+        CalorieCalculatorOutputBoundary caloriePresenter = new CalorieCalculatorPresenter(exerciseListVM);
+        ActivityLogSaveOutputBoundary activityLogSavePresenter = new ActivityLogSavePresenter(historyVM);
+        ActivityLogLoadOutputBoundary activityLogLoadPresenter = new ActivityLogLoadPresenter();
+
+        ExerciseFinderInputBoundary exerciseFinder = new ExerciseFinderInteractor(exerciseDAO, exercisePresenter);
+        CalorieCalculatorInputBoundary calorieCalculator = new CalorieCalculatorInteractor(exerciseFinder, caloriePresenter);
+        ActivityLogInputBoundary activityLog = new ActivityLogInteractor(
+                activityLogDAO,
+                exerciseFinder,
+                activityLogSavePresenter,
+                activityLogLoadPresenter
+        );
+        ActivityPageController controller = new ActivityPageController(exerciseFinder, calorieCalculator, activityLog);
+        SupabaseUserDataDataAccessObject userDataDAO = new SupabaseUserDataDataAccessObject(authenticatedClient);
+        try{
+            Optional<Profile> maybeProfile = userDataDAO.loadCurrentUserProfile();
+            Profile currentProfile;
+
+            if (maybeProfile.isPresent()) {
+                currentProfile = maybeProfile.get();
+
+                ActivityView view = new ActivityView(controller, exerciseListVM, historyVM, currentProfile, this);
+                primaryStage.setScene(view.getScene());
+                primaryStage.setTitle("HealthZ - Activity Tracker");
+
+            } else {
+                System.out.println("No profile found for current user.");
+
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Failed to load user profile: " + e.getMessage());
+            showError("Could not load your profile data. Using defaults.");
+        }
+    }
+
     /**
      * Navigate to Dashboard page
      */
@@ -607,12 +667,6 @@ public class Navigator {
     /**
      * Navigate to Activity Log Page
      */
-    public void showActivityLog() {
-        ActivityLogView activityLogView = new ActivityLogView(this);
-
-        primaryStage.setScene(activityLogView.getScene());
-        primaryStage.setTitle("HealthZ - Activity Log");
-    }
 
     /**
      * Go back to previous page
@@ -791,7 +845,7 @@ public class Navigator {
         // Activity Log button
         dashboardView.getActivityLogButton().setOnAction(e -> {
             System.out.println("Navigating to Activity Log...");
-            showActivityLog();
+            showActivityTracker();
         });
 
         // Log out Button

@@ -3,7 +3,7 @@ package tut0301.group1.healthz.dataaccess.supabase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import tut0301.group1.healthz.interfaceadapter.auth.mapping.ProfileJsonMapper;
-import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
 
 import java.net.http.HttpRequest;

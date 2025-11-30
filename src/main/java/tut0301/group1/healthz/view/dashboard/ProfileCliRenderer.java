@@ -1,7 +1,7 @@
 package tut0301.group1.healthz.view.dashboard;
 
 import tut0301.group1.healthz.interfaceadapter.dashboard.TableFormatter;
-import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
