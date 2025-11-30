@@ -6,13 +6,11 @@ import tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInputBoundary;
 import tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInputData;
 
 /**
- * Controller for LogFoodIntake functionality.
- *
+ * Controller for LogFoodIntake functionality.*
  * Responsibilities:
  * - Receives user input from the View
  * - Creates InputData objects
  * - Calls the Interactor (Use Case)
- *
  * Clean Architecture compliance:
  * - Controller does NOT know about Presenter or ViewModel
  * - Controller only knows about Interactor (through InputBoundary interface)
