@@ -15,6 +15,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
+import tut0301.group1.healthz.interfaceadapter.activity.ActivityHistoryViewModel;
+import tut0301.group1.healthz.interfaceadapter.activity.ActivityItem;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,10 +34,12 @@ public class DashboardView {
     // Clean Architecture components
     private final DashboardViewModel viewModel;
     private final DashboardController controller;
+    private final ActivityHistoryViewModel activityHistoryViewModel;
 
     // Store references for updating
     private Label caloriesValueLabel;
     private Canvas caloriesCanvas;
+    private ListView<ActivityItem> activityHistoryListView;
 
     // TODO: Get from actual data sources
     private double carbsPercent = 42;
@@ -59,10 +63,12 @@ public class DashboardView {
      */
     public DashboardView(DashboardController controller,
                          DashboardViewModel viewModel,
+                         ActivityHistoryViewModel activityHistoryViewModel,
                          String userId,
                          String userName) {
         this.controller = controller;
         this.viewModel = viewModel;
+        this.activityHistoryViewModel = activityHistoryViewModel;
         this.userName = userName != null ? userName : "User";
 
         // Load dashboard data
@@ -276,31 +282,19 @@ public class DashboardView {
 
         row1.getChildren().addAll(caloriesWidget, macrosWidget, quoteWidget);
 
-        // Second row: Activity Tracker, Start a Habit
+        // Second row: Activity History and Quick Add
         HBox row2 = new HBox(30);
         row2.setAlignment(Pos.TOP_LEFT);
 
-        VBox activityWidget = createActivityTrackerWidget();
-        VBox habitWidget = createStartHabitWidget();
-
-        HBox.setHgrow(activityWidget, Priority.ALWAYS);
-        HBox.setHgrow(habitWidget, Priority.NEVER);
-
-        row2.getChildren().addAll(activityWidget, habitWidget);
-
-        // Third row: Recent Entries, Quick Add
-        HBox row3 = new HBox(30);
-        row3.setAlignment(Pos.TOP_LEFT);
-
-        VBox recentWidget = createRecentEntriesWidget();
+        VBox activityHistoryWidget = createActivityHistoryWidget();
         VBox quickAddWidget = createQuickAddWidget();
 
-        HBox.setHgrow(recentWidget, Priority.ALWAYS);
+        HBox.setHgrow(activityHistoryWidget, Priority.ALWAYS);
         HBox.setHgrow(quickAddWidget, Priority.NEVER);
 
-        row3.getChildren().addAll(recentWidget, quickAddWidget);
+        row2.getChildren().addAll(activityHistoryWidget, quickAddWidget);
 
-        content.getChildren().addAll(row1, row2, row3);
+        content.getChildren().addAll(row1, row2);
         return content;
     }
 
@@ -473,6 +467,116 @@ public class DashboardView {
 
         widget.getChildren().addAll(title, quote);
         return widget;
+    }
+
+    /**
+     * Create activity history widget with real data from ViewModel
+     */
+    private VBox createActivityHistoryWidget() {
+        VBox widget = createWidgetBox();
+        widget.setPrefHeight(400);
+
+        // Header
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(0, 0, 15, 0));
+
+        Label title = new Label("Activity History");
+        title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label arrow = new Label("▶");
+        arrow.setFont(Font.font(16));
+        arrow.setTextFill(Color.web("#6B7280"));
+        arrow.setStyle("-fx-cursor: hand;");
+
+        // Make arrow clickable to navigate to full activity tracker
+        arrow.setOnMouseClicked(e -> {
+            if (activityLogButton != null) {
+                activityLogButton.fire();
+            }
+        });
+
+        header.getChildren().addAll(title, spacer, arrow);
+
+        // ✅ Activity history ListView bound to ViewModel
+        activityHistoryListView = new ListView<>(activityHistoryViewModel.getHistory());
+        activityHistoryListView.setPrefHeight(300);
+        activityHistoryListView.setStyle(
+                "-fx-background-color: transparent; " +
+                        "-fx-border-color: transparent;"
+        );
+
+        // ✅ Custom cell renderer matching ActivityView style
+        activityHistoryListView.setCellFactory(list -> new ActivityHistoryCell());
+
+        widget.getChildren().addAll(header, activityHistoryListView);
+        return widget;
+    }
+
+    /**
+     * Custom cell for activity history items
+     */
+    private static class ActivityHistoryCell extends ListCell<ActivityItem> {
+        @Override
+        protected void updateItem(ActivityItem item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty || item == null) {
+                setGraphic(null);
+                return;
+            }
+
+            // Left side: name + duration + calories
+            Label nameLabel = new Label(item.getName());
+            nameLabel.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 18));
+            nameLabel.setTextFill(Color.web("#111827"));
+
+            Label durationLabel = new Label(item.getDuration());
+            durationLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            durationLabel.setTextFill(Color.web("#27692A"));
+
+            Label caloriesLabel = new Label(item.getCalories() + " cal");
+            caloriesLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            caloriesLabel.setTextFill(Color.web("#27692A"));
+
+            HBox details = new HBox(10, durationLabel, caloriesLabel);
+            VBox left = new VBox(4, nameLabel, details);
+            HBox.setHgrow(left, Priority.ALWAYS);
+
+            // Right side: date
+            Label dateLabel = new Label(item.getDate());
+            dateLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            dateLabel.setTextFill(Color.web("#6B7280"));
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+            // Complete row
+            HBox row = new HBox(20, left, spacer, dateLabel);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.setPadding(new Insets(18, 10, 18, 10));
+            row.setStyle(
+                    "-fx-border-color: #E5E7EB; " +
+                            "-fx-border-width: 0 0 1 0;"
+            );
+
+            // Hover effect
+            row.setOnMouseEntered(e -> row.setStyle(
+                    "-fx-border-color: #E5E7EB; " +
+                            "-fx-border-width: 0 0 1 0; " +
+                            "-fx-background-color: #F9FAFB; " +
+                            "-fx-cursor: hand;"
+            ));
+            row.setOnMouseExited(e -> row.setStyle(
+                    "-fx-border-color: #E5E7EB; " +
+                            "-fx-border-width: 0 0 1 0;"
+            ));
+
+            setGraphic(row);
+        }
     }
 
     /**

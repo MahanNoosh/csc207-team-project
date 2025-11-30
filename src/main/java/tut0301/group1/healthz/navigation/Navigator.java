@@ -336,7 +336,7 @@ public class Navigator {
      * Navigate to Recipe Detail page
      */
     public void showRecipeDetail(long recipeId) {
-        System.out.println("🧭 Navigator: Showing recipe detail for ID: " + recipeId);
+        System.out.println("Navigator: Showing recipe detail for ID: " + recipeId);
 
         // Create ViewModel
         RecipeDetailViewModel viewModel = new RecipeDetailViewModel();
@@ -483,7 +483,7 @@ public class Navigator {
             }
 
         } catch (Exception e) {
-            System.err.println("❌ Failed to load user profile: " + e.getMessage());
+            System.err.println("Failed to load user profile: " + e.getMessage());
             showError("Could not load your profile data. Using defaults.");
         }
     }
@@ -493,7 +493,7 @@ public class Navigator {
      */
     public void showDashboard() {
         String userId = getCurrentUserId();
-        String userName = getUserDisplayName(); // Use existing method!
+        String userName = getUserDisplayName();
 
         if (userId == null) {
             System.err.println("Cannot show dashboard: No user logged in");
@@ -503,6 +503,7 @@ public class Navigator {
 
         System.out.println("Navigator: Showing dashboard for user " + userId);
 
+        // Dashboard ViewModel and Presenter
         DashboardViewModel viewModel = new DashboardViewModel();
         DashboardPresenter presenter = new DashboardPresenter(viewModel);
 
@@ -512,13 +513,73 @@ public class Navigator {
         DashboardInputBoundary interactor = new DashboardInteractor(userDataAccess, presenter);
         DashboardController controller = new DashboardController(interactor);
 
+        // Reuse setup from showActivityTracker()
+        ActivityHistoryViewModel activityHistoryVM = setupActivityHistory();
+
         // Create view with Clean Architecture components
-        DashboardView dashboardView = new DashboardView(controller, viewModel, userId, userName);
+        DashboardView dashboardView = new DashboardView(
+                controller,
+                viewModel,
+                activityHistoryVM,
+                userId,
+                userName
+        );
 
         setupDashboardNavigation(dashboardView);
 
         primaryStage.setScene(dashboardView.getScene());
         primaryStage.setTitle("HealthZ - Dashboard");
+    }
+
+    /**
+     * Helper method to set up activity history (reuses showActivityTracker logic)
+     */
+    private ActivityHistoryViewModel setupActivityHistory() {
+        SupabaseExerciseDataAccessObject exerciseDAO =
+                new SupabaseExerciseDataAccessObject(authenticatedClient);
+
+        SupabaseActivityLogDataAccessObject activityLogDAO =
+                new SupabaseActivityLogDataAccessObject(authenticatedClient);
+
+        ExerciseListViewModel exerciseListVM = new ExerciseListViewModel();
+        ActivityHistoryViewModel historyVM = new ActivityHistoryViewModel();
+
+        ExerciseFinderOutputBoundary exercisePresenter =
+                new ExerciseFinderPresenter(exerciseListVM);
+
+        CalorieCalculatorOutputBoundary caloriePresenter =
+                new CalorieCalculatorPresenter(exerciseListVM);
+
+        ActivityLogSaveOutputBoundary activityLogSavePresenter =
+                new ActivityLogSavePresenter(historyVM);
+
+        ActivityLogLoadOutputBoundary activityLogLoadPresenter =
+                new ActivityLogLoadPresenter();  // No arguments
+
+        ExerciseFinderInputBoundary exerciseFinder =
+                new ExerciseFinderInteractor(exerciseDAO, exercisePresenter);
+
+        CalorieCalculatorInputBoundary calorieCalculator =
+                new CalorieCalculatorInteractor(exerciseFinder, caloriePresenter);
+
+        ActivityLogInputBoundary activityLog = new ActivityLogInteractor(
+                activityLogDAO,
+                exerciseFinder,
+                activityLogSavePresenter,
+                activityLogLoadPresenter
+        );
+
+        // Load activities
+        try {
+            System.out.println("Loading activity history for dashboard...");
+            activityLog.loadLogsForUser();
+            Thread.sleep(300);
+            System.out.println("Activity history loaded");
+        } catch (Exception e) {
+            System.err.println("Failed to load activity history: " + e.getMessage());
+        }
+
+        return historyVM;
     }
 
     /**
@@ -550,7 +611,7 @@ public class Navigator {
      * Navigate to Main App/Dashboard (after successful login/signup)
      */
     public void showMainApp() {
-        System.out.println("✅ Login/Signup successful! Navigating to main app...");
+        System.out.println("Login/Signup successful! Navigating to main app...");
         showDashboard();
     }
 
@@ -579,7 +640,7 @@ public class Navigator {
         //  - restarts the 3-minute login retry window
         //  - applies a ~2min cooldown
         view.getResendButton().setOnAction(e -> {
-            System.out.println("🔁 User clicked: Resend verification email");
+            System.out.println("User clicked: Resend verification email");
             resendVerificationEmail(signupData, view);
 
             // restart 3-minute auto-login window (your existing helper)
@@ -614,13 +675,13 @@ public class Navigator {
 
         // Sign up link -> go to signup
         loginView.getSignUpButton().setOnAction(e -> {
-            System.out.println("📝 Navigating to Sign Up...");
+            System.out.println("Navigating to Sign Up...");
             showSignup();
         });
 
         // Continue button -> perform login, then go to main app
         loginView.getLoginButton().setOnAction(e -> {
-            System.out.println("🔐 Logging in with " + loginView.getEmail());
+            System.out.println("Logging in with " + loginView.getEmail());
 
             String url  = System.getenv("SUPABASE_URL");
             String anon = System.getenv("SUPABASE_ANON_KEY");
@@ -641,7 +702,7 @@ public class Navigator {
             loginController.login(loginView.getEmail(), loginView.getPassword());
 
             if (loginVM.isLoggedIn()) {
-                System.out.println("✅ Login successful, ensuring profile row exists...");
+                System.out.println("Login successful, ensuring profile row exists...");
 
                 this.authenticatedClient = client;
 
@@ -723,13 +784,13 @@ public class Navigator {
     private void setupLoginNavigation(LandingView landingView) {
         // Connect Sign Up button
         landingView.getSignUpButton().setOnAction(e -> {
-            System.out.println("📝 Navigating to Sign Up...");
+            System.out.println("Navigating to Sign Up...");
             showSignup();
         });
 
         // Connect Log In button
         landingView.getLogInButton().setOnAction(e -> {
-            System.out.println("🔐 Logging in...");
+            System.out.println("Logging in...");
             // TODO: show actual login form or validate credentials
             // For now, just go to main app
             showLogin();
@@ -780,7 +841,7 @@ public class Navigator {
 
         try {
             String userId = loginVM.getUserId();
-            System.out.println("🔐 Login succeeded. userId = " + userId);
+            System.out.println("Login succeeded. userId = " + userId);
 
             this.authenticatedClient = client;
 
@@ -791,7 +852,7 @@ public class Navigator {
             SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
             userDataGateway.upsertProfile(profile);
 
-            System.out.println("💾 Profile saved successfully. Navigating to main app...");
+            System.out.println("Profile saved successfully. Navigating to main app...");
 
             // Stop if running
             if (emailCheckTimeline != null) {
@@ -822,7 +883,7 @@ public class Navigator {
             SupabaseClient client = new SupabaseClient(url, anon);
             client.resendSignupVerification(signupData.getEmail());
 
-            System.out.println("📧 Resent verification email to " + signupData.getEmail());
+            System.out.println("Resent verification email to " + signupData.getEmail());
             view.setStatusText("Verification email resent to " + signupData.getEmail() + ". Waiting for verification…");
         } catch (Exception ex) {
             System.err.println("Failed to resend verification email: " + ex.getMessage());

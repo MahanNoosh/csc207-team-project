@@ -58,8 +58,8 @@ public class RecipeDetailView {
         this.addFavoriteController = addFavoriteController;
         this.userId = userId;
 
-        this.backButton = new Button("⬅️");
-        this.favoriteButton = new Button("♥");
+        this.backButton = new Button("⬅");
+        this.favoriteButton = new Button("❤️");
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
