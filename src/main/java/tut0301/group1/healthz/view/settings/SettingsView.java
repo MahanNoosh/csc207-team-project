@@ -131,6 +131,30 @@ public class SettingsView {
                 "    -fx-background-radius: 25px;" +
                 "    -fx-cursor: hand;" +
                 "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.3), 10, 0, 0, 4);");
+        saveButton.setOnMouseClicked(e -> {
+                saveButton.setStyle("-fx-background-color: #205425;" +
+                        "    -fx-padding: 14px 40px;" +
+                        "    -fx-background-radius: 25px;" +
+                        "    -fx-cursor: hand;" +
+                        "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 15, 0, 0, 6);"
+                );
+        });
+        saveButton.setOnMouseEntered(e -> {
+            saveButton.setStyle("-fx-background-color: #205425;" +
+                    "    -fx-padding: 14px 40px;" +
+                    "    -fx-background-radius: 25px;" +
+                    "    -fx-cursor: hand;" +
+                    "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 15, 0, 0, 6);"
+            );
+        });
+        saveButton.setOnMouseExited(e -> {
+            saveButton.setStyle("-fx-background-color: #27692A;" +
+                    "    -fx-padding: 14px 40px;" +
+                    "    -fx-background-radius: 25px;" +
+                    "    -fx-cursor: hand;" +
+                    "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 15, 0, 0, 6);"
+            );
+        });
 
         saveButton.setOnAction(e -> saveSettings());
 
@@ -554,44 +578,53 @@ public class SettingsView {
     /**
      * Collect form values and call UpdateUser use case via controller.
      */
-    public void saveSettings() {
+    private void saveSettings() {
         try {
+            // Read text fields
             int age = Integer.parseInt(ageField.getText());
             double height = Double.parseDouble(heightField.getText());
             double weight = Double.parseDouble(weightField.getText());
-
-            Sex sex = mapGenderToSex(genderCombo.getValue());
-            Goal goal = mapGoalStringToEnum(goalCombo.getValue());
-            double activityMET = mapActivityLevelToMET(activityLevelCombo.getValue());
-
             double targetWeight = Double.parseDouble(targetWeightField.getText());
-            double dailyCalorie = Double.parseDouble(dailyCalorieField.getText());
-            Optional<Double> dailyCalorieOpt = Optional.of(dailyCalorie);
+            double dailyCalories = Double.parseDouble(dailyCalorieField.getText());
 
-            DietPreference dietPreference = mapDietToDietPreference(dietCombo.getValue());
-            // Currently not stored on Profile in your DAO; kept for future use
-            HealthCondition healthCondition = (currentProfile != null)
-                    ? currentProfile.getHealthCondition()
-                    : HealthCondition.NONE;
+            // Read dropdowns
+            Sex sex = mapGenderToSex(genderCombo.getValue());
+            DietPreference dietPref = mapDietToDietPreference(dietCombo.getValue());
+            Goal goal = mapGoalStringToEnum(goalCombo.getValue());
+            double activityLevel = mapActivityLevelToMET(activityLevelCombo.getValue());
 
-            Profile newProfile = new Profile(
-                    null,            // userId (DAO will override with current userId)
-                    weight,
-                    height,
-                    age,
-                    sex,
-                    goal,
-                    activityMET,
-                    targetWeight,
-                    dailyCalorieOpt,
-                    healthCondition,
-                    dietPreference
+            // Create updated profile
+            Profile updatedProfile = new Profile(
+                    null,                // userId
+                    weight,              // weightKg
+                    height,              // heightCm
+                    age,                 // ageYears
+                    sex,                 // sex
+                    goal,                // goal
+                    activityLevel,         // activityLevelMET
+                    targetWeight,        // targetWeightKg
+                    Optional.of(dailyCalories),     // dailyCalorieTarget
+                    HealthCondition.NONE,     // healthCondition   (10)
+                    dietPref       // dietPreference    (11)
             );
 
-            updateUserController.updateUser(newProfile);
+            // Pass to controller
+            updateUserController.updateUser(updatedProfile);
 
-        } catch (NumberFormatException e) {
-            showError("Please check that age, height, weight, target weight, and daily calories are valid numbers.");
+            // Notify user
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText("Profile Updated");
+            alert.setContentText("Your settings have been saved.");
+            alert.show();
+
+        } catch (Exception ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not save settings");
+            alert.setContentText(ex.getMessage());
+            alert.show();
         }
     }
+
 }
