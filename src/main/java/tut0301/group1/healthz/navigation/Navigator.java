@@ -360,16 +360,12 @@ public class Navigator {
                 oauthToken
         );
 
-        AddFavoriteInputBoundary addFavoriteInteractor = new AddFavoriteInteractor(favoriteGateway);
-        AddFavoriteController addFavoriteController = new AddFavoriteController(addFavoriteInteractor);
-
         // Create View
         RecipeDetailView detailView = new RecipeDetailView(
                 recipeId,
                 controller,
                 viewModel,
                 this,
-                addFavoriteController,
                 userId );
 
         // Setup back button
@@ -989,11 +985,6 @@ public class Navigator {
         recipeDetailView.getBackButton().setOnAction(e -> {
             System.out.println("Going back from recipe detail...");
             showRecipeSearch();
-        });
-
-        recipeDetailView.getFavoriteButton().setOnAction(e -> {
-            System.out.println("Navigating to favorite recipe page...");
-            showFavoriteRecipes();
         });
     }
 
