@@ -7,10 +7,16 @@ import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAc
 //import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailDataAccessObject;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchDataAccessObject;
+import tut0301.group1.healthz.dataaccess.supabase.*;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tut0301.group1.healthz.interfaceadapter.activity.*;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailDataAccessObject;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseFavoriteRecipeDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject;
+import tut0301.group1.healthz.entities.Profile;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
@@ -26,6 +32,19 @@ import tut0301.group1.healthz.interfaceadapter.recipe.*;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipePresenter;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeViewModel;
+import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserController;
+import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserPresenter;
+import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserViewModel;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogInputBoundary;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogInteractor;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogLoadOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogSaveOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorInputBoundary;
+import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorInteractor;
+import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderInputBoundary;
+import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderInteractor;
+import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderOutputBoundary;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
@@ -48,7 +67,9 @@ import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBou
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailDataAccessInterface;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
+import tut0301.group1.healthz.view.activity.ActivityView;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
+import tut0301.group1.healthz.usecase.setting.UpdateUserInteractor;
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
 import tut0301.group1.healthz.view.auth.SignupView;
@@ -62,10 +83,11 @@ import tut0301.group1.healthz.view.dashboard.DashboardView;
 import tut0301.group1.healthz.view.recipe.RecipeSearchView;
 import tut0301.group1.healthz.view.recipe.FavoriteRecipeView;
 import tut0301.group1.healthz.view.nutrition.FoodLogView;
-import tut0301.group1.healthz.view.activity.ActivityLogView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+
+import java.util.Optional;
 
 /**
  * Navigator - Handles all navigation between views
@@ -211,6 +233,8 @@ public class Navigator {
         // Recipe Search setup
         RecipeSearchViewModel recipeSearchViewModel = new RecipeSearchViewModel();
         RecipeSearchPresenter recipeSearchPresenter = new RecipeSearchPresenter(recipeSearchViewModel);
+        RecipeSearchGateway recipeSearchGateway = new FatSecretRecipeSearchDataAccessObject();
+        RecipeSearchInputBoundary recipeSearchInteractor = new RecipeSearchInteractor(recipeSearchGateway, recipeSearchPresenter);
         RecipeSearchDataAccessInterface recipeSearchDataAccessInterface = new FatSecretRecipeSearchDataAccessObject();
         RecipeSearchInputBoundary recipeSearchInteractor = new RecipeSearchInteractor(recipeSearchDataAccessInterface, recipeSearchPresenter);
         RecipeSearchController recipeSearchController = new RecipeSearchController(recipeSearchInteractor, recipeSearchPresenter);
@@ -260,7 +284,7 @@ public class Navigator {
 
         FavoriteRecipeView view = new FavoriteRecipeView(userName, userId, controller, viewModel, this);
 
-        setupFavoriteRecipes(view);
+        setupFavoriteRecipesNavigation(view);
 
         primaryStage.setScene(view.getScene());
         primaryStage.setTitle("HealthZ - Favorite Recipes");
@@ -313,6 +337,7 @@ public class Navigator {
         // Create Presenter
         RecipeDetailPresenter presenter = new RecipeDetailPresenter(viewModel);
 
+        RecipeDetailGateway gateway = new FatSecretRecipeDetailDataAccessObject();
         RecipeDetailDataAccessInterface gateway = new FatSecretRecipeDetailDataAccessObject();
 
         // Create Interactor
@@ -355,11 +380,106 @@ public class Navigator {
      * Navigate to Settings page
      */
     public void showSettings() {
-        SettingsView settingsView = new SettingsView(this);
+        if (authenticatedClient == null) {
+            showError("You must be logged in to view Settings.");
+            showLogin();
+            return;
+        }
 
-        // Switch to settings scene
+        // 1. DAO for user_data
+        SupabaseUserDataDataAccessObject userDao =
+                new SupabaseUserDataDataAccessObject(authenticatedClient);
+
+        // 2. Load or create profile
+        Profile currentProfile;
+        try {
+            currentProfile = userDao.loadCurrentUserProfile()
+                    .orElseGet(() -> {
+                        try {
+                            return userDao.createBlankForCurrentUserIfMissing();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Could not load your settings: " + e.getMessage());
+            return;
+        }
+
+        // 3. Build use-case stack
+        UpdateUserViewModel settingsViewModel = new UpdateUserViewModel();
+        UpdateUserPresenter settingsPresenter = new UpdateUserPresenter(settingsViewModel);
+        UpdateUserInteractor settingsInteractor = new UpdateUserInteractor(userDao, settingsPresenter);
+        UpdateUserController settingsController = new UpdateUserController(settingsInteractor, settingsPresenter);
+
+        // 4. Get name + email (conceptually coming from LoginOutputData)
+        String displayName = getUserDisplayName();
+        String email = getCurrentUserEmail();
+
+        // 5. Build view
+        SettingsView settingsView =
+                new SettingsView(this, settingsController, currentProfile, displayName, email);
+
         primaryStage.setScene(settingsView.getScene());
         primaryStage.setTitle("HealthZ - Settings");
+    }
+
+    private String getCurrentUserEmail() {
+        if (authenticatedClient != null) {
+            try {
+                return authenticatedClient.getUserEmail();
+            } catch (Exception e) {
+                System.err.println("Could not get email: " + e.getMessage());
+            }
+        }
+        return "";
+    }
+
+
+    public void showActivityTracker(){
+
+        SupabaseExerciseDataAccessObject exerciseDAO = new SupabaseExerciseDataAccessObject(authenticatedClient);
+        SupabaseActivityLogDataAccessObject activityLogDAO = new SupabaseActivityLogDataAccessObject(authenticatedClient);
+
+        ExerciseListViewModel exerciseListVM = new ExerciseListViewModel();
+        ActivityHistoryViewModel historyVM = new ActivityHistoryViewModel();
+
+        ExerciseFinderOutputBoundary exercisePresenter = new ExerciseFinderPresenter(exerciseListVM);
+        CalorieCalculatorOutputBoundary caloriePresenter = new CalorieCalculatorPresenter(exerciseListVM);
+        ActivityLogSaveOutputBoundary activityLogSavePresenter = new ActivityLogSavePresenter(historyVM);
+        ActivityLogLoadOutputBoundary activityLogLoadPresenter = new ActivityLogLoadPresenter();
+
+        ExerciseFinderInputBoundary exerciseFinder = new ExerciseFinderInteractor(exerciseDAO, exercisePresenter);
+        CalorieCalculatorInputBoundary calorieCalculator = new CalorieCalculatorInteractor(exerciseFinder, caloriePresenter);
+        ActivityLogInputBoundary activityLog = new ActivityLogInteractor(
+                activityLogDAO,
+                exerciseFinder,
+                activityLogSavePresenter,
+                activityLogLoadPresenter
+        );
+        ActivityPageController controller = new ActivityPageController(exerciseFinder, calorieCalculator, activityLog);
+        SupabaseUserDataDataAccessObject userDataDAO = new SupabaseUserDataDataAccessObject(authenticatedClient);
+        try{
+            Optional<Profile> maybeProfile = userDataDAO.loadCurrentUserProfile();
+            Profile currentProfile;
+
+            if (maybeProfile.isPresent()) {
+                currentProfile = maybeProfile.get();
+
+                ActivityView view = new ActivityView(controller, exerciseListVM, historyVM, currentProfile, this);
+                primaryStage.setScene(view.getScene());
+                primaryStage.setTitle("HealthZ - Activity Tracker");
+
+            } else {
+                System.out.println("No profile found for current user.");
+
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Failed to load user profile: " + e.getMessage());
+            showError("Could not load your profile data. Using defaults.");
+        }
     }
 
     /**
@@ -552,12 +672,6 @@ public class Navigator {
     /**
      * Navigate to Activity Log Page
      */
-    public void showActivityLog() {
-        ActivityLogView activityLogView = new ActivityLogView();
-
-        primaryStage.setScene(activityLogView.getScene());
-        primaryStage.setTitle("HealthZ - Activity Log");
-    }
 
     /**
      * Go back to previous page
@@ -736,7 +850,7 @@ public class Navigator {
         // Activity Log button
         dashboardView.getActivityLogButton().setOnAction(e -> {
             System.out.println("Navigating to Activity Log...");
-            // TODO: showActivityTracker();
+            showActivityTracker();
         });
 
         // Log out Button
@@ -777,9 +891,25 @@ public class Navigator {
     }
 
     /**
+     * Setup navigation for Recipe Details page
+     */
+    private void setupRecipeDetailNavigation(RecipeDetailView recipeDetailView) {
+        recipeDetailView.getBackButton().setOnAction(e -> {
+            System.out.println("Going back from recipe detail...");
+            showRecipeSearch();
+        });
+
+        recipeDetailView.getFavoriteButton().setOnAction(e -> {
+            System.out.println("Navigating to favorite recipe page...");
+            showFavoriteRecipes();
+        });
+    }
+
+
+    /**
      * Setup navigation for Favorite Recipe page
      */
-    private void setupFavoriteRecipes(FavoriteRecipeView favoriteRecipeView) {
+    private void setupFavoriteRecipesNavigation(FavoriteRecipeView favoriteRecipeView) {
         favoriteRecipeView.getBackButton().setOnAction(e -> {
             System.out.println("Navigating to Back button...");
             showRecipeSearch();
