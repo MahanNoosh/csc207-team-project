@@ -18,6 +18,9 @@ import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
 import tut0301.group1.healthz.interfaceadapter.auth.mapping.SignupProfileMapper;
+import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
+import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardPresenter;
+import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.AddFavoriteController;
 import tut0301.group1.healthz.interfaceadapter.food.FoodDetailPresenter;
 import tut0301.group1.healthz.interfaceadapter.food.FoodSearchPresenter;
@@ -42,6 +45,9 @@ import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderOutp
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
+import tut0301.group1.healthz.usecase.dashboard.DashboardInputBoundary;
+import tut0301.group1.healthz.usecase.dashboard.DashboardInteractor;
+import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
 import tut0301.group1.healthz.usecase.favoriterecipe.*;
 import tut0301.group1.healthz.usecase.food.detail.FoodDetailGateway;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInputBoundary;
@@ -304,18 +310,6 @@ public class Navigator {
         }
     }
 
-    private String getCurrentUserId() {
-        if (authenticatedClient != null) {
-            try {
-                return authenticatedClient.getUserId();
-            } catch (Exception e) {
-                System.err.println("Could not get user ID: " + e.getMessage());
-                return null;
-            }
-        }
-        return null;
-    }
-
     /**
      * Navigate to Recipe Detail page
      */
@@ -417,7 +411,7 @@ public class Navigator {
             }
 
         } catch (Exception e) {
-            System.err.println("❌ Failed to load user profile: " + e.getMessage());
+            System.err.println("Failed to load user profile: " + e.getMessage());
             showError("Could not load your profile data. Using defaults.");
         }
     }
@@ -426,9 +420,24 @@ public class Navigator {
      * Navigate to Dashboard page
      */
     public void showDashboard() {
-        String userName = getUserDisplayName();
-        DashboardView dashboardView = new DashboardView(userName);
+        // TODO: figure out why it isn't displaying actual username
+        String userId = getUserDisplayName();
+
+        System.out.println("Navigator: Showing dashboard for user " + userId);
+
+        DashboardViewModel viewModel = new DashboardViewModel();
+        DashboardPresenter presenter = new DashboardPresenter(viewModel);
+
+        UserDataDataAccessInterface userDataAccess =
+                new SupabaseUserDataDataAccessObject(authenticatedClient);
+
+        DashboardInputBoundary interactor = new DashboardInteractor(userDataAccess, presenter);
+        DashboardController controller = new DashboardController(interactor);
+
+        DashboardView dashboardView = new DashboardView(controller, viewModel, userId);
+
         setupDashboardNavigation(dashboardView);
+
         primaryStage.setScene(dashboardView.getScene());
         primaryStage.setTitle("HealthZ - Dashboard");
     }
@@ -459,7 +468,7 @@ public class Navigator {
      * Navigate to Main App/Dashboard (after successful login/signup)
      */
     public void showMainApp() {
-        System.out.println("✅ Login/Signup successful! Navigating to main app...");
+        System.out.println("Login/Signup successful! Navigating to main app...");
         showDashboard();
     }
 
@@ -488,7 +497,7 @@ public class Navigator {
         //  - restarts the 3-minute login retry window
         //  - applies a ~2min cooldown
         view.getResendButton().setOnAction(e -> {
-            System.out.println("🔁 User clicked: Resend verification email");
+            System.out.println("User clicked: Resend verification email");
             resendVerificationEmail(signupData, view);
 
             // restart 3-minute auto-login window (your existing helper)
@@ -523,13 +532,13 @@ public class Navigator {
 
         // Sign up link -> go to signup
         loginView.getSignUpButton().setOnAction(e -> {
-            System.out.println("📝 Navigating to Sign Up...");
+            System.out.println("Navigating to Sign Up...");
             showSignup();
         });
 
         // Continue button -> perform login, then go to main app
         loginView.getLoginButton().setOnAction(e -> {
-            System.out.println("🔐 Logging in with " + loginView.getEmail());
+            System.out.println("Logging in with " + loginView.getEmail());
 
             String url  = System.getenv("SUPABASE_URL");
             String anon = System.getenv("SUPABASE_ANON_KEY");
@@ -550,7 +559,7 @@ public class Navigator {
             loginController.login(loginView.getEmail(), loginView.getPassword());
 
             if (loginVM.isLoggedIn()) {
-                System.out.println("✅ Login successful, ensuring profile row exists...");
+                System.out.println("Login successful, ensuring profile row exists...");
 
                 this.authenticatedClient = client;
 
@@ -609,21 +618,23 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Food Log");
     }
 
-    /**
-     * Navigate to Activity Log Page
-     */
+    // ========== PRIVATE HELPER METHODS ==========
 
     /**
-     * Go back to previous page
-     * (Can implement navigation history stack later)
+     * Get Current User Id
      */
-    public void goBack() {
-        // TODO: Implement navigation history stack
-        System.out.println("Going back...");
-        showLogin();
+    private String getCurrentUserId() {
+        if (authenticatedClient != null) {
+            try {
+                return authenticatedClient.getUserId();
+            } catch (Exception e) {
+                System.err.println("Could not get user ID: " + e.getMessage());
+                return null;
+            }
+        }
+        return null;
     }
 
-    // ========== PRIVATE HELPER METHODS ==========
 
     /**
      * Setup navigation for Login page

@@ -23,7 +23,8 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
 
     @Override
     public Optional<Profile> loadCurrentUserProfile() throws Exception {
-        String userId = client.getUserId(); // ensures session/token
+        String userId = client.getUserId();
+
         String endpoint =
                 "user_data?select=" + UserDataFields.projection() +
                         "&userId=eq." + userId + "&limit=1";
@@ -34,13 +35,22 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
                 .build();
 
         HttpResponse<String> res = client.send(req);
+
         if (res.statusCode() >= 400) {
-            throw new RuntimeException("Fetch user_data failed: " + res.body());
+            System.err.println("Failed to load profile: " + res.body());
+            return Optional.empty();
         }
 
         JSONArray arr = new JSONArray(res.body());
-        if (arr.length() == 0) return Optional.empty();
-        return Optional.of(ProfileJsonMapper.fromRow(arr.getJSONObject(0)));
+        if (arr.length() == 0) {
+            System.out.println("No profile found in database");
+            return Optional.empty();
+        }
+
+        Profile profile = ProfileJsonMapper.fromRow(arr.getJSONObject(0));
+        System.out.println("Profile loaded from database");
+
+        return Optional.of(profile);
     }
 
     @Override
