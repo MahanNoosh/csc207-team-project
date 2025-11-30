@@ -14,6 +14,7 @@ import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseFavoriteRecipeDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject;
+import tut0301.group1.healthz.entities.Profile;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
@@ -29,6 +30,9 @@ import tut0301.group1.healthz.interfaceadapter.recipe.*;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipePresenter;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeViewModel;
+import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserController;
+import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserPresenter;
+import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserViewModel;
 import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogInputBoundary;
 import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogInteractor;
 import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogLoadOutputBoundary;
@@ -59,6 +63,7 @@ import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
 import tut0301.group1.healthz.view.activity.ActivityView;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
+import tut0301.group1.healthz.usecase.setting.UpdateUserInteractor;
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
 import tut0301.group1.healthz.view.auth.SignupView;
@@ -398,12 +403,62 @@ public class Navigator {
      * Navigate to Settings page
      */
     public void showSettings() {
-        SettingsView settingsView = new SettingsView(this);
+        if (authenticatedClient == null) {
+            showError("You must be logged in to view Settings.");
+            showLogin();
+            return;
+        }
 
-        // Switch to settings scene
+        // 1. DAO for user_data
+        SupabaseUserDataDataAccessObject userDao =
+                new SupabaseUserDataDataAccessObject(authenticatedClient);
+
+        // 2. Load or create profile
+        Profile currentProfile;
+        try {
+            currentProfile = userDao.loadCurrentUserProfile()
+                    .orElseGet(() -> {
+                        try {
+                            return userDao.createBlankForCurrentUserIfMissing();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Could not load your settings: " + e.getMessage());
+            return;
+        }
+
+        // 3. Build use-case stack
+        UpdateUserViewModel settingsViewModel = new UpdateUserViewModel();
+        UpdateUserPresenter settingsPresenter = new UpdateUserPresenter(settingsViewModel);
+        UpdateUserInteractor settingsInteractor = new UpdateUserInteractor(userDao, settingsPresenter);
+        UpdateUserController settingsController = new UpdateUserController(settingsInteractor, settingsPresenter);
+
+        // 4. Get name + email (conceptually coming from LoginOutputData)
+        String displayName = getUserDisplayName();
+        String email = getCurrentUserEmail();
+
+        // 5. Build view
+        SettingsView settingsView =
+                new SettingsView(this, settingsController, currentProfile, displayName, email);
+
         primaryStage.setScene(settingsView.getScene());
         primaryStage.setTitle("HealthZ - Settings");
     }
+
+    private String getCurrentUserEmail() {
+        if (authenticatedClient != null) {
+            try {
+                return authenticatedClient.getUserEmail();
+            } catch (Exception e) {
+                System.err.println("Could not get email: " + e.getMessage());
+            }
+        }
+        return "";
+    }
+
 
     public void showActivityTracker(){
 
