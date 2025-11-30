@@ -161,7 +161,7 @@ public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGat
                 recipeId,
                 name,
                 description,
-                new ArrayList<>(),
+                Optional.empty(),
                 new ArrayList<>(),
                 Optional.empty(),
                 Optional.empty(),

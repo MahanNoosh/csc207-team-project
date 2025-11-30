@@ -47,7 +47,7 @@ class RecipeSearchInteractorTest {
         };
 
         RecipeSearchInputBoundary interactor = new RecipeSearchInteractor(gateway, successPresenter);
-        interactor.execute(inputData.getQuery(), inputData.getFilter());
+        interactor.execute(inputData);
     }
 
     @Test
@@ -76,7 +76,7 @@ class RecipeSearchInteractorTest {
         };
 
         RecipeSearchInputBoundary interactor = new RecipeSearchInteractor(gateway, failurePresenter);
-        interactor.execute(inputData.getQuery(), inputData.getFilter());
+        interactor.execute(inputData);
     }
 
     @Test
@@ -106,6 +106,6 @@ class RecipeSearchInteractorTest {
         };
 
         RecipeSearchInputBoundary interactor = new RecipeSearchInteractor(gateway, presenter);
-        interactor.execute(inputData.getQuery(), inputData.getFilter());
+        interactor.execute(inputData);
     }
 }

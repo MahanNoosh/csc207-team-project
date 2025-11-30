@@ -5,28 +5,44 @@ import tut0301.group1.healthz.entities.nutrition.RecipeFilter;
 
 import java.util.List;
 
-public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
-    private final RecipeSearchDataAccessInterface gateway;
-    private final RecipeSearchOutputBoundary presenter;
+/**
+ * The recipe search interactor.
+ */
+public final class RecipeSearchInteractor implements RecipeSearchInputBoundary {
+    private final RecipeSearchDataAccessInterface recipeSearchDataAccessObject;
+    private final RecipeSearchOutputBoundary recipeSearchPresenter;
 
-    public RecipeSearchInteractor(RecipeSearchDataAccessInterface gateway, RecipeSearchOutputBoundary presenter) {
-        this.gateway = gateway;
-        this.presenter = presenter;
+    /**
+     * The recipe search interactor constructor.
+     * @param recipeSearchDataAccessInterface the data access interface.
+     * @param recipeSearchOutputBoundary the output boundary.
+     */
+    public RecipeSearchInteractor(final RecipeSearchDataAccessInterface
+                                          recipeSearchDataAccessInterface,
+                                  final RecipeSearchOutputBoundary
+                                          recipeSearchOutputBoundary) {
+        this.recipeSearchDataAccessObject = recipeSearchDataAccessInterface;
+        this.recipeSearchPresenter = recipeSearchOutputBoundary;
     }
 
     @Override
-    public void execute(String query, RecipeFilter filter) {
+    public void execute(final RecipeSearchInputData recipeSearchInputData) {
+        String query = recipeSearchInputData.getQuery();
+        RecipeFilter filter = recipeSearchInputData.getFilter();
+
         if (query == null || query.isBlank()) {
-            presenter.presentFailure("Please enter a recipe name or ingredient to search for.");
+            recipeSearchPresenter.presentFailure(
+                    "Please enter a recipe name or ingredient to search for.");
             return;
         }
 
         try {
-            List<RecipeSearchResult> results = gateway.search(
-                    query.trim(), filter);
-            presenter.presentSuccess(results);
+            List<RecipeSearchResult> results =
+                    recipeSearchDataAccessObject.search(query.trim(), filter);
+            recipeSearchPresenter.presentSuccess(results);
         } catch (Exception e) {
-            presenter.presentFailure("Could not fetch recipe data: " + e.getMessage());
+            recipeSearchPresenter.presentFailure(
+                    "Could not fetch recipe data: " + e.getMessage());
         }
     }
 }

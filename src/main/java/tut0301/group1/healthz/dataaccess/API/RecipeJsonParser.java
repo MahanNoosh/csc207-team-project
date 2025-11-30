@@ -40,8 +40,7 @@ public class RecipeJsonParser {
                     recipe.getString("recipe_id"),
                     recipe.getString("recipe_name"),
                     recipe.getString("recipe_description"),
-                    List.of("Not applicable"),
-                    null, null, null, null,
+                    null, null, null, null, null,
                     recipe.getString("recipe_image")
             );
             recipesList.add(recipeEntity);
@@ -111,8 +110,8 @@ public class RecipeJsonParser {
         JSONArray recipeImage = recipeImages.getJSONArray("recipe_image");
         String imageUrl = recipeImage.get(0).toString();
 
-        return new Recipe(recipeId, name, description, instructions, recipeIngredients, prepTime, cookTime,
-                servings, imageUrl);
+        return new Recipe(recipeId, name, description, Optional.of(instructions), recipeIngredients,
+                prepTime, cookTime, servings, imageUrl);
     }
 
     public static List<RecipeSearchResult> parseRecipeResults(String jsonResponse) {

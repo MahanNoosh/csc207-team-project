@@ -2,6 +2,7 @@ package tut0301.group1.healthz.interfaceadapter.recipe;
 
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 import tut0301.group1.healthz.entities.nutrition.RecipeFilter;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputData;
 
 public class RecipeSearchController {
     private final RecipeSearchInputBoundary interactor;
@@ -16,7 +17,7 @@ public class RecipeSearchController {
         presenter.getViewModel().setMessage(null);
         presenter.getViewModel().setResults(java.util.List.of());
         presenter.getViewModel().setLoading(true);
-        interactor.execute(query, filter);
+        interactor.execute(new RecipeSearchInputData(query, filter));
     }
 
     public RecipeSearchViewModel getViewModel() {
