@@ -277,7 +277,7 @@ public class RecipeDetailView {
                         "-fx-cursor: hand;"
         );
 
-        // favoriteButton.setOnAction(e -> handleFavorite(details));
+        favoriteButton.setOnAction(e -> handleFavorite(details));
 
         header.getChildren().addAll(backButton, title, spacer, favoriteButton);
         return header;
@@ -509,29 +509,25 @@ public class RecipeDetailView {
     /**
      * Handle favorite button click
      */
-    /*
     private void handleFavorite(RecipeDetails result) {
         System.out.println("➕ Adding to favorites: " + result.recipeName());
 
         if (addFavoriteController == null || userId == null) {
-            System.err.println("❌ Favorites not configured");
+            System.err.println("Favorites not configured");
             showAlert("Error", "Unable to add to favorites. Please sign in.");
             return;
         }
 
         try {
-            // Add to favorites using the controller
             addFavoriteController.addFavorite(userId, result.recipeName());
 
             showAlert("Added to Favorites", result.recipeName() + " has been added to your favorites! ♥");
 
         } catch (Exception e) {
-            System.err.println("❌ Failed to add favorite: " + e.getMessage());
+            System.err.println("Failed to add favorite: " + e.getMessage());
             showAlert("Error", "Failed to add to favorites: " + e.getMessage());
         }
     }
-
-     */
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

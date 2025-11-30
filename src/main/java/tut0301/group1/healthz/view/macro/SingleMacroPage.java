@@ -1,5 +1,3 @@
-
-
 package tut0301.group1.healthz.view.macro;
 
 import javafx.geometry.Insets;
@@ -13,7 +11,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -26,6 +23,8 @@ import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.entities.nutrition.ServingInfo;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailViewModel;
+import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeController;
+import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
 
 /**
@@ -38,6 +37,10 @@ public class SingleMacroPage {
     private final Navigator navigator;
     private final Scene scene;
 
+    private final LogFoodIntakeController logController;
+    private final LogFoodIntakeViewModel logViewModel;
+    private final String userId;
+
     private ComboBox<String> servingComboBox;
     private TextField servingsCountField;
     private ComboBox<String> mealComboBox;
@@ -46,9 +49,20 @@ public class SingleMacroPage {
     private FoodItem foodItem;
     private ServingInfo currentServing;
 
-    public SingleMacroPage(MacroDetailController controller, MacroDetailViewModel viewModel, Navigator navigator) {
+    /**
+     * Updated Constructor to accept LogFoodIntake dependencies
+     */
+    public SingleMacroPage(MacroDetailController controller,
+                           MacroDetailViewModel viewModel,
+                           LogFoodIntakeController logController,
+                           LogFoodIntakeViewModel logViewModel,
+                           String userId,
+                           Navigator navigator) {
         this.controller = controller;
         this.viewModel = viewModel;
+        this.logController = logController;
+        this.logViewModel = logViewModel;
+        this.userId = userId;
         this.navigator = navigator;
 
         BorderPane root = new BorderPane();
@@ -182,6 +196,86 @@ public class SingleMacroPage {
         button.setOnAction(e -> handleAddToLog());
 
         return button;
+    }
+
+    // [New Implementation] Handle Adding Food to Log
+    private void handleAddToLog() {
+        // 1. Get raw input
+        String servingSizeDesc = servingComboBox.getValue();
+        String servingsCountStr = servingsCountField.getText();
+        String meal = mealComboBox.getValue();
+
+        // 2. Validate input
+        if (servingSizeDesc == null || servingSizeDesc.isEmpty()) {
+            showErrorMessage("Please select a serving size");
+            return;
+        }
+
+        if (meal == null || meal.isEmpty()) {
+            showErrorMessage("Please select a meal");
+            return;
+        }
+
+        double multiplier;
+        try {
+            multiplier = Double.parseDouble(servingsCountStr);
+        } catch (NumberFormatException e) {
+            showErrorMessage("Please enter a valid number for servings");
+            return;
+        }
+
+        if (multiplier <= 0) {
+            showErrorMessage("Servings must be greater than 0");
+            return;
+        }
+
+        // 3. Get FoodDetails
+        FoodDetails foodDetails = viewModel.getDetails();
+        if (foodDetails == null) {
+            showErrorMessage("Food details not loaded.");
+            return;
+        }
+
+        // 4. Find the correct ServingInfo object
+        ServingInfo selectedServing = null;
+        for (ServingInfo s : foodDetails.servings) {
+            if (s.servingDescription.equals(servingSizeDesc)) {
+                selectedServing = s;
+                break;
+            }
+        }
+
+        if (selectedServing == null) {
+            showErrorMessage("Invalid serving selection.");
+            return;
+        }
+
+        // 5. Check User ID
+        if (userId == null || userId.isEmpty()) {
+            showErrorMessage("User not logged in.");
+            return;
+        }
+
+        // 6. Execute Use Case
+        System.out.println("LOGGING: " + foodDetails.name + " | x" + multiplier + " | " + meal);
+
+        logController.logFood(
+                userId,
+                foodDetails,
+                selectedServing,
+                multiplier,
+                meal
+        );
+
+        // 7. Show success feedback
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText("Food Logged");
+        alert.setContentText(
+                "Successfully added " + foodDetails.name + "\n" +
+                        "(" + multiplier + "x " + selectedServing.servingDescription + ") to " + meal + "."
+        );
+        alert.showAndWait();
     }
 
     private HBox createCenterContent() {
@@ -691,57 +785,6 @@ public class SingleMacroPage {
         divider.setPrefHeight(height);
         divider.setStyle("-fx-background-color: #000000;");
         return divider;
-    }
-
-    private VBox createStat(String labelText, String valueText) {
-        VBox stat = new VBox(4);
-        Label label = new Label(labelText);
-        label.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 14));
-        label.setTextFill(Color.web("#374151"));
-
-        Label value = new Label(valueText);
-        value.setFont(Font.font("Inter", FontWeight.BOLD, 18));
-        value.setTextFill(Color.web("#111827"));
-
-        stat.getChildren().addAll(label, value);
-        return stat;
-    }
-
-    private void handleAddToLog() {
-        String servingSize = servingComboBox.getValue();
-        String servingsCount = servingsCountField.getText();
-        String meal = mealComboBox.getValue();
-
-        if (servingSize == null || servingSize.isEmpty()) {
-            showErrorMessage("Please select a serving size");
-            return;
-        }
-
-        if (meal == null || meal.isEmpty()) {
-            showErrorMessage("Please select a meal");
-            return;
-        }
-
-        double multiplier = safeParse(servingsCount, 1.0);
-        if (multiplier <= 0) {
-            showErrorMessage("Servings must be greater than 0");
-            return;
-        }
-
-        double totalCalories = foodItem.getCalories() * multiplier;
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Success");
-        alert.setHeaderText("Added to Log!");
-        alert.setContentText(
-                foodItem.getName() + "\n" +
-                        servingSize + " (" + servingsCount + "x servings)\n" +
-                        "Added to " + meal + "\n" +
-                        "Total: " + String.format("%.0f", totalCalories) + " calories"
-        );
-        alert.showAndWait();
-
-        // TODO: Actually save to meal log and navigate back if needed.
     }
 
     private void showErrorMessage(String message) {

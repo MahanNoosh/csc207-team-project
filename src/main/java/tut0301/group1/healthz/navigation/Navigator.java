@@ -5,8 +5,11 @@ import javafx.stage.Stage;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodDetailDataAccessObject;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAccessObject;
 //import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchGateway;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailDataAccessObject;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchDataAccessObject;
+import tut0301.group1.healthz.dataaccess.supabase.*;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tut0301.group1.healthz.interfaceadapter.activity.*;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseFavoriteRecipeDataAccessObject;
@@ -26,6 +29,16 @@ import tut0301.group1.healthz.interfaceadapter.recipe.*;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipePresenter;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeViewModel;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogInputBoundary;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogInteractor;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogLoadOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogSaveOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorInputBoundary;
+import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorInteractor;
+import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderInputBoundary;
+import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderInteractor;
+import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderOutputBoundary;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
@@ -33,21 +46,18 @@ import tut0301.group1.healthz.usecase.favoriterecipe.*;
 import tut0301.group1.healthz.usecase.food.detail.FoodDetailGateway;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInputBoundary;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInteractor;
+import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInputBoundary;
+import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInteractor;
 import tut0301.group1.healthz.usecase.food.search.FoodSearchDataAccessInterface;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodInputBoundary;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodInteractor;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodOutputBoundary;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailGateway;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputBoundary;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInteractor;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
+import tut0301.group1.healthz.view.activity.ActivityView;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
 import tut0301.group1.healthz.view.auth.LandingView;
 import tut0301.group1.healthz.view.auth.LoginView;
@@ -62,10 +72,19 @@ import tut0301.group1.healthz.view.dashboard.DashboardView;
 import tut0301.group1.healthz.view.recipe.RecipeSearchView;
 import tut0301.group1.healthz.view.recipe.FavoriteRecipeView;
 import tut0301.group1.healthz.view.nutrition.FoodLogView;
-import tut0301.group1.healthz.view.activity.ActivityLogView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeController;
+import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakePresenter;
+import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeViewModel;
+import tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInputBoundary;
+import tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInteractor;
+import tut0301.group1.healthz.usecase.food.logging.FoodLogGateway;
+import tut0301.group1.healthz.dataaccess.supabase.food.SupabaseFoodLogGateway;
+import javafx.concurrent.Task;
+
+import java.util.Optional;
 
 /**
  * Navigator - Handles all navigation between views
@@ -173,32 +192,56 @@ public class Navigator {
      * Navigate to a single macro detail page for a selected food id.
      */
     public void showMacroDetails(long foodId) {
-        // Clean Architecture Layer Setup:
-        // 1. ViewModel (Interface Adapter)
+        // 1. Get the current user ID
+        String currentUserId = getCurrentUserId();
+        if (currentUserId == null) {
+            System.err.println("Warning: Showing details but user is not logged in.");
+            // Optional: Handle guest login logic
+        }
+
+        // 2. Clean Architecture Layer Setup: Macro Detail
+        // ViewModel (Interface Adapter)
         MacroDetailViewModel detailViewModel = new MacroDetailViewModel();
 
-        // 2. Presenter (Interface Adapter) - implements OutputBoundary
+        // Presenter (Interface Adapter) - implements OutputBoundary
         FoodDetailPresenter presenter = new FoodDetailPresenter(detailViewModel);
 
-        // 3. Gateway (Interface Adapter) - implements gateway interface
+        // Gateway (Interface Adapter) - implements gateway interface
         FoodDetailGateway gateway = new FatSecretFoodDetailDataAccessObject();
 
-        // 4. Interactor (Use Case) - depends on gateway and outputBoundary interfaces
+        // Interactor (Use Case) - depends on gateway and outputBoundary interfaces
         GetFoodDetailInputBoundary interactor = new GetFoodDetailInteractor(gateway, presenter);
 
-        // 5. Controller (Interface Adapter) - only knows about interactor
+        // Controller (Interface Adapter) - only knows about interactor
         MacroDetailController controller = new MacroDetailController(interactor);
 
-        // Set initial loading state in ViewModel before calling controller
+        // 3. Clean Architecture Layer Setup: Log Food Intake (Add Button)
+        LogFoodIntakeViewModel logViewModel = new LogFoodIntakeViewModel();
+        LogFoodIntakePresenter logPresenter = new LogFoodIntakePresenter(logViewModel);
+
+        // Use the existing authenticated Supabase client for logging
+        FoodLogGateway logGateway = new SupabaseFoodLogGateway(authenticatedClient);
+
+        LogFoodIntakeInputBoundary logInteractor = new LogFoodIntakeInteractor(logGateway, logPresenter);
+        LogFoodIntakeController logController = new LogFoodIntakeController(logInteractor);
+
+        // 4. Initialize State
         detailViewModel.setLoading(true);
         detailViewModel.setMessage(null);
         detailViewModel.setDetails(null);
 
-        // Controller calls interactor, which will call presenter, which updates viewModel
+        // 5. Fetch Data
         controller.fetch(foodId);
 
-        // 6. View - observes ViewModel
-        SingleMacroPage detailView = new SingleMacroPage(controller, detailViewModel, this);
+        // 6. Create View with injected dependencies
+        SingleMacroPage detailView = new SingleMacroPage(
+                controller,
+                detailViewModel,
+                logController,  // Injected Log Controller
+                logViewModel,   // Injected Log ViewModel
+                currentUserId,  // Injected User ID
+                this
+        );
 
         primaryStage.setScene(detailView.getScene());
         primaryStage.setTitle("HealthZ - Food Details");
@@ -211,7 +254,7 @@ public class Navigator {
         // Recipe Search setup
         RecipeSearchViewModel recipeSearchViewModel = new RecipeSearchViewModel();
         RecipeSearchPresenter recipeSearchPresenter = new RecipeSearchPresenter(recipeSearchViewModel);
-        RecipeSearchGateway recipeSearchGateway = new FatSecretRecipeSearchGateway();
+        RecipeSearchGateway recipeSearchGateway = new FatSecretRecipeSearchDataAccessObject();
         RecipeSearchInputBoundary recipeSearchInteractor = new RecipeSearchInteractor(recipeSearchGateway, recipeSearchPresenter);
         RecipeSearchController recipeSearchController = new RecipeSearchController(recipeSearchInteractor, recipeSearchPresenter);
 
@@ -260,7 +303,7 @@ public class Navigator {
 
         FavoriteRecipeView view = new FavoriteRecipeView(userName, userId, controller, viewModel, this);
 
-        setupFavoriteRecipes(view);
+        setupFavoriteRecipesNavigation(view);
 
         primaryStage.setScene(view.getScene());
         primaryStage.setTitle("HealthZ - Favorite Recipes");
@@ -313,7 +356,7 @@ public class Navigator {
         // Create Presenter
         RecipeDetailPresenter presenter = new RecipeDetailPresenter(viewModel);
 
-        RecipeDetailGateway gateway = new FatSecretRecipeDetailGateway();
+        RecipeDetailGateway gateway = new FatSecretRecipeDetailDataAccessObject();
 
         // Create Interactor
         RecipeDetailInputBoundary interactor = new RecipeDetailInteractor(gateway, presenter);
@@ -362,15 +405,105 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Settings");
     }
 
+    public void showActivityTracker(){
+
+        SupabaseExerciseDataAccessObject exerciseDAO = new SupabaseExerciseDataAccessObject(authenticatedClient);
+        SupabaseActivityLogDataAccessObject activityLogDAO = new SupabaseActivityLogDataAccessObject(authenticatedClient);
+
+        ExerciseListViewModel exerciseListVM = new ExerciseListViewModel();
+        ActivityHistoryViewModel historyVM = new ActivityHistoryViewModel();
+
+        ExerciseFinderOutputBoundary exercisePresenter = new ExerciseFinderPresenter(exerciseListVM);
+        CalorieCalculatorOutputBoundary caloriePresenter = new CalorieCalculatorPresenter(exerciseListVM);
+        ActivityLogSaveOutputBoundary activityLogSavePresenter = new ActivityLogSavePresenter(historyVM);
+        ActivityLogLoadOutputBoundary activityLogLoadPresenter = new ActivityLogLoadPresenter();
+
+        ExerciseFinderInputBoundary exerciseFinder = new ExerciseFinderInteractor(exerciseDAO, exercisePresenter);
+        CalorieCalculatorInputBoundary calorieCalculator = new CalorieCalculatorInteractor(exerciseFinder, caloriePresenter);
+        ActivityLogInputBoundary activityLog = new ActivityLogInteractor(
+                activityLogDAO,
+                exerciseFinder,
+                activityLogSavePresenter,
+                activityLogLoadPresenter
+        );
+        ActivityPageController controller = new ActivityPageController(exerciseFinder, calorieCalculator, activityLog);
+        SupabaseUserDataDataAccessObject userDataDAO = new SupabaseUserDataDataAccessObject(authenticatedClient);
+        try{
+            Optional<Profile> maybeProfile = userDataDAO.loadCurrentUserProfile();
+            Profile currentProfile;
+
+            if (maybeProfile.isPresent()) {
+                currentProfile = maybeProfile.get();
+
+                ActivityView view = new ActivityView(controller, exerciseListVM, historyVM, currentProfile, this);
+                primaryStage.setScene(view.getScene());
+                primaryStage.setTitle("HealthZ - Activity Tracker");
+
+            } else {
+                System.out.println("No profile found for current user.");
+
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Failed to load user profile: " + e.getMessage());
+            showError("Could not load your profile data. Using defaults.");
+        }
+    }
+
     /**
      * Navigate to Dashboard page
      */
     public void showDashboard() {
         String userName = getUserDisplayName();
-        DashboardView dashboardView = new DashboardView(userName);
+        String userId = getCurrentUserId();
+
+        tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryViewModel summaryViewModel =
+                new tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryViewModel();
+
+        tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryPresenter summaryPresenter =
+                new tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryPresenter(summaryViewModel);
+
+        tut0301.group1.healthz.usecase.food.logging.FoodLogGateway foodLogGateway =
+                new SupabaseFoodLogGateway(authenticatedClient);
+
+        tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogDataAccessInterface activityLogDataAccess =
+                new tut0301.group1.healthz.dataaccess.supabase.SupabaseActivityLogDataAccessObject(authenticatedClient);
+
+        tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface userDataAccess =
+                new tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject(authenticatedClient);
+
+        tut0301.group1.healthz.usecase.caloriesummary.GetDailyCalorieSummaryInputBoundary summaryInteractor =
+                new tut0301.group1.healthz.usecase.caloriesummary.GetDailyCalorieSummaryInteractor(
+                        foodLogGateway,
+                        activityLogDataAccess,
+                        userDataAccess,
+                        summaryPresenter);
+
+        tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryController summaryController =
+                new tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryController(summaryInteractor);
+
+        DashboardView dashboardView = new DashboardView(userName, summaryController, summaryViewModel, userId);
+
         setupDashboardNavigation(dashboardView);
         primaryStage.setScene(dashboardView.getScene());
         primaryStage.setTitle("HealthZ - Dashboard");
+
+        if (userId != null) {
+            Task<Void> loadTask = new Task<>() {
+                @Override
+                protected Void call() throws Exception {
+                    // Background thread: Fetch data from Supabase
+                    summaryController.executeToday(userId);
+                    return null;
+                }
+                @Override
+                protected void failed() {
+                    getException().printStackTrace();
+                    System.err.println("Failed to load daily summary: " + getException().getMessage());
+                }
+            };
+            new Thread(loadTask).start();
+        }
     }
 
     private String getUserDisplayName() {
@@ -533,17 +666,71 @@ public class Navigator {
      * Navigate to Food Log Page
      */
     public void showFoodLog() {
+        // Food Search dependencies (for searching foods)
         MacroSearchViewModel macroSearchViewModel = new MacroSearchViewModel();
-        SearchFoodOutputBoundary presenter = new FoodSearchPresenter(macroSearchViewModel);
-        FoodSearchDataAccessInterface gateway = new FatSecretFoodSearchDataAccessObject();
-        SearchFoodInputBoundary interactor = new SearchFoodInteractor(gateway, presenter);
-        MacroSearchController controller = new MacroSearchController(interactor);
+        SearchFoodOutputBoundary searchPresenter = new FoodSearchPresenter(macroSearchViewModel);
+        FoodSearchDataAccessInterface searchGateway = new FatSecretFoodSearchDataAccessObject();
+        SearchFoodInputBoundary searchInteractor = new SearchFoodInteractor(searchGateway, searchPresenter);
+        MacroSearchController macroSearchController = new MacroSearchController(searchInteractor);
 
         macroSearchViewModel.setLoading(false);
         macroSearchViewModel.setMessage(null);
         macroSearchViewModel.setResults(java.util.List.of());
 
-        FoodLogView foodLogView = new FoodLogView(this, controller, macroSearchViewModel);
+        // LogFoodIntake dependencies (for logging foods)
+        tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeViewModel logFoodViewModel =
+            new tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeViewModel();
+        tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakePresenter logFoodPresenter =
+            new tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakePresenter(logFoodViewModel);
+        tut0301.group1.healthz.usecase.food.logging.FoodLogGateway foodLogGateway =
+            new SupabaseFoodLogGateway(authenticatedClient);
+        tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInputBoundary logFoodInteractor =
+            new tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInteractor(foodLogGateway, logFoodPresenter);
+        tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeController logFoodController =
+            new tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeController(logFoodInteractor);
+
+        // Get Food Detail dependencies (for getting full food details when logging)
+        MacroDetailViewModel detailViewModel = new MacroDetailViewModel();
+        FoodDetailPresenter detailPresenter = new FoodDetailPresenter(detailViewModel);
+        FoodDetailGateway detailGateway = new FatSecretFoodDetailDataAccessObject();
+        GetFoodDetailInputBoundary detailInteractor = new GetFoodDetailInteractor(detailGateway, detailPresenter);
+        MacroDetailController macroDetailController = new MacroDetailController(detailInteractor);
+
+        // GetFoodLogHistory dependencies (for loading saved food logs by date)
+        tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryViewModel foodLogHistoryViewModel =
+            new tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryViewModel();
+        tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryPresenter foodLogHistoryPresenter =
+            new tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryPresenter(foodLogHistoryViewModel);
+        // Reuse the same foodLogGateway instance from above
+        GetFoodLogHistoryInputBoundary foodLogHistoryInteractor =
+            new GetFoodLogHistoryInteractor(
+                    foodLogGateway,
+                    foodLogHistoryPresenter);
+        tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryController foodLogHistoryController =
+            new tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryController(foodLogHistoryInteractor);
+
+        // Get current user ID
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            System.err.println("Warning: User not logged in, using default user ID");
+            userId = "guest-user";
+        }
+
+        FoodLogView foodLogView = new FoodLogView(
+            this,
+            macroSearchController,
+            macroSearchViewModel,
+            logFoodController,
+            logFoodViewModel,
+            macroDetailController,
+            detailViewModel,
+            foodLogHistoryController,
+            foodLogHistoryViewModel,
+            userId
+        );
+
+        // Load today's food logs
+        foodLogHistoryController.execute(userId, java.time.LocalDate.now());
 
         primaryStage.setScene(foodLogView.getScene());
         primaryStage.setTitle("HealthZ - Food Log");
@@ -552,12 +739,6 @@ public class Navigator {
     /**
      * Navigate to Activity Log Page
      */
-    public void showActivityLog() {
-        ActivityLogView activityLogView = new ActivityLogView(this);
-
-        primaryStage.setScene(activityLogView.getScene());
-        primaryStage.setTitle("HealthZ - Activity Log");
-    }
 
     /**
      * Go back to previous page
@@ -644,7 +825,7 @@ public class Navigator {
 
             // Save profile
             SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
-            userDataGateway.upsertProfile(profile);
+            userDataGateway.updateCurrentUserProfile(profile);
 
             System.out.println("💾 Profile saved successfully. Navigating to main app...");
 
@@ -736,7 +917,7 @@ public class Navigator {
         // Activity Log button
         dashboardView.getActivityLogButton().setOnAction(e -> {
             System.out.println("Navigating to Activity Log...");
-            showActivityLog();
+            showActivityTracker();
         });
 
         // Log out Button
@@ -777,9 +958,25 @@ public class Navigator {
     }
 
     /**
+     * Setup navigation for Recipe Details page
+     */
+    private void setupRecipeDetailNavigation(RecipeDetailView recipeDetailView) {
+        recipeDetailView.getBackButton().setOnAction(e -> {
+            System.out.println("Going back from recipe detail...");
+            showRecipeSearch();
+        });
+
+        recipeDetailView.getFavoriteButton().setOnAction(e -> {
+            System.out.println("Navigating to favorite recipe page...");
+            showFavoriteRecipes();
+        });
+    }
+
+
+    /**
      * Setup navigation for Favorite Recipe page
      */
-    private void setupFavoriteRecipes(FavoriteRecipeView favoriteRecipeView) {
+    private void setupFavoriteRecipesNavigation(FavoriteRecipeView favoriteRecipeView) {
         favoriteRecipeView.getBackButton().setOnAction(e -> {
             System.out.println("Navigating to Back button...");
             showRecipeSearch();

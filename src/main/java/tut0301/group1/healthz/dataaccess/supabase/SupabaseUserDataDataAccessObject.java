@@ -3,7 +3,7 @@ package tut0301.group1.healthz.dataaccess.supabase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import tut0301.group1.healthz.interfaceadapter.auth.mapping.ProfileJsonMapper;
-import tut0301.group1.healthz.entities.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
 
 import java.net.http.HttpRequest;
@@ -68,7 +68,8 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
         return ProfileJsonMapper.fromRow(arr.getJSONObject(0));
     }
 
-    public Profile upsertProfile(Profile profile) throws Exception {
+    @Override
+    public Profile updateCurrentUserProfile(Profile profile) throws Exception {
         // Ensure we use the current user's id
         String currentUserId = client.getUserId();
         Profile toSave = new Profile(
@@ -107,4 +108,5 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
         }
         return ProfileJsonMapper.fromRow(arr.getJSONObject(0));
     }
+
 }
