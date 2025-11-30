@@ -1,6 +1,5 @@
 package tut0301.group1.healthz.view.dashboard;
 
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,9 +13,13 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryController;
-import tut0301.group1.healthz.interfaceadapter.caloriesummary.GetDailyCalorieSummaryViewModel;
+import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
+import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
+import tut0301.group1.healthz.interfaceadapter.activity.ActivityHistoryViewModel;
+import tut0301.group1.healthz.interfaceadapter.activity.ActivityItem;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -28,18 +31,25 @@ public class DashboardView {
     private Scene scene;
     private String userName;
 
-    private final GetDailyCalorieSummaryController summaryController;
-    private final GetDailyCalorieSummaryViewModel summaryViewModel;
-    private final String userId;
+    // Clean Architecture components
+    private final DashboardViewModel viewModel;
+    private final DashboardController controller;
+    private final ActivityHistoryViewModel activityHistoryViewModel;
 
-    private int caloriesTotal = 2000;
-
+    // Store references for updating
     private Label caloriesValueLabel;
-    private Canvas caloriesChartCanvas;
-    private Label carbsPercentLabel, carbsGramsLabel;
-    private Label fatPercentLabel, fatGramsLabel;
-    private Label proteinPercentLabel, proteinGramsLabel;
+    private Canvas caloriesCanvas;
+    private ListView<ActivityItem> activityHistoryListView;
 
+    // TODO: Get from actual data sources
+    private double carbsPercent = 42;
+    private double carbsGrams = 32.6;
+    private double fatPercent = 15;
+    private double fatGrams = 12.4;
+    private double proteinPercent = 20;
+    private double proteinGrams = 22.5;
+
+    // Navigation buttons
     private Button settingsButton;
     private Button homeButton;
     private Button recipesButton;
@@ -49,69 +59,35 @@ public class DashboardView {
     private Button logOutButton;
 
     /**
-     * Constructor with real data dependencies
+     * Constructor with Clean Architecture
      */
-    public DashboardView(String userName,
-                         GetDailyCalorieSummaryController summaryController,
-                         GetDailyCalorieSummaryViewModel summaryViewModel,
-                         String userId) {
+    public DashboardView(DashboardController controller,
+                         DashboardViewModel viewModel,
+                         ActivityHistoryViewModel activityHistoryViewModel,
+                         String userId,
+                         String userName) {
+        this.controller = controller;
+        this.viewModel = viewModel;
+        this.activityHistoryViewModel = activityHistoryViewModel;
         this.userName = userName != null ? userName : "User";
-        this.summaryController = summaryController;
-        this.summaryViewModel = summaryViewModel;
-        this.userId = userId;
+
+        // Load dashboard data
+        System.out.println("DashboardView: Loading data...");
+        controller.loadDashboard(userId);
+
+        // Wait for data to load
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            // ignore
+        }
+
+        System.out.println("   DashboardView: Data loaded");
+        System.out.println("   Daily Goal: " + viewModel.getDailyCalorieGoal());
+        System.out.println("   Remaining: " + viewModel.getCaloriesRemaining());
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 1200);
-
-        setupDataBinding();
-    }
-
-    /**
-     * Listen to changes in the ViewModel and update UI accordingly.
-     */
-    private void setupDataBinding() {
-        summaryViewModel.totalMacroProperty().addListener((obs, oldVal, newVal) -> {
-            Platform.runLater(this::updateDashboardUI);
-        });
-    }
-
-    /**
-     * Refresh the dashboard widgets with new data.
-     */
-    private void updateDashboardUI() {
-        double carbs = summaryViewModel.getTotalCarbs();
-        double fat = summaryViewModel.getTotalFat();
-        double protein = summaryViewModel.getTotalProtein();
-
-        double totalCalories = summaryViewModel.getTotalCalories();
-
-        int caloriesRemaining = Math.max(0, (int) summaryViewModel.getNetRemainingCalories());
-
-        if (caloriesValueLabel != null) {
-            caloriesValueLabel.setText(String.valueOf(caloriesRemaining));
-        }
-        if (caloriesChartCanvas != null) {
-            drawCaloriesChart(caloriesChartCanvas.getGraphicsContext2D(), totalCalories);
-        }
-
-        double totalMacroGrams = carbs + fat + protein;
-
-        updateMacroColumn(carbsPercentLabel, carbsGramsLabel, carbs, totalMacroGrams);
-        updateMacroColumn(fatPercentLabel, fatGramsLabel, fat, totalMacroGrams);
-        updateMacroColumn(proteinPercentLabel, proteinGramsLabel, protein, totalMacroGrams);
-    }
-
-    /**
-     * Helper to update a single macro column's labels.
-     * Calculates percentage based on grams, not calories.
-     */
-    private void updateMacroColumn(Label pctLabel, Label gLabel, double grams, double totalMacroGrams) {
-        if (pctLabel == null || gLabel == null) return;
-
-        double pct = totalMacroGrams > 0 ? (grams / totalMacroGrams) * 100 : 0;
-
-        pctLabel.setText(String.format("%.0f%%", pct));
-        gLabel.setText(String.format("%.1fg", grams));
     }
 
     /**
@@ -187,6 +163,7 @@ public class DashboardView {
 
         // External link icon
         logOutButton = createIconButton("↗", 20);
+        logOutButton.setOnAction(e -> System.out.println("Log Out clicked"));
 
         // Step goal notification with bell
         HBox stepGoalBox = new HBox(10);
@@ -197,6 +174,7 @@ public class DashboardView {
                         "-fx-padding: 12px 24px;"
         );
 
+        // Bell icon - Using Unicode
         Label bellIcon = new Label("🔔");
         bellIcon.setFont(Font.font(20));
 
@@ -225,6 +203,9 @@ public class DashboardView {
         return headerBox;
     }
 
+    /**
+     * Create navigation tab button
+     */
     private Button createNavTab(String text, boolean active) {
         Button tab = new Button(text);
         tab.setFont(Font.font("Inter", FontWeight.BOLD, 16));
@@ -260,19 +241,29 @@ public class DashboardView {
                     )
             );
         }
+
         return tab;
     }
 
+    /**
+     * Create icon button
+     */
     private Button createIconButton(String iconText, int size) {
         Button btn = new Button();
+
         Label icon = new Label(iconText);
         icon.setFont(Font.font(size));
         icon.setTextFill(Color.web("#6B7280"));
+
         btn.setGraphic(icon);
         btn.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+
         return btn;
     }
 
+    /**
+     * Create dashboard content with all widgets
+     */
     private VBox createDashboardContent() {
         VBox content = new VBox(30);
         content.setPadding(new Insets(40, 60, 40, 60));
@@ -291,64 +282,58 @@ public class DashboardView {
 
         row1.getChildren().addAll(caloriesWidget, macrosWidget, quoteWidget);
 
-        // Second row: Activity Tracker, Start a Habit
+        // Second row: Activity History and Quick Add
         HBox row2 = new HBox(30);
         row2.setAlignment(Pos.TOP_LEFT);
 
-        VBox activityWidget = createActivityTrackerWidget();
-        VBox habitWidget = createStartHabitWidget();
-
-        HBox.setHgrow(activityWidget, Priority.ALWAYS);
-        HBox.setHgrow(habitWidget, Priority.NEVER);
-
-        row2.getChildren().addAll(activityWidget, habitWidget);
-
-        // Third row: Recent Entries, Quick Add
-        HBox row3 = new HBox(30);
-        row3.setAlignment(Pos.TOP_LEFT);
-
-        VBox recentWidget = createRecentEntriesWidget();
+        VBox activityHistoryWidget = createActivityHistoryWidget();
         VBox quickAddWidget = createQuickAddWidget();
 
-        HBox.setHgrow(recentWidget, Priority.ALWAYS);
+        HBox.setHgrow(activityHistoryWidget, Priority.ALWAYS);
         HBox.setHgrow(quickAddWidget, Priority.NEVER);
 
-        row3.getChildren().addAll(recentWidget, quickAddWidget);
+        row2.getChildren().addAll(activityHistoryWidget, quickAddWidget);
 
-        content.getChildren().addAll(row1, row2, row3);
+        content.getChildren().addAll(row1, row2);
         return content;
     }
 
-    // [UPDATED] Create calories widget with dynamic update support
+    /**
+     * Create calories widget with circular progress
+     */
     private VBox createCaloriesWidget() {
         VBox widget = createWidgetBox();
         widget.setPrefWidth(300);
         widget.setMinWidth(300);
 
+        // Header
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
+
         Label title = new Label("Calories");
         title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
+
         Label arrow = new Label("▶");
         arrow.setFont(Font.font(16));
         arrow.setTextFill(Color.web("#6B7280"));
+
         header.getChildren().addAll(title, arrow);
 
+        // Circular progress chart
         StackPane chartStack = new StackPane();
         chartStack.setPrefSize(200, 200);
         chartStack.setPadding(new Insets(20, 0, 20, 0));
 
-        // Canvas for chart
-        caloriesChartCanvas = new Canvas(200, 200);
-        // Initial draw (likely 0, updated via data binding)
-        drawCaloriesChart(caloriesChartCanvas.getGraphicsContext2D(), summaryViewModel.getTotalCalories());
+        // Create canvas and store reference
+        caloriesCanvas = new Canvas(200, 200);
+        updateCaloriesChart();
 
+        // Center text
         VBox centerText = new VBox(2);
         centerText.setAlignment(Pos.CENTER);
 
-        // Value Label - use net remaining calories (target - consumed + burned)
-        int remaining = (int) summaryViewModel.getNetRemainingCalories();
-        caloriesValueLabel = new Label(String.valueOf(remaining));
+        // Use ViewModel data
+        caloriesValueLabel = new Label(String.valueOf(viewModel.getCaloriesRemaining()));
         caloriesValueLabel.setFont(Font.font("Inter", FontWeight.BOLD, 48));
         caloriesValueLabel.setTextFill(Color.web("#111827"));
 
@@ -357,35 +342,49 @@ public class DashboardView {
         remainingLabel.setTextFill(Color.web("#6B7280"));
 
         centerText.getChildren().addAll(caloriesValueLabel, remainingLabel);
-        chartStack.getChildren().addAll(caloriesChartCanvas, centerText);
+
+        chartStack.getChildren().addAll(caloriesCanvas, centerText);
 
         widget.getChildren().addAll(header, chartStack);
         return widget;
     }
 
-    // [UPDATED] Logic to draw the donut chart
-    private void drawCaloriesChart(GraphicsContext gc, double consumed) {
-        // Use net remaining calories (target - consumed + burned)
-        double remaining = Math.max(0, summaryViewModel.getNetRemainingCalories());
-        double progress = remaining / summaryViewModel.getDailyCalorieTarget();
-        double angle = progress * 360;
+    /**
+     * Update calories chart based on ViewModel data
+     */
+    private void updateCaloriesChart() {
+        GraphicsContext gc = caloriesCanvas.getGraphicsContext2D();
 
+        // Clear canvas
         gc.clearRect(0, 0, 200, 200);
 
-        // Background circle
+        // Get values from ViewModel
+        int remaining = viewModel.getCaloriesRemaining();
+        int total = viewModel.getDailyCalorieGoal();
+
+        if (total == 0) {
+            total = 2000; // Fallback
+        }
+
+        // Calculate progress
+        double progress = (double) remaining / total;
+        double angle = progress * 360;
+
+        // Draw background circle
         gc.setStroke(Color.web("#E5E7EB"));
         gc.setLineWidth(25);
         gc.strokeArc(25, 25, 150, 150, 0, 360, javafx.scene.shape.ArcType.OPEN);
 
-        // Progress circle
+        // Draw progress circle
         gc.setStroke(Color.web("#27692A"));
         gc.setLineWidth(25);
         gc.setLineCap(StrokeLineCap.ROUND);
-        // Start from top (90 degrees), draw counter-clockwise
         gc.strokeArc(25, 25, 150, 150, 90, -angle, javafx.scene.shape.ArcType.OPEN);
     }
 
-    // [UPDATED] Create macros widget with dynamic references
+    /**
+     * Create macros widget showing percentages
+     */
     private VBox createMacrosWidget() {
         VBox widget = createWidgetBox();
 
@@ -393,49 +392,61 @@ public class DashboardView {
         macrosRow.setAlignment(Pos.CENTER);
         macrosRow.setPadding(new Insets(30, 40, 30, 40));
 
-        // Create Labels
-        carbsPercentLabel = createPctLabel(); carbsGramsLabel = createGramsLabel();
-        fatPercentLabel = createPctLabel();   fatGramsLabel = createGramsLabel();
-        proteinPercentLabel = createPctLabel(); proteinGramsLabel = createGramsLabel();
+        // Carbs
+        VBox carbsBox = createMacroColumn(
+                String.format("%.0f%%", carbsPercent),
+                String.format("%.1fg", carbsGrams),
+                "Carbs",
+                "#B91C1C"
+        );
 
-        // Initial update
-        updateDashboardUI();
+        // Fat
+        VBox fatBox = createMacroColumn(
+                String.format("%.0f%%", fatPercent),
+                String.format("%.1fg", fatGrams),
+                "Fat",
+                "#B26B00"
+        );
 
-        VBox carbsBox = createMacroColumnBox(carbsPercentLabel, carbsGramsLabel, "Carbs", "#B91C1C");
-        VBox fatBox = createMacroColumnBox(fatPercentLabel, fatGramsLabel, "Fat", "#B26B00");
-        VBox proteinBox = createMacroColumnBox(proteinPercentLabel, proteinGramsLabel, "Protein", "#1B9DBB");
+        // Protein
+        VBox proteinBox = createMacroColumn(
+                String.format("%.0f%%", proteinPercent),
+                String.format("%.1fg", proteinGrams),
+                "Protein",
+                "#1B9DBB"
+        );
 
         macrosRow.getChildren().addAll(carbsBox, fatBox, proteinBox);
         widget.getChildren().add(macrosRow);
         return widget;
     }
 
-    private Label createPctLabel() {
-        Label l = new Label("0%");
-        l.setFont(Font.font("Inter", FontWeight.BOLD, 40));
-        return l;
-    }
-
-    private Label createGramsLabel() {
-        Label l = new Label("0g");
-        l.setFont(Font.font("Inter", FontWeight.BOLD, 20));
-        l.setTextFill(Color.web("#111827"));
-        return l;
-    }
-
-    private VBox createMacroColumnBox(Label pct, Label gram, String name, String color) {
+    /**
+     * Create a single macro column
+     */
+    private VBox createMacroColumn(String percent, String grams, String label, String color) {
         VBox column = new VBox(5);
         column.setAlignment(Pos.CENTER);
-        pct.setTextFill(Color.web(color));
 
-        Label nameLabel = new Label(name);
+        Label percentLabel = new Label(percent);
+        percentLabel.setFont(Font.font("Inter", FontWeight.BOLD, 40));
+        percentLabel.setTextFill(Color.web(color));
+
+        Label gramsLabel = new Label(grams);
+        gramsLabel.setFont(Font.font("Inter", FontWeight.BOLD, 20));
+        gramsLabel.setTextFill(Color.web("#111827"));
+
+        Label nameLabel = new Label(label);
         nameLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 18));
         nameLabel.setTextFill(Color.web("#6B7280"));
 
-        column.getChildren().addAll(pct, gram, nameLabel);
+        column.getChildren().addAll(percentLabel, gramsLabel, nameLabel);
         return column;
     }
 
+    /**
+     * Create daily quote widget
+     */
     private VBox createDailyQuoteWidget() {
         VBox widget = createWidgetBox();
         widget.setPrefWidth(280);
@@ -458,6 +469,119 @@ public class DashboardView {
         return widget;
     }
 
+    /**
+     * Create activity history widget with real data from ViewModel
+     */
+    private VBox createActivityHistoryWidget() {
+        VBox widget = createWidgetBox();
+        widget.setPrefHeight(400);
+
+        // Header
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(0, 0, 15, 0));
+
+        Label title = new Label("Activity History");
+        title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label arrow = new Label("▶");
+        arrow.setFont(Font.font(16));
+        arrow.setTextFill(Color.web("#6B7280"));
+        arrow.setStyle("-fx-cursor: hand;");
+
+        // Make arrow clickable to navigate to full activity tracker
+        arrow.setOnMouseClicked(e -> {
+            if (activityLogButton != null) {
+                activityLogButton.fire();
+            }
+        });
+
+        header.getChildren().addAll(title, spacer, arrow);
+
+        // ✅ Activity history ListView bound to ViewModel
+        activityHistoryListView = new ListView<>(activityHistoryViewModel.getHistory());
+        activityHistoryListView.setPrefHeight(300);
+        activityHistoryListView.setStyle(
+                "-fx-background-color: transparent; " +
+                        "-fx-border-color: transparent;"
+        );
+
+        // ✅ Custom cell renderer matching ActivityView style
+        activityHistoryListView.setCellFactory(list -> new ActivityHistoryCell());
+
+        widget.getChildren().addAll(header, activityHistoryListView);
+        return widget;
+    }
+
+    /**
+     * Custom cell for activity history items
+     */
+    private static class ActivityHistoryCell extends ListCell<ActivityItem> {
+        @Override
+        protected void updateItem(ActivityItem item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty || item == null) {
+                setGraphic(null);
+                return;
+            }
+
+            // Left side: name + duration + calories
+            Label nameLabel = new Label(item.getName());
+            nameLabel.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 18));
+            nameLabel.setTextFill(Color.web("#111827"));
+
+            Label durationLabel = new Label(item.getDuration());
+            durationLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            durationLabel.setTextFill(Color.web("#27692A"));
+
+            Label caloriesLabel = new Label(item.getCalories() + " cal");
+            caloriesLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            caloriesLabel.setTextFill(Color.web("#27692A"));
+
+            HBox details = new HBox(10, durationLabel, caloriesLabel);
+            VBox left = new VBox(4, nameLabel, details);
+            HBox.setHgrow(left, Priority.ALWAYS);
+
+            // Right side: date
+            Label dateLabel = new Label(item.getDate());
+            dateLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            dateLabel.setTextFill(Color.web("#6B7280"));
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+            // Complete row
+            HBox row = new HBox(20, left, spacer, dateLabel);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.setPadding(new Insets(18, 10, 18, 10));
+            row.setStyle(
+                    "-fx-border-color: #E5E7EB; " +
+                            "-fx-border-width: 0 0 1 0;"
+            );
+
+            // Hover effect
+            row.setOnMouseEntered(e -> row.setStyle(
+                    "-fx-border-color: #E5E7EB; " +
+                            "-fx-border-width: 0 0 1 0; " +
+                            "-fx-background-color: #F9FAFB; " +
+                            "-fx-cursor: hand;"
+            ));
+            row.setOnMouseExited(e -> row.setStyle(
+                    "-fx-border-color: #E5E7EB; " +
+                            "-fx-border-width: 0 0 1 0;"
+            ));
+
+            setGraphic(row);
+        }
+    }
+
+    /**
+     * Create activity tracker widget with bar chart
+     */
     private VBox createActivityTrackerWidget() {
         VBox widget = createWidgetBox();
         widget.setPrefHeight(250);
@@ -466,11 +590,13 @@ public class DashboardView {
         title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
         title.setPadding(new Insets(0, 0, 20, 0));
 
+        // Bar chart
         HBox chartBox = new HBox(20);
         chartBox.setAlignment(Pos.BOTTOM_CENTER);
         chartBox.setPadding(new Insets(20, 40, 20, 40));
         chartBox.setPrefHeight(150);
 
+        // TODO: use actual activity data
         String[] days = {"Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"};
         double[] heights = {0.7, 0.65, 0.45, 0.5, 0.35, 0.75, 0.85};
 
@@ -479,11 +605,13 @@ public class DashboardView {
             barContainer.setAlignment(Pos.BOTTOM_CENTER);
             HBox.setHgrow(barContainer, Priority.ALWAYS);
 
+            // Bar
             Region bar = new Region();
             bar.setPrefWidth(40);
             bar.setPrefHeight(120 * heights[i]);
             bar.setStyle("-fx-background-color: #27692A; -fx-background-radius: 4px 4px 0 0;");
 
+            // Day label
             Label dayLabel = new Label(days[i]);
             dayLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
             dayLabel.setTextFill(Color.web("#6B7280"));
@@ -496,6 +624,9 @@ public class DashboardView {
         return widget;
     }
 
+    /**
+     * Create start a habit widget
+     */
     private VBox createStartHabitWidget() {
         VBox widget = createWidgetBox();
         widget.setPrefWidth(280);
@@ -512,9 +643,11 @@ public class DashboardView {
         description.setWrapText(true);
         description.setPadding(new Insets(15, 0, 0, 0));
 
+        // Spacer
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
+        // Plus button
         Button plusButton = new Button("+");
         plusButton.setFont(Font.font("Inter", FontWeight.BOLD, 32));
         plusButton.setTextFill(Color.WHITE);
@@ -532,9 +665,13 @@ public class DashboardView {
         return widget;
     }
 
+    /**
+     * Create recent entries widget
+     */
     private VBox createRecentEntriesWidget() {
         VBox widget = createWidgetBox();
 
+        // Header
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
 
@@ -550,19 +687,25 @@ public class DashboardView {
 
         header.getChildren().addAll(title, spacer, arrow);
 
+        // Entry 1
         VBox entry1 = createEntryRow("Bicycling, 20 kph", "15 minutes", "2 hr");
 
+        // Separator
         Region separator1 = new Region();
         separator1.setPrefHeight(1);
         separator1.setStyle("-fx-background-color: #E5E7EB;");
         separator1.setPadding(new Insets(5, 0, 5, 0));
 
+        // Entry 2
         VBox entry2 = createEntryRow("Turkey Sandwich", "Breakfast", "4 hr");
 
         widget.getChildren().addAll(header, entry1, separator1, entry2);
         return widget;
     }
 
+    /**
+     * Create a single entry row
+     */
     private VBox createEntryRow(String title, String subtitle, String time) {
         VBox row = new VBox(5);
         row.setPadding(new Insets(10, 0, 10, 0));
@@ -591,6 +734,9 @@ public class DashboardView {
         return row;
     }
 
+    /**
+     * Create quick add widget
+     */
     private VBox createQuickAddWidget() {
         VBox widget = createWidgetBox();
         widget.setPrefWidth(340);
@@ -601,7 +747,10 @@ public class DashboardView {
         title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
         title.setPadding(new Insets(0, 0, 20, 0));
 
+        // Log Meal button
         foodLogButton = createQuickAddButton("+ Log Meal");
+
+        // Log Activity button
         activityLogButton = createQuickAddButton("+ Log Activity");
         activityLogButton.setOnAction(e -> System.out.println("Log Activity clicked"));
 
@@ -609,6 +758,9 @@ public class DashboardView {
         return widget;
     }
 
+    /**
+     * Create quick add button
+     */
     private Button createQuickAddButton(String text) {
         Button btn = new Button(text);
         btn.setFont(Font.font("Inter", FontWeight.BOLD, 20));
@@ -641,6 +793,9 @@ public class DashboardView {
         return btn;
     }
 
+    /**
+     * Create a standard widget box
+     */
     private VBox createWidgetBox() {
         VBox box = new VBox(15);
         box.setStyle(
@@ -652,12 +807,43 @@ public class DashboardView {
         return box;
     }
 
-    public Scene getScene() { return scene; }
+    public Scene getScene() {
+        return scene;
+    }
+
+    /**
+     * Get the Settings button (for navigation logic)
+     */
     public Button getSettingsButton() { return settingsButton; }
+
+    /**
+     * Get the Home button (for navigation logic)
+     */
     public Button getHomeButton() { return homeButton; }
+
+    /**
+     * Get the Recipes button (for navigation logic)
+     */
     public Button getRecipesButton() { return recipesButton; }
+
+    /**
+     * Get the Macros button (for navigation logic)
+     */
     public Button getMacrosButton() { return macrosButton; }
+
+    /**
+     * Get the Food Log button (for navigation logic)
+     */
     public Button getFoodLogButton() { return foodLogButton; }
+
+    /**
+     * Get the Activity Log button (for navigation logic)
+     */
     public Button getActivityLogButton() { return activityLogButton; }
+
+    /**
+     * Get the Log Out button (for navigation logic)
+     */
     public Button getLogOutButton() { return logOutButton; }
+
 }

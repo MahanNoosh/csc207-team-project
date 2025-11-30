@@ -709,7 +709,7 @@ public class RecipeSearchView {
         }
 
         // Favorite button
-        Button favoriteBtn = new Button("♥");
+        Button favoriteBtn = new Button("❤️");
         favoriteBtn.setFont(Font.font(24));
         favoriteBtn.setTextFill(Color.WHITE);
         favoriteBtn.setPrefSize(50, 50);

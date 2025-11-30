@@ -52,7 +52,7 @@ public class Main {
         // ---- Signup stack ----
         var signupView = new SignupView();
         var signupVM = new SignupViewModel();
-        var signupPresenter = new SignupPresenter(signupView, signupVM);
+        var signupPresenter = new SignupPresenter(signupVM);
         SignupInputBoundary signupUC = new SignupInteractor(authGateway, signupPresenter);
         var signupController = new SignupController(signupUC, signupPresenter);
 
