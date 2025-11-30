@@ -1,19 +1,13 @@
 package tut0301.group1.healthz.entities.nutrition;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.Optional;
 
 /**
  * Represents a tut0301.group1.healthz.entities.recipe with ingredients, instructions, and nutritional information.
- * Core nutrition entity that can calculate macros, health scores, and support tut0301.group1.healthz.entities.recipe operations.
  */
 public class Recipe {
-
     private final String recipeId;
     private String name;
     private String description;
@@ -23,11 +17,7 @@ public class Recipe {
     private Optional<Integer> cookTimeMinutes;
     private Optional<Integer> servings;
     private String imageUrl;
-    // private String cuisine;
-    // private String difficulty;
-    // private List<String> tags;
-    // private final LocalDateTime createdAt;
-    // private LocalDateTime updatedAt;
+
 
     // Cached health score (recalculate when ingredients change)
     private Double cachedHealthScore;
@@ -52,12 +42,7 @@ public class Recipe {
         this.prepTimeMinutes = prepTimeMinutes;
         this.cookTimeMinutes = cookTimeMinutes;
         this.servings = servings;
-        // this.cuisine = cuisine;
-        // this.difficulty = difficulty;
         this.imageUrl = imageUrl;
-        // this.tags = new ArrayList<>(tags);
-        // this.createdAt = createdAt;
-        // this.updatedAt = updatedAt;
         this.cachedHealthScore = null;
     }
 

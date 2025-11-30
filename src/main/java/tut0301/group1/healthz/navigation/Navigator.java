@@ -5,8 +5,8 @@ import javafx.stage.Stage;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodDetailDataAccessObject;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAccessObject;
 //import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchGateway;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailDataAccessObject;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseFavoriteRecipeDataAccessObject;
@@ -243,7 +243,7 @@ public class Navigator {
         // Recipe Search setup
         RecipeSearchViewModel recipeSearchViewModel = new RecipeSearchViewModel();
         RecipeSearchPresenter recipeSearchPresenter = new RecipeSearchPresenter(recipeSearchViewModel);
-        RecipeSearchGateway recipeSearchGateway = new FatSecretRecipeSearchGateway();
+        RecipeSearchGateway recipeSearchGateway = new FatSecretRecipeSearchDataAccessObject();
         RecipeSearchInputBoundary recipeSearchInteractor = new RecipeSearchInteractor(recipeSearchGateway, recipeSearchPresenter);
         RecipeSearchController recipeSearchController = new RecipeSearchController(recipeSearchInteractor, recipeSearchPresenter);
 
@@ -292,7 +292,7 @@ public class Navigator {
 
         FavoriteRecipeView view = new FavoriteRecipeView(userName, userId, controller, viewModel, this);
 
-        setupFavoriteRecipes(view);
+        setupFavoriteRecipesNavigation(view);
 
         primaryStage.setScene(view.getScene());
         primaryStage.setTitle("HealthZ - Favorite Recipes");
@@ -345,7 +345,7 @@ public class Navigator {
         // Create Presenter
         RecipeDetailPresenter presenter = new RecipeDetailPresenter(viewModel);
 
-        RecipeDetailGateway gateway = new FatSecretRecipeDetailGateway();
+        RecipeDetailGateway gateway = new FatSecretRecipeDetailDataAccessObject();
 
         // Create Interactor
         RecipeDetailInputBoundary interactor = new RecipeDetailInteractor(gateway, presenter);
@@ -656,7 +656,7 @@ public class Navigator {
      * Navigate to Activity Log Page
      */
     public void showActivityLog() {
-        ActivityLogView activityLogView = new ActivityLogView();
+        ActivityLogView activityLogView = new ActivityLogView(this);
 
         primaryStage.setScene(activityLogView.getScene());
         primaryStage.setTitle("HealthZ - Activity Log");
@@ -839,7 +839,7 @@ public class Navigator {
         // Activity Log button
         dashboardView.getActivityLogButton().setOnAction(e -> {
             System.out.println("Navigating to Activity Log...");
-            // TODO: showActivityTracker();
+            showActivityLog();
         });
 
         // Log out Button
@@ -880,9 +880,25 @@ public class Navigator {
     }
 
     /**
+     * Setup navigation for Recipe Details page
+     */
+    private void setupRecipeDetailNavigation(RecipeDetailView recipeDetailView) {
+        recipeDetailView.getBackButton().setOnAction(e -> {
+            System.out.println("Going back from recipe detail...");
+            showRecipeSearch();
+        });
+
+        recipeDetailView.getFavoriteButton().setOnAction(e -> {
+            System.out.println("Navigating to favorite recipe page...");
+            showFavoriteRecipes();
+        });
+    }
+
+
+    /**
      * Setup navigation for Favorite Recipe page
      */
-    private void setupFavoriteRecipes(FavoriteRecipeView favoriteRecipeView) {
+    private void setupFavoriteRecipesNavigation(FavoriteRecipeView favoriteRecipeView) {
         favoriteRecipeView.getBackButton().setOnAction(e -> {
             System.out.println("Navigating to Back button...");
             showRecipeSearch();
