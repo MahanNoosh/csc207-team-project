@@ -27,7 +27,6 @@ public class GetDailySummaryPresenter implements GetDailySummaryOutputBoundary {
 
     @Override
     public void presentDailySummary(GetDailySummaryOutputData outputData) {
-        // Update ViewModel with the summary data
         viewModel.setDate(outputData.getDate());
         viewModel.setFoodLogs(outputData.getFoodLogs());
         viewModel.setTotalMacro(outputData.getTotalMacro());
@@ -37,7 +36,6 @@ public class GetDailySummaryPresenter implements GetDailySummaryOutputBoundary {
 
     @Override
     public void presentError(String errorMessage) {
-        // Update ViewModel with error state
         viewModel.clear();
         viewModel.setErrorMessage(errorMessage);
         viewModel.setLoading(false);

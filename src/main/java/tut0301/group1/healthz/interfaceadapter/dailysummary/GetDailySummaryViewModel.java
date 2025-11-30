@@ -28,7 +28,6 @@ public class GetDailySummaryViewModel {
         this.loading = false;
     }
 
-    // Getters and Setters
     public ObjectProperty<Macro> totalMacroProperty() {
         return totalMacro;
     }
@@ -54,7 +53,6 @@ public class GetDailySummaryViewModel {
     public boolean isLoading() { return loading; }
     public void setLoading(boolean loading) { this.loading = loading; }
 
-    // Utility methods now delegate to the property
     public double getTotalCalories() { return getTotalMacro().calories(); }
     public double getTotalProtein() { return getTotalMacro().proteinG(); }
     public double getTotalFat() { return getTotalMacro().fatG(); }
