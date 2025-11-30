@@ -1,6 +1,5 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseActivityLogDataAccessObject;
 import tut0301.group1.healthz.entities.Dashboard.ActivityEntry;
 import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
@@ -54,17 +53,21 @@ public class DashboardInteractor implements DashboardInputBoundary {
 
             // Get activity logs for today and calculate calories burned
             List<ActivityEntry> activities = activityLogDataAccess.getActivitiesForUser();
-            int activityCalories = activities.stream()
-                    .filter(entry -> entry.getTimestamp().toLocalDate().equals(today))
-                    .mapToInt(entry -> (int) entry.getCaloriesBurned())
-                    .sum();
+
+            int activityCalories = 0;
+            for (ActivityEntry entry : activities) {
+                if (entry.getTimestamp().toLocalDate().equals(today)) {
+                    activityCalories += (int) entry.getCaloriesBurned();
+                }
+            }
 
             // Get food logs for today and calculate calories consumed
             List<FoodLog> foodLogs = foodLogGateway.getFoodLogsByDate(userId, today);
 
-            int caloriesConsumed = foodLogs.stream()
-                    .mapToInt(log -> (int) log.getActualMacro().calories())
-                    .sum();
+            int caloriesConsumed = 0;
+            for (FoodLog entry : foodLogs) {
+                caloriesConsumed += (int) entry.getActualMacro().calories();
+            }
 
             // Calculate remaining calories
             int caloriesRemaining = dailyCalorieGoal - caloriesConsumed + activityCalories;
