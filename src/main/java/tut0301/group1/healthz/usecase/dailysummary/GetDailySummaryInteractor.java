@@ -2,7 +2,6 @@ package tut0301.group1.healthz.usecase.dailysummary;
 
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.entities.nutrition.Macro;
-import tut0301.group1.healthz.entities.nutrition.UserFoodLog;
 import tut0301.group1.healthz.usecase.food.logging.FoodLogGateway;
 
 import java.util.List;
@@ -38,27 +37,25 @@ public class GetDailySummaryInteractor implements GetDailySummaryInputBoundary {
     @Override
     public void execute(GetDailySummaryInputData inputData) {
         try {
-            // Get user's food log from gateway
-            UserFoodLog userFoodLog = foodLogGateway.getUserFoodLog(inputData.getUserId());
+            List<FoodLog> foodLogs = foodLogGateway.getFoodLogsByDate(
+                    inputData.getUserId(),
+                    inputData.getDate()
+            );
 
-            // Extract logs and calculate totals for the specified date
-            List<FoodLog> foodLogs = userFoodLog.getLogsByDate(inputData.getDate());
-            Macro totalMacro = userFoodLog.getDailyTotalMacro(inputData.getDate());
+            Macro totalMacro = foodLogs.stream()
+                    .map(FoodLog::getActualMacro)
+                    .reduce(Macro.ZERO, Macro::add);
 
-            // Create output data
             GetDailySummaryOutputData outputData = new GetDailySummaryOutputData(
                     inputData.getDate(),
                     foodLogs,
                     totalMacro
             );
 
-            // Present the result through the output boundary
             outputBoundary.presentDailySummary(outputData);
 
         } catch (Exception e) {
-            // Handle errors and present error message
-            String errorMessage = "Failed to retrieve daily summary: " + e.getMessage();
-            outputBoundary.presentError(errorMessage);
+            outputBoundary.presentError("Failed to retrieve daily summary: " + e.getMessage());
         }
     }
 }

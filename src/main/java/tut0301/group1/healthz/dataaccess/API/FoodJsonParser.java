@@ -128,40 +128,6 @@ public class FoodJsonParser {
     }
 
     /**
-     * Extracts macro results for the list of foods returned by the search API.
-     * Each result includes the food name, the raw serving description, and parsed macros.
-     */
-    public static List<MacroSearchResult> parseMacroResults(String jsonResponse) {
-        List<MacroSearchResult> results = new ArrayList<>();
-
-        try {
-            JSONObject root = new JSONObject(jsonResponse);
-            if (!root.has("foods")) {
-                return results;
-            }
-
-            JSONObject foodsObj = root.getJSONObject("foods");
-            JSONArray foodArray = foodsObj.optJSONArray("food");
-            if (foodArray == null) {
-                return results;
-            }
-
-            for (int i = 0; i < foodArray.length(); i++) {
-                JSONObject food = foodArray.getJSONObject(i);
-                long foodId = food.optLong("food_id", -1);
-                String foodName = food.optString("food_name", "");
-                String description = food.optString("food_description", "");
-                Macro macro = parseMacroFromDescription(description);
-                results.add(new MacroSearchResult(foodId, foodName, description, macro));
-            }
-        } catch (Exception e) {
-            System.err.println("❌ Failed to parse macro results: " + e.getMessage());
-        }
-
-        return results;
-    }
-
-    /**
      * Extracts the first numeric value after the colon (or after "Calories", "Fat", etc.).
      * Example:
      * - "Per 1 apple - Calories: 100kcal" → 100.0
@@ -183,6 +149,8 @@ public class FoodJsonParser {
         }
         return 0;
     }
+
+    // java/tut0301/group1/healthz/dataaccess/API/FoodJsonParser.java
 
     /**
      * Parse a full food detail response from FatSecret into a rich
@@ -210,13 +178,41 @@ public class FoodJsonParser {
         for (int i = 0; i < servingArray.length(); i++) {
             JSONObject s = servingArray.getJSONObject(i);
 
+            // [FIX START] Determine the best display unit and amount
+            // Priority 1: Use specific measurement fields if available (e.g., "cup", "1.0")
+            // Priority 2: Parse from description (e.g., "1 apple" -> 1.0, "apple")
+            // Priority 3: Fallback to metric (e.g., "g", "100.0")
+
+            double amount;
+            String unit;
+
+            if (s.has("measurement_description") && s.has("number_of_units")) {
+                // Case 1: API provides explicit natural units (common for standard measures)
+                unit = s.getString("measurement_description");
+                amount = s.getDouble("number_of_units");
+            } else {
+                // Case 2: Try to parse from description string (e.g., "1 slice" or "1/2 apple")
+                String desc = s.getString("serving_description");
+                ParsedServing parsed = parseUnitFromDescription(desc);
+
+                if (parsed != null) {
+                    amount = parsed.amount;
+                    unit = parsed.unit;
+                } else {
+                    // Case 3: Fallback to metric
+                    amount = s.optDouble("metric_serving_amount", 100.0);
+                    unit = s.optString("metric_serving_unit", "g");
+                }
+            }
+            // [FIX END]
+
             ServingInfo info = new ServingInfo(
                     s.getLong("serving_id"),
                     s.getString("serving_description"),
 
-                    // Metric amount for your parsed fields
-                    s.getDouble("metric_serving_amount"),
-                    s.getString("metric_serving_unit"),
+                    // Use the resolved amount and unit
+                    amount,
+                    unit,
 
                     // Nutrition fields (use opt to handle missing values)
                     parseDouble(s, "calories"),
@@ -232,6 +228,43 @@ public class FoodJsonParser {
         }
 
         return new FoodDetails(foodId, name, foodType, brandName, foodUrl, servings);
+    }
+
+    // [NEW HELPER METHOD] Add this method to the FoodJsonParser class
+    private record ParsedServing(double amount, String unit) {}
+
+    private static ParsedServing parseUnitFromDescription(String description) {
+        if (description == null || description.isBlank()) return null;
+
+        // Regex to match "1 cup", "1.5 slice", "1/2 apple"
+        // 1. Digits or fraction
+        // 2. Space
+        // 3. Unit text (until the end or specific separators like " - " or "(")
+        try {
+            // Simplify fractions for regex (very basic handling)
+            String cleanDesc = description.trim();
+
+            // Match pattern: Number (int/decimal) + Space + Text
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile("^([0-9]+(?:\\.[0-9]+)?)\\s+(.+)");
+            java.util.regex.Matcher m = p.matcher(cleanDesc);
+
+            if (m.find()) {
+                double val = Double.parseDouble(m.group(1));
+                String text = m.group(2);
+
+                // Clean up the unit text (remove anything after " (" or " -")
+                int bracketIdx = text.indexOf("(");
+                if (bracketIdx > 0) text = text.substring(0, bracketIdx).trim();
+
+                int dashIdx = text.indexOf(" -");
+                if (dashIdx > 0) text = text.substring(0, dashIdx).trim();
+
+                return new ParsedServing(val, text);
+            }
+        } catch (Exception e) {
+            // Ignore parsing errors and return null
+        }
+        return null;
     }
 
     // Utility: safely parse a double field (may be missing)

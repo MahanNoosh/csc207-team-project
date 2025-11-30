@@ -14,6 +14,10 @@ import tut0301.group1.healthz.entities.nutrition.BasicFood;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
+import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailController;
+import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailViewModel;
+import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeController;
+import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeViewModel;
 import tut0301.group1.healthz.view.components.Sidebar;
 import tut0301.group1.healthz.navigation.Navigator;
 
@@ -25,19 +29,40 @@ public class FoodLogView {
     private Scene scene;
     private final Navigator navigator;
 
-    // macro search
+    // Food search (for searching foods)
     private final MacroSearchController macroSearchController;
     private final MacroSearchViewModel macroSearchViewModel;
+
+    // Log food intake (for logging foods)
+    private final LogFoodIntakeController logFoodIntakeController;
+    private final LogFoodIntakeViewModel logFoodIntakeViewModel;
+
+    // Food detail (for getting full details before logging)
+    private final MacroDetailController macroDetailController;
+    private final MacroDetailViewModel macroDetailViewModel;
+
+    // Current user
+    private final String userId;
 
     private LocalDate currentDate = LocalDate.now();
     private Label dateLabel;
 
     public FoodLogView(Navigator navigator,
                        MacroSearchController macroSearchController,
-                       MacroSearchViewModel macroSearchViewModel) {
+                       MacroSearchViewModel macroSearchViewModel,
+                       LogFoodIntakeController logFoodIntakeController,
+                       LogFoodIntakeViewModel logFoodIntakeViewModel,
+                       MacroDetailController macroDetailController,
+                       MacroDetailViewModel macroDetailViewModel,
+                       String userId) {
         this.navigator = navigator;
         this.macroSearchController = macroSearchController;
         this.macroSearchViewModel = macroSearchViewModel;
+        this.logFoodIntakeController = logFoodIntakeController;
+        this.logFoodIntakeViewModel = logFoodIntakeViewModel;
+        this.macroDetailController = macroDetailController;
+        this.macroDetailViewModel = macroDetailViewModel;
+        this.userId = userId;
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
