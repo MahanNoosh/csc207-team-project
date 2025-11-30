@@ -4,10 +4,10 @@ import tut0301.group1.healthz.dataaccess.API.OAuth.OAuth;
 import tut0301.group1.healthz.dataaccess.API.OAuth.OAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.config.EnvConfig;
 import tut0301.group1.healthz.entities.nutrition.RecipeDetails;
-import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailDataAccessInterface;
 import static tut0301.group1.healthz.dataaccess.API.RecipeJsonParser.parseRecipeDetails;
 
-public class FatSecretRecipeDetailDataAccessObject implements RecipeDetailGateway {
+public class FatSecretRecipeDetailDataAccessObject implements RecipeDetailDataAccessInterface {
     private final FatSecretRecipeSearchDataAccessObject recipeGateway;
 
     public FatSecretRecipeDetailDataAccessObject() {

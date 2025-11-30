@@ -3,6 +3,7 @@ package tut0301.group1.healthz.usecase.food.logging;
 import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.entities.nutrition.ServingInfo;
+import tut0301.group1.healthz.entities.nutrition.UserFoodLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,6 +97,11 @@ public class LogFoodIntakeInteractorTest {
         @Override
         public List<FoodLog> getFoodLogs(String userId) {
             return savedLogs;
+        }
+
+        @Override
+        public UserFoodLog getUserFoodLog(String userId) throws Exception {
+            return null;
         }
 
         public List<FoodLog> getSavedLogs() {

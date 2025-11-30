@@ -13,10 +13,10 @@ import tut0301.group1.healthz.dataaccess.API.OAuth.OAuth;
 import tut0301.group1.healthz.dataaccess.API.OAuth.OAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.config.EnvConfig;
 import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
-import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchDataAccessInterface;
 import tut0301.group1.healthz.entities.nutrition.RecipeFilter;
 
-public class FatSecretRecipeSearchDataAccessObject implements RecipeSearchGateway {
+public class FatSecretRecipeSearchDataAccessObject implements RecipeSearchDataAccessInterface {
     private final OkHttpClient client = new OkHttpClient();
     private static final String SEARCH_URL = "https://platform.fatsecret.com/rest/recipes/search/v3";
     private static final String ID_URL = "https://platform.fatsecret.com/rest/recipe/v2";
@@ -77,7 +77,7 @@ public class FatSecretRecipeSearchDataAccessObject implements RecipeSearchGatewa
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful() || response.body() == null) {
-                throw new IOException("FatSecret API error (recipe detail): " + response.code());
+                throw new IOException("FatSecret API error: " + response.code());
             }
             return response.body().string();
         }

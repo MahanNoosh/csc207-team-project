@@ -6,18 +6,18 @@ import tut0301.group1.healthz.entities.nutrition.RecipeFilter;
 import java.util.List;
 
 public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
-    private final RecipeSearchGateway gateway;
+    private final RecipeSearchDataAccessInterface gateway;
     private final RecipeSearchOutputBoundary presenter;
 
-    public RecipeSearchInteractor(RecipeSearchGateway gateway, RecipeSearchOutputBoundary presenter) {
+    public RecipeSearchInteractor(RecipeSearchDataAccessInterface gateway, RecipeSearchOutputBoundary presenter) {
         this.gateway = gateway;
         this.presenter = presenter;
     }
 
     @Override
-    public void search(String query, RecipeFilter filter) {
+    public void execute(String query, RecipeFilter filter) {
         if (query == null || query.isBlank()) {
-            presenter.presentFailure("Please enter a recipe name to search for.");
+            presenter.presentFailure("Please enter a recipe name or ingredient to search for.");
             return;
         }
 

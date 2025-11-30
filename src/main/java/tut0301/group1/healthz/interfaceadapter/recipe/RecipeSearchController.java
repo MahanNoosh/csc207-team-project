@@ -18,7 +18,7 @@ public class RecipeSearchController {
         presenter.getViewModel().setLoading(true);
 
         RecipeFilter filter = new RecipeFilter();
-        interactor.search(query, filter);
+        interactor.execute(query, filter);
     }
 
     public RecipeSearchViewModel getViewModel() {

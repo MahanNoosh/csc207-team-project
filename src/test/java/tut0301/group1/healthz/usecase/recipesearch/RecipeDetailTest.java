@@ -5,7 +5,7 @@ import tut0301.group1.healthz.entities.nutrition.RecipeDetails;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailViewModel;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailPresenter;
-import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailDataAccessInterface;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
 
@@ -16,7 +16,7 @@ public class RecipeDetailTest {
 
         RecipeDetailPresenter presenter = new RecipeDetailPresenter(viewModel);
 
-        RecipeDetailGateway gateway = new FatSecretRecipeDetailDataAccessObject();
+        RecipeDetailDataAccessInterface gateway = new FatSecretRecipeDetailDataAccessObject();
 
         RecipeDetailInputBoundary interactor = new RecipeDetailInteractor(gateway, presenter);
 

@@ -5,8 +5,8 @@ import javafx.stage.Stage;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodDetailDataAccessObject;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAccessObject;
 //import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailGateway;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchGateway;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailDataAccessObject;
+import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseFavoriteRecipeDataAccessObject;
@@ -43,10 +43,10 @@ import tut0301.group1.healthz.usecase.food.search.SearchFoodOutputBoundary;
 //import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
 //import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
 //import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
-import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchDataAccessInterface;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
-import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
+import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailDataAccessInterface;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
 import tut0301.group1.healthz.view.auth.LandingView;
@@ -211,8 +211,8 @@ public class Navigator {
         // Recipe Search setup
         RecipeSearchViewModel recipeSearchViewModel = new RecipeSearchViewModel();
         RecipeSearchPresenter recipeSearchPresenter = new RecipeSearchPresenter(recipeSearchViewModel);
-        RecipeSearchGateway recipeSearchGateway = new FatSecretRecipeSearchGateway();
-        RecipeSearchInputBoundary recipeSearchInteractor = new RecipeSearchInteractor(recipeSearchGateway, recipeSearchPresenter);
+        RecipeSearchDataAccessInterface recipeSearchDataAccessInterface = new FatSecretRecipeSearchDataAccessObject();
+        RecipeSearchInputBoundary recipeSearchInteractor = new RecipeSearchInteractor(recipeSearchDataAccessInterface, recipeSearchPresenter);
         RecipeSearchController recipeSearchController = new RecipeSearchController(recipeSearchInteractor, recipeSearchPresenter);
 
         String userId = getCurrentUserId();
@@ -313,7 +313,7 @@ public class Navigator {
         // Create Presenter
         RecipeDetailPresenter presenter = new RecipeDetailPresenter(viewModel);
 
-        RecipeDetailGateway gateway = new FatSecretRecipeDetailGateway();
+        RecipeDetailDataAccessInterface gateway = new FatSecretRecipeDetailDataAccessObject();
 
         // Create Interactor
         RecipeDetailInputBoundary interactor = new RecipeDetailInteractor(gateway, presenter);

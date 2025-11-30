@@ -1,10 +1,10 @@
 package tut0301.group1.healthz.usecase.recipesearch.detailed;
 
 public class RecipeDetailInteractor implements RecipeDetailInputBoundary {
-    private final RecipeDetailGateway gateway;
+    private final RecipeDetailDataAccessInterface gateway;
     private final RecipeDetailOutputBoundary presenter;
 
-    public RecipeDetailInteractor(RecipeDetailGateway gateway, RecipeDetailOutputBoundary presenter) {
+    public RecipeDetailInteractor(RecipeDetailDataAccessInterface gateway, RecipeDetailOutputBoundary presenter) {
         this.gateway = gateway;
         this.presenter = presenter;
     }
@@ -12,7 +12,7 @@ public class RecipeDetailInteractor implements RecipeDetailInputBoundary {
     @Override
     public void execute(RecipeDetailInputData inputData) {
         if (inputData == null || inputData.getRecipeId() <= 0) {
-            presenter.prepareFailView("Missing recipe id.");
+            presenter.prepareFailView("Invalid or missing recipe ID.");
             return;
         }
 

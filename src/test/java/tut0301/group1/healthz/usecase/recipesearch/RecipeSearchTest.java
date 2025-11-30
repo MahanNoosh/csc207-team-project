@@ -5,7 +5,7 @@ import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchController;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchPresenter;
 import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
-import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
+import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchDataAccessInterface;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
 
@@ -19,7 +19,7 @@ public class RecipeSearchTest {
 
         RecipeSearchPresenter presenter = new RecipeSearchPresenter(viewModel);
 
-        RecipeSearchGateway gateway = new FatSecretRecipeSearchDataAccessObject();
+        RecipeSearchDataAccessInterface gateway = new FatSecretRecipeSearchDataAccessObject();
 
         RecipeSearchInputBoundary interactor = new RecipeSearchInteractor(gateway, presenter);
 
