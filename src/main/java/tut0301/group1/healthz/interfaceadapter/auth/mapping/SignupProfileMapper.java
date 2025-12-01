@@ -54,7 +54,7 @@ public final class SignupProfileMapper {
         }
 
         // ========== ACTIVITY MET (optional) ==========
-        Double activityMet = null;
+        Double activityMet = mapActivityLevelToMET(data.getActivityLevel());
 
         // ========== NUMERIC FIELDS ==========
         Double heightCm     = data.getHeight() > 0 ? data.getHeight() : null;
@@ -73,5 +73,23 @@ public final class SignupProfileMapper {
                 Optional.empty(),   // dailyCalorieTarget (later)
                 null                // healthCondition  (later)
         );
+    }
+
+    private static double mapActivityLevelToMET(String level) {
+        if (level == null) return 1.2;
+        switch (level) {
+            case "Sedentary":
+                return 1.2;
+            case "Lightly Active":
+                return 1.375;
+            case "Moderately Active":
+                return 1.55;
+            case "Very Active":
+                return 1.725;
+            case "Extremely Active":
+                return 1.9;
+            default:
+                return 1.2;
+        }
     }
 }
