@@ -901,7 +901,7 @@ public class Navigator {
 
             // Save profile
             SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
-            userDataGateway.updateCurrentUserProfile(profile);
+            userDataGateway.upsertProfile(profile);
 
             System.out.println("Profile saved successfully. Navigating to main app...");
 
