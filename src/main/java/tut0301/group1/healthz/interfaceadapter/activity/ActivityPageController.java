@@ -39,4 +39,12 @@ public class ActivityPageController {
         ActivityLogInputData inputData = new ActivityLogInputData(exerciseName, minutes);
         activityLogInteractor.logActivity(inputData, profile);
     }
+
+    public void loadActivityHistory() {
+        try {
+            activityLogInteractor.loadLogsForUser();
+        } catch (Exception e) {
+            System.err.println("Load failed: " + e.getMessage());
+        }
+    }
 }

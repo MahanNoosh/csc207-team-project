@@ -4,7 +4,6 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodDetailDataAccessObject;
 import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAccessObject;
-//import tut0301.group1.healthz.dataaccess.API.FatSecretMacroSearchGateway;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailDataAccessObject;
 import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.*;
@@ -20,6 +19,7 @@ import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
 import tut0301.group1.healthz.interfaceadapter.auth.mapping.SignupProfileMapper;
+import tut0301.group1.healthz.interfaceadapter.dashboard.*;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardPresenter;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
@@ -43,6 +43,7 @@ import tut0301.group1.healthz.interfaceadapter.recipe.*;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipePresenter;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeViewModel;
+import tut0301.group1.healthz.usecase.activity.activitylog.*;
 import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserController;
 import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserPresenter;
 import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserViewModel;
@@ -53,9 +54,16 @@ import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogSaveOutput
 import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorInputBoundary;
 import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorInteractor;
 import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseDataAccessInterface;
 import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderInputBoundary;
 import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderInteractor;
 import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.recent.RecentActivityInputBoundary;
+import tut0301.group1.healthz.usecase.activity.recent.RecentActivityInteractor;
+import tut0301.group1.healthz.usecase.activity.recent.RecentActivityOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.weeklysummary.WeeklySummaryInputBoundary;
+import tut0301.group1.healthz.usecase.activity.weeklysummary.WeeklySummaryInteractor;
+import tut0301.group1.healthz.usecase.activity.weeklysummary.WeeklySummaryOutputBoundary;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
 import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
@@ -105,6 +113,7 @@ import tut0301.group1.healthz.view.dashboard.DashboardView;
 import tut0301.group1.healthz.view.recipe.RecipeSearchView;
 import tut0301.group1.healthz.view.recipe.FavoriteRecipeView;
 import tut0301.group1.healthz.view.nutrition.FoodLogView;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
@@ -461,18 +470,18 @@ public class Navigator {
 
     public void showActivityTracker(){
 
-        SupabaseExerciseDataAccessObject exerciseDAO = new SupabaseExerciseDataAccessObject(authenticatedClient);
-        SupabaseActivityLogDataAccessObject activityLogDAO = new SupabaseActivityLogDataAccessObject(authenticatedClient);
+        ExerciseDataAccessInterface exerciseDAO = new SupabaseExerciseDataAccessObject(authenticatedClient);
+        ActivityLogDataAccessInterface activityLogDAO = new SupabaseActivityLogDataAccessObject(authenticatedClient);
 
         ExerciseListViewModel exerciseListVM = new ExerciseListViewModel();
         ActivityHistoryViewModel historyVM = new ActivityHistoryViewModel();
 
         ExerciseFinderOutputBoundary exercisePresenter = new ExerciseFinderPresenter(exerciseListVM);
+        ExerciseFinderInputBoundary exerciseFinder = new ExerciseFinderInteractor(exerciseDAO, exercisePresenter);
         CalorieCalculatorOutputBoundary caloriePresenter = new CalorieCalculatorPresenter(exerciseListVM);
         ActivityLogSaveOutputBoundary activityLogSavePresenter = new ActivityLogSavePresenter(historyVM);
-        ActivityLogLoadOutputBoundary activityLogLoadPresenter = new ActivityLogLoadPresenter();
+        ActivityLogLoadOutputBoundary activityLogLoadPresenter = new ActivityLogLoadPresenter(historyVM,exerciseFinder);
 
-        ExerciseFinderInputBoundary exerciseFinder = new ExerciseFinderInteractor(exerciseDAO, exercisePresenter);
         CalorieCalculatorInputBoundary calorieCalculator = new CalorieCalculatorInteractor(exerciseFinder, caloriePresenter);
         ActivityLogInputBoundary activityLog = new ActivityLogInteractor(
                 activityLogDAO,
@@ -510,6 +519,23 @@ public class Navigator {
     public void showDashboard() {
         String userId = getCurrentUserId();
         String userName = getUserDisplayName();
+        ExerciseDataAccessInterface exerciseDAO = new SupabaseExerciseDataAccessObject(authenticatedClient);
+        ExerciseListViewModel exerciseListVM = new ExerciseListViewModel();
+        ExerciseFinderOutputBoundary exerciseFinderPresenter = new ExerciseFinderPresenter(exerciseListVM);
+        ExerciseFinderInputBoundary exerciseFinder = new ExerciseFinderInteractor(exerciseDAO,
+                exerciseFinderPresenter);
+        ActivityLogDataAccessInterface activityLogDAO = new SupabaseActivityLogDataAccessObject(authenticatedClient);
+        WeeklySummaryViewModel activitySummaryViewModel = new WeeklySummaryViewModel();
+        WeeklySummaryOutputBoundary activitySummaryPresenter = new WeeklySummaryPresenter(activitySummaryViewModel);
+        WeeklySummaryInputBoundary weeklySummaryInteractor = new WeeklySummaryInteractor(activityLogDAO,
+                activitySummaryPresenter);
+        WeeklySummaryController weeklySummaryController= new WeeklySummaryController(weeklySummaryInteractor);
+        RecentActivityViewModel recentActivityViewModel = new RecentActivityViewModel();
+        RecentActivityOutputBoundary recentActivityPresenter = new RecentActivityPresenter(recentActivityViewModel,
+                exerciseFinder);
+        RecentActivityInputBoundary recentActivityInteractor = new RecentActivityInteractor(activityLogDAO,
+                recentActivityPresenter);
+        RecentActivityController recentActivityController = new RecentActivityController(recentActivityInteractor);
 
         if (userId == null) {
             System.err.println("Cannot show dashboard: No user logged in");
@@ -556,19 +582,16 @@ public class Navigator {
         // Controller
         GetDailyMacroSummaryController summaryController = new GetDailyMacroSummaryController(summaryInteractor);
 
-        // Reuse setup from showActivityTracker()
-        ActivityHistoryViewModel activityHistoryVM = setupActivityHistory();
-
         // Create view with Clean Architecture components
-        DashboardView dashboardView = new DashboardView(
+        DashboardView dashboardView = new DashboardView(userName,
+                activitySummaryViewModel, weeklySummaryController,
+                recentActivityController, recentActivityViewModel,
                 controller,
                 viewModel,
-                activityHistoryVM,
                 summaryController,
                 summaryViewModel,
-                userId,
-                userName
-        );
+                userId);
+
 
         setupDashboardNavigation(dashboardView);
 
@@ -576,60 +599,6 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Dashboard");
     }
 
-    /**
-     * Helper method to set up activity history (reuses showActivityTracker logic)
-     */
-    private ActivityHistoryViewModel setupActivityHistory() {
-        SupabaseExerciseDataAccessObject exerciseDAO =
-                new SupabaseExerciseDataAccessObject(authenticatedClient);
-
-        SupabaseActivityLogDataAccessObject activityLogDAO =
-                new SupabaseActivityLogDataAccessObject(authenticatedClient);
-
-        ExerciseListViewModel exerciseListVM = new ExerciseListViewModel();
-        ActivityHistoryViewModel historyVM = new ActivityHistoryViewModel();
-
-        ExerciseFinderOutputBoundary exercisePresenter =
-                new ExerciseFinderPresenter(exerciseListVM);
-
-        CalorieCalculatorOutputBoundary caloriePresenter =
-                new CalorieCalculatorPresenter(exerciseListVM);
-
-        ActivityLogSaveOutputBoundary activityLogSavePresenter =
-                new ActivityLogSavePresenter(historyVM);
-
-        ActivityLogLoadOutputBoundary activityLogLoadPresenter =
-                new ActivityLogLoadPresenter();  // No arguments
-
-        ExerciseFinderInputBoundary exerciseFinder =
-                new ExerciseFinderInteractor(exerciseDAO, exercisePresenter);
-
-        CalorieCalculatorInputBoundary calorieCalculator =
-                new CalorieCalculatorInteractor(exerciseFinder, caloriePresenter);
-
-        ActivityLogInputBoundary activityLog = new ActivityLogInteractor(
-                activityLogDAO,
-                exerciseFinder,
-                activityLogSavePresenter,
-                activityLogLoadPresenter
-        );
-
-        // Load activities
-        try {
-            System.out.println("Loading activity history for dashboard...");
-            activityLog.loadLogsForUser();
-            Thread.sleep(300);
-            System.out.println("Activity history loaded");
-        } catch (Exception e) {
-            System.err.println("Failed to load activity history: " + e.getMessage());
-        }
-
-        return historyVM;
-    }
-
-    /**
-     * Displays User's Name
-     */
     private String getUserDisplayName() {
         if (authenticatedClient != null) {
             String displayName = authenticatedClient.getDisplayName();

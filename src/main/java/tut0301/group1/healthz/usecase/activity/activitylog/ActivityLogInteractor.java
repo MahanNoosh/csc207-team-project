@@ -61,7 +61,7 @@ public class ActivityLogInteractor implements ActivityLogInputBoundary {
             List<ActivityEntry> logs = activityDataAccess.getActivitiesForUser();
             loadPresenter.presentActivityLogs(new ActivityLogLoadOutputData(logs));
         } catch (Exception e) {
-            loadPresenter.prepareFailView("Failed to load activity logs");
+            loadPresenter.prepareFailView("Failed to load activity logs" + e.getMessage());
         }
     }
 

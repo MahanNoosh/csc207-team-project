@@ -17,6 +17,7 @@ import tut0301.group1.healthz.interfaceadapter.activity.ExerciseListViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
 import tut0301.group1.healthz.view.components.Sidebar;
 
+import java.beans.PropertyChangeEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -63,6 +64,8 @@ public class ActivityView {
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
+        historyViewModel.addPropertyChangeListener(this::onHistoryChanged);
+        controller.loadActivityHistory();
     }
 
     public Scene getScene() {
@@ -214,6 +217,8 @@ public class ActivityView {
         exerciseListView.setManaged(false); // ⬅️ prevents empty space when hidden
         exerciseListView.setItems(exerciseListViewModel.getExerciseList());
         exerciseListView.setStyle("-fx-border-color: #E5E7EB; -fx-background-radius: 8;");
+//      keyboard navigation
+
 
         // Load all exercises from Supabase
         controller.loadAllExercises();
@@ -373,6 +378,15 @@ public class ActivityView {
             info("Activity Logged", selectedActivity + " has been logged successfully!");
         } catch (Exception e) {
             error("Failed to save activity: " + e.getMessage());
+        }
+    }
+
+    private void onHistoryChanged(PropertyChangeEvent evt) {
+        if ("history".equals(evt.getPropertyName())) {
+            historyListView.setItems(historyViewModel.getHistory());
+        } else if ("error".equals(evt.getPropertyName())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, evt.getNewValue().toString());
+            alert.showAndWait();
         }
     }
 
