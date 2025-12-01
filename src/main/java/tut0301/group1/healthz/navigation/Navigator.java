@@ -86,12 +86,6 @@ import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInter
 import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInputBoundary;
 import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInteractor;
 import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogDataAccessInterface;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailGateway;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputBoundary;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInteractor;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
