@@ -22,12 +22,9 @@ import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummary
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
 import tut0301.group1.healthz.interfaceadapter.activity.ActivityHistoryViewModel;
-import tut0301.group1.healthz.interfaceadapter.activity.ActivityItem;
 import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryViewModel;
 
 import java.beans.PropertyChangeEvent;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,13 +41,11 @@ public class DashboardView {
     private final RecentActivityController recentActivityController;
     private final RecentActivityViewModel recentActivityViewModel;
     private final WeeklySummaryViewModel weeklySummaryViewModel;
-    private String userName;
     private String userId;
 
     // Clean Architecture components
-    private final DashboardViewModel viewModel;
-    private final DashboardController controller;
-    private final ActivityHistoryViewModel activityHistoryViewModel;
+    private final DashboardViewModel dashboardViewModel;
+    private final DashboardController dashboardController;
 
     // GetDailyCalorieSummary components
     private final GetDailyMacroSummaryController summaryController;
@@ -59,7 +54,6 @@ public class DashboardView {
     // Store references for updating
     private Label caloriesValueLabel;
     private Canvas caloriesCanvas;
-    private ListView<ActivityItem> activityHistoryListView;
 
     // Macro labels for dynamic updates
     private Label carbsPercentLabel;
@@ -86,9 +80,8 @@ public class DashboardView {
      * Constructor with Clean Architecture
      */
     public DashboardView(String userName, WeeklySummaryViewModel weeklySummaryViewModel, WeeklySummaryController weeklySummaryController, RecentActivityController recentActivityController, RecentActivityViewModel recentActivityViewModel,
-                         DashboardController controller,
-                         DashboardViewModel viewModel,
-                         ActivityHistoryViewModel activityHistoryViewModel,
+                         DashboardController dashboardController,
+                         DashboardViewModel dashboardViewModel,
                          GetDailyMacroSummaryController summaryController,
                          GetDailyMacroSummaryViewModel summaryViewModel,
                          String userId) {
@@ -96,9 +89,8 @@ public class DashboardView {
         this.weeklySummaryViewModel = weeklySummaryViewModel;
         this.recentActivityController = recentActivityController;
         this.recentActivityViewModel = recentActivityViewModel;
-        this.controller = controller;
-        this.viewModel = viewModel;
-        this.activityHistoryViewModel = activityHistoryViewModel;
+        this.dashboardController = dashboardController;
+        this.dashboardViewModel = dashboardViewModel;
         this.summaryController = summaryController;
         this.summaryViewModel = summaryViewModel;
         this.userId = userId;
@@ -106,7 +98,7 @@ public class DashboardView {
 
         // Load dashboard profile data
         System.out.println("DashboardView: Loading profile data...");
-        controller.loadDashboard(userId);
+        dashboardController.loadDashboard(userId);
 
         // Wait for profile data to load
         try {
@@ -116,8 +108,8 @@ public class DashboardView {
         }
 
         System.out.println("   DashboardView: Profile data loaded");
-        System.out.println("   Daily Goal: " + viewModel.getDailyCalorieGoal());
-        System.out.println("   Remaining: " + viewModel.getCaloriesRemaining());
+        System.out.println("   Daily Goal: " + dashboardViewModel.getDailyCalorieGoal());
+        System.out.println("   Remaining: " + dashboardViewModel.getCaloriesRemaining());
 
         BorderPane root = createMainLayout();
         weeklySummaryViewModel.addPropertyChangeListener(this::onSummaryChanged);
@@ -449,7 +441,7 @@ public class DashboardView {
         centerText.setAlignment(Pos.CENTER);
 
         // Use ViewModel data
-        caloriesValueLabel = new Label(String.valueOf(viewModel.getCaloriesRemaining()));
+        caloriesValueLabel = new Label(String.valueOf(dashboardViewModel.getCaloriesRemaining()));
         caloriesValueLabel.setFont(Font.font("Inter", FontWeight.BOLD, 48));
         caloriesValueLabel.setTextFill(Color.web("#111827"));
 
@@ -479,8 +471,8 @@ public class DashboardView {
         gc.clearRect(0, 0, 200, 200);
 
         // Get values from viewModel (uses Profile settings)
-        double remaining = viewModel.getCaloriesRemaining();
-        double total = viewModel.getDailyCalorieGoal();
+        double remaining = dashboardViewModel.getCaloriesRemaining();
+        double total = dashboardViewModel.getDailyCalorieGoal();
 
         if (total == 0) {
             total = 2000.0; // Fallback

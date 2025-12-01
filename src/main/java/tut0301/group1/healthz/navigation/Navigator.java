@@ -582,16 +582,12 @@ public class Navigator {
         // Controller
         GetDailyMacroSummaryController summaryController = new GetDailyMacroSummaryController(summaryInteractor);
 
-        // Reuse setup from showActivityTracker()
-        ActivityHistoryViewModel activityHistoryVM = setupActivityHistory();
-
         // Create view with Clean Architecture components
         DashboardView dashboardView = new DashboardView(userName,
                 activitySummaryViewModel, weeklySummaryController,
                 recentActivityController, recentActivityViewModel,
                 controller,
                 viewModel,
-                activityHistoryVM,
                 summaryController,
                 summaryViewModel,
                 userId);
