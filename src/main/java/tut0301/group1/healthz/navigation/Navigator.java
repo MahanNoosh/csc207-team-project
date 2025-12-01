@@ -482,6 +482,10 @@ public class Navigator {
         ActivityLogSaveOutputBoundary activityLogSavePresenter = new ActivityLogSavePresenter(historyVM);
         ActivityLogLoadOutputBoundary activityLogLoadPresenter = new ActivityLogLoadPresenter(historyVM,exerciseFinder);
 
+        // needed user info
+        String displayName = getUserDisplayName();
+        String email = getCurrentUserEmail();
+
         CalorieCalculatorInputBoundary calorieCalculator = new CalorieCalculatorInteractor(exerciseFinder, caloriePresenter);
         ActivityLogInputBoundary activityLog = new ActivityLogInteractor(
                 activityLogDAO,
@@ -498,7 +502,8 @@ public class Navigator {
             if (maybeProfile.isPresent()) {
                 currentProfile = maybeProfile.get();
 
-                ActivityView view = new ActivityView(controller, exerciseListVM, historyVM, currentProfile, this);
+                ActivityView view = new ActivityView(controller, exerciseListVM, historyVM,
+                        currentProfile, this, displayName, email);
                 primaryStage.setScene(view.getScene());
                 primaryStage.setTitle("HealthZ - Activity Tracker");
 
@@ -795,6 +800,10 @@ public class Navigator {
                 foodLogHistoryPresenter);
         GetFoodLogHistoryController foodLogHistoryController = new GetFoodLogHistoryController(foodLogHistoryInteractor);
 
+        // user info needed for sidebar
+        String displayName = getUserDisplayName();
+        String email = getCurrentUserEmail();
+
         FoodLogView foodLogView = new FoodLogView(
                 this,
                 macroSearchController,
@@ -805,7 +814,9 @@ public class Navigator {
                 macroDetailViewModel,
                 foodLogHistoryController,
                 foodLogHistoryViewModel,
-                userId
+                userId,
+                displayName,
+                email
         );
 
         primaryStage.setScene(foodLogView.getScene());
