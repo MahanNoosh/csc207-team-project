@@ -274,7 +274,7 @@ public class DashboardView {
         Label bellIcon = new Label("🔔");
         bellIcon.setFont(Font.font(20));
 
-        Label stepGoalText = new Label("30 more minutes until\nyour daily step goal!");
+        Label stepGoalText = new Label("Remember to log your meals!");
         stepGoalText.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
         stepGoalText.setTextFill(Color.WHITE);
         stepGoalText.setTextAlignment(TextAlignment.CENTER);
@@ -383,12 +383,10 @@ public class DashboardView {
         row2.setAlignment(Pos.TOP_LEFT);
 
         VBox activityWidget = createActivityTrackerWidget();
-        VBox habitWidget = createStartHabitWidget();
 
         HBox.setHgrow(activityWidget, Priority.ALWAYS);
-        HBox.setHgrow(habitWidget, Priority.NEVER);
 
-        row2.getChildren().addAll(activityWidget, habitWidget);
+        row2.getChildren().addAll(activityWidget);
 
         // Third row: Recent Entries, Quick Add
         HBox row3 = new HBox(30);
@@ -695,49 +693,10 @@ public VBox createActivityTrackerWidget() {
             chartBox.getChildren().add(barContainer);
         }
     }
-//    -----------------------------
+
     /**
-     * Create start a habit widget
+     * Create Recent Activities
      */
-    private VBox createStartHabitWidget() {
-        VBox widget = createWidgetBox();
-        widget.setPrefWidth(280);
-        widget.setMinWidth(280);
-        widget.setPrefHeight(250);
-        widget.setAlignment(Pos.TOP_LEFT);
-
-        Label title = new Label("Start a habit");
-        title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
-
-        Label description = new Label("Big goals start\nwith small\nhabits.");
-        description.setFont(Font.font("Inter", FontWeight.NORMAL, 18));
-        description.setTextFill(Color.web("#6B7280"));
-        description.setWrapText(true);
-        description.setPadding(new Insets(15, 0, 0, 0));
-
-        // Spacer
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
-
-        // Plus button
-        Button plusButton = new Button("+");
-        plusButton.setFont(Font.font("Inter", FontWeight.BOLD, 32));
-        plusButton.setTextFill(Color.WHITE);
-        plusButton.setPrefSize(60, 60);
-        plusButton.setStyle(
-                "-fx-background-color: #27692A; " +
-                        "-fx-background-radius: 30px; " +
-                        "-fx-cursor: hand;"
-        );
-
-        HBox buttonBox = new HBox(plusButton);
-        buttonBox.setAlignment(Pos.CENTER_RIGHT);
-
-        widget.getChildren().addAll(title, description, spacer, buttonBox);
-        return widget;
-    }
-
-//    ==========================================mine
     private VBox createRecentActivityWidget() {
         VBox widget = createWidgetBox();
         widget.setPrefHeight(300);
