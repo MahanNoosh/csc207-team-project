@@ -1,0 +1,164 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RecipeSearchInteractor</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">tut0301.group1.healthz.usecase.recipesearch.metadata</a>
+</div>
+
+<h1>Coverage Summary for Class: RecipeSearchInteractor (tut0301.group1.healthz.usecase.recipesearch.metadata)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RecipeSearchInteractor</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package tut0301.group1.healthz.usecase.recipesearch.metadata;
+&nbsp;
+&nbsp;import tut0301.group1.healthz.entities.nutrition.RecipeSearchResult;
+&nbsp;import tut0301.group1.healthz.entities.nutrition.RecipeFilter;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * The recipe search interactor.
+&nbsp; */
+&nbsp;public final class RecipeSearchInteractor implements RecipeSearchInputBoundary {
+&nbsp;    private final RecipeSearchDataAccessInterface recipeSearchDataAccessObject;
+&nbsp;    private final RecipeSearchOutputBoundary recipeSearchPresenter;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The recipe search interactor constructor.
+&nbsp;     * @param recipeSearchDataAccessInterface the data access interface.
+&nbsp;     * @param recipeSearchOutputBoundary the output boundary.
+&nbsp;     */
+&nbsp;    public RecipeSearchInteractor(final RecipeSearchDataAccessInterface
+&nbsp;                                          recipeSearchDataAccessInterface,
+&nbsp;                                  final RecipeSearchOutputBoundary
+<b class="fc">&nbsp;                                          recipeSearchOutputBoundary) {</b>
+<b class="fc">&nbsp;        this.recipeSearchDataAccessObject = recipeSearchDataAccessInterface;</b>
+<b class="fc">&nbsp;        this.recipeSearchPresenter = recipeSearchOutputBoundary;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void execute(final RecipeSearchInputData recipeSearchInputData) {
+<b class="fc">&nbsp;        String query = recipeSearchInputData.getQuery();</b>
+<b class="fc">&nbsp;        RecipeFilter filter = recipeSearchInputData.getFilter();</b>
+&nbsp;
+<b class="pc">&nbsp;        if (query == null || query.isBlank()) {</b>
+<b class="fc">&nbsp;            recipeSearchPresenter.presentFailure(</b>
+&nbsp;                    &quot;Please enter a recipe name or ingredient to search for.&quot;);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        try {
+<b class="fc">&nbsp;            List&lt;RecipeSearchResult&gt; results =</b>
+<b class="fc">&nbsp;                    recipeSearchDataAccessObject.search(query.trim(), filter);</b>
+<b class="fc">&nbsp;            recipeSearchPresenter.presentSuccess(results);</b>
+&nbsp;        } catch (Exception e) {
+<b class="fc">&nbsp;            recipeSearchPresenter.presentFailure(</b>
+<b class="fc">&nbsp;                    &quot;Could not fetch recipe data: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-30 18:10</div>
+</div>
+</body>
+</html>

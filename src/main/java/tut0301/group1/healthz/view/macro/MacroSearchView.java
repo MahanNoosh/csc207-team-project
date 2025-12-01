@@ -15,8 +15,8 @@ import tut0301.group1.healthz.entities.nutrition.Macro;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
-import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputBoundary;
-import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputData;
+// import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputBoundary;
+// import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputData;
 
 /**
  * Macro Search page that allows user to search macro of food by name.
@@ -149,55 +149,11 @@ public class MacroSearchView {
         searchField.setPrefWidth(700);
         HBox.setHgrow(searchField, Priority.ALWAYS);
 
-        searchField.setOnAction(e -> performSearch(new MacroSearchInputData(searchField.getText())));
+        searchField.setOnAction(e -> performSearch(searchField.getText()));
 
         searchContainer.getChildren().addAll(searchIcon, searchField);
         return searchContainer;
     }
-
-    /**
-     * Create navigation tab button (copied from DashboardView style)
-     */
-    private Button createNavTab(String text, boolean active) {
-        Button tab = new Button(text);
-        tab.setFont(Font.font("Inter", FontWeight.BOLD, 16));
-        tab.setPrefHeight(40);
-
-        if (active) {
-            tab.setStyle(
-                    "-fx-background-color: #8FBF9C; " +
-                            "-fx-text-fill: white; " +
-                            "-fx-background-radius: 5; " +
-                            "-fx-padding: 8px 20px;"
-            );
-        } else {
-            tab.setStyle(
-                    "-fx-background-color: transparent; " +
-                            "-fx-text-fill: #27692A; " +
-                            "-fx-padding: 8px 20px;"
-            );
-
-            tab.setOnMouseEntered(e ->
-                    tab.setStyle(
-                            "-fx-background-color: #8FBF9C; " +
-                                    "-fx-text-fill: white; " +
-                                    "-fx-padding: 8px 20px; " +
-                                    "-fx-cursor: hand;"
-                    )
-            );
-
-            tab.setOnMouseExited(e ->
-                    tab.setStyle(
-                            "-fx-background-color: transparent; " +
-                                    "-fx-text-fill: #27692A; " +
-                                    "-fx-padding: 8px 20px;"
-                    )
-            );
-        }
-
-        return tab;
-    }
-
     /**
      * Create content area showing history and results
      */
@@ -291,11 +247,7 @@ public class MacroSearchView {
         macrosRow.getChildren().addAll(calories, protein, fat, carbs);
 
         foodInfo.getChildren().addAll(foodName, servingSize, macrosRow);
-
-        // right side - Add button
-        Button addButton = createAddButton();
-
-        card.getChildren().addAll(foodInfo, addButton);
+        card.getChildren().addAll(foodInfo);
         return card;
     }
 
@@ -310,55 +262,14 @@ public class MacroSearchView {
     }
 
     /**
-     * Create "Add to Log" button
-     */
-    private Button createAddButton() {
-        Button addButton = new Button("+ Add to Log");
-        addButton.setPrefWidth(180);
-        addButton.setPrefHeight(50);
-        addButton.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
-        addButton.setStyle(
-                "-fx-background-color: #A7C4BC; " +
-                        "-fx-text-fill: #1F2937; " +
-                        "-fx-background-radius: 8px; " +
-                        "-fx-cursor: hand;"
-        );
-
-        addButton.setOnMouseEntered(e ->
-                addButton.setStyle(
-                        "-fx-background-color: #8FB3A9; " +
-                                "-fx-text-fill: #1F2937; " +
-                                "-fx-background-radius: 8px; " +
-                                "-fx-cursor: hand;"
-                )
-        );
-
-        addButton.setOnMouseExited(e ->
-                addButton.setStyle(
-                        "-fx-background-color: #A7C4BC; " +
-                                "-fx-text-fill: #1F2937; " +
-                                "-fx-background-radius: 8px; " +
-                                "-fx-cursor: hand;"
-                )
-        );
-
-        addButton.setOnAction(e -> {
-            System.out.println("Add to Log clicked!");
-            // TODO: implement add to log functionality
-        });
-
-        return addButton;
-    }
-
-    /**
      * Perform search when user presses Enter
      */
-    private void performSearch(MacroSearchInputData input) {
-        if (input.getSearchQuary() == null || input.getSearchQuary().trim().isEmpty()) {
+    private void performSearch(String searchQuery) {
+        if (searchQuery == null || searchQuery.trim().isEmpty()) {
             return;
         }
 
-        controller.search(input.getSearchQuary());
+        controller.search(searchQuery);
         refreshResults();
         searchField.clear();
     }

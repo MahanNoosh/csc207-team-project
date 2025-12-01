@@ -107,7 +107,6 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
         }
         return ProfileJsonMapper.fromRow(arr.getJSONObject(0));
     }
-
     public Profile updateCurrentUserProfile(Profile profile) throws Exception {
         String currentUserId = client.getUserId();
 

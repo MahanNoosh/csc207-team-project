@@ -13,9 +13,13 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryController;
+import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
+import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
+import tut0301.group1.healthz.interfaceadapter.activity.ActivityHistoryViewModel;
+import tut0301.group1.healthz.interfaceadapter.activity.ActivityItem;
+import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryViewModel;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -25,19 +29,32 @@ import java.util.stream.Collectors;
 public class DashboardView {
 
     private Scene scene;
-    private String userName; // TODO: Get from user profile
+    private String userName;
+    private String userId;
 
-    // TODO: Get from actual data sources)
-    private int caloriesRemaining = 425;
-    private int caloriesTotal = 2000;
-    private double carbsPercent = 42;
-    private double carbsGrams = 32.6;
-    private double fatPercent = 15;
-    private double fatGrams = 12.4;
-    private double proteinPercent = 20;
-    private double proteinGrams = 22.5;
+    // Clean Architecture components
+    private final DashboardViewModel viewModel;
+    private final DashboardController controller;
+    private final ActivityHistoryViewModel activityHistoryViewModel;
 
-    // for navigation logic
+    // GetDailyCalorieSummary components
+    private final GetDailyMacroSummaryController summaryController;
+    private final GetDailyMacroSummaryViewModel summaryViewModel;
+
+    // Store references for updating
+    private Label caloriesValueLabel;
+    private Canvas caloriesCanvas;
+    private ListView<ActivityItem> activityHistoryListView;
+
+    // Macro labels for dynamic updates
+    private Label carbsPercentLabel;
+    private Label carbsGramsLabel;
+    private Label fatPercentLabel;
+    private Label fatGramsLabel;
+    private Label proteinPercentLabel;
+    private Label proteinGramsLabel;
+
+    // Navigation buttons
     private Button settingsButton;
     private Button homeButton;
     private Button recipesButton;
@@ -47,12 +64,104 @@ public class DashboardView {
     private Button logOutButton;
 
     /**
-     * Constructor
+     * Constructor with Clean Architecture
      */
-    public DashboardView(String userName) {
+    public DashboardView(DashboardController controller,
+                         DashboardViewModel viewModel,
+                         ActivityHistoryViewModel activityHistoryViewModel,
+                         GetDailyMacroSummaryController summaryController,
+                         GetDailyMacroSummaryViewModel summaryViewModel,
+                         String userId,
+                         String userName) {
+        this.controller = controller;
+        this.viewModel = viewModel;
+        this.activityHistoryViewModel = activityHistoryViewModel;
+        this.summaryController = summaryController;
+        this.summaryViewModel = summaryViewModel;
+        this.userId = userId;
         this.userName = userName != null ? userName : "User";
+
+        // Load dashboard profile data
+        System.out.println("DashboardView: Loading profile data...");
+        controller.loadDashboard(userId);
+
+        // Wait for profile data to load
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            // ignore
+        }
+
+        System.out.println("   DashboardView: Profile data loaded");
+        System.out.println("   Daily Goal: " + viewModel.getDailyCalorieGoal());
+        System.out.println("   Remaining: " + viewModel.getCaloriesRemaining());
+
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 1200);
+
+        // Set up property listeners for reactive UI updates
+        setupPropertyListeners();
+
+        // Load calorie summary data for today
+        System.out.println("DashboardView: Loading calorie summary for today...");
+        summaryController.executeToday(userId);
+    }
+
+    /**
+     * Set up property listeners for reactive UI updates.
+     * When summaryViewModel data changes, the UI will automatically update.
+     */
+    private void setupPropertyListeners() {
+        // Listen to totalMacro changes
+        summaryViewModel.totalMacroProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("DashboardView: Macro data updated - " + newValue);
+            updateMacrosDisplay();
+            updateCaloriesChart();
+        });
+    }
+
+
+    /**
+     * Update macros display based on summaryViewModel data
+     */
+    private void updateMacrosDisplay() {
+        if (carbsPercentLabel == null || carbsGramsLabel == null ||
+            fatPercentLabel == null || fatGramsLabel == null ||
+            proteinPercentLabel == null || proteinGramsLabel == null) {
+            return; // Labels not yet created
+        }
+
+        double carbs = summaryViewModel.getTotalCarbs();
+        double fat = summaryViewModel.getTotalFat();
+        double protein = summaryViewModel.getTotalProtein();
+        double totalMacroGrams = carbs + fat + protein;
+
+        // Update carbs
+        if (totalMacroGrams > 0) {
+            double carbsPercent = (carbs / totalMacroGrams) * 100;
+            carbsPercentLabel.setText(String.format("%.0f%%", carbsPercent));
+        } else {
+            carbsPercentLabel.setText("0%");
+        }
+        carbsGramsLabel.setText(String.format("%.1fg", carbs));
+
+        // Update fat
+        if (totalMacroGrams > 0) {
+            double fatPercent = (fat / totalMacroGrams) * 100;
+            fatPercentLabel.setText(String.format("%.0f%%", fatPercent));
+        } else {
+            fatPercentLabel.setText("0%");
+        }
+        fatGramsLabel.setText(String.format("%.1fg", fat));
+
+        // Update protein
+        if (totalMacroGrams > 0) {
+            double proteinPercent = (protein / totalMacroGrams) * 100;
+            proteinPercentLabel.setText(String.format("%.0f%%", proteinPercent));
+        } else {
+            proteinPercentLabel.setText("0%");
+        }
+        proteinGramsLabel.setText(String.format("%.1fg", protein));
     }
 
     /**
@@ -247,31 +356,19 @@ public class DashboardView {
 
         row1.getChildren().addAll(caloriesWidget, macrosWidget, quoteWidget);
 
-        // Second row: Activity Tracker, Start a Habit
+        // Second row: Activity History and Quick Add
         HBox row2 = new HBox(30);
         row2.setAlignment(Pos.TOP_LEFT);
 
-        VBox activityWidget = createActivityTrackerWidget();
-        VBox habitWidget = createStartHabitWidget();
-
-        HBox.setHgrow(activityWidget, Priority.ALWAYS);
-        HBox.setHgrow(habitWidget, Priority.NEVER);
-
-        row2.getChildren().addAll(activityWidget, habitWidget);
-
-        // Third row: Recent Entries, Quick Add
-        HBox row3 = new HBox(30);
-        row3.setAlignment(Pos.TOP_LEFT);
-
-        VBox recentWidget = createRecentEntriesWidget();
+        VBox activityHistoryWidget = createActivityHistoryWidget();
         VBox quickAddWidget = createQuickAddWidget();
 
-        HBox.setHgrow(recentWidget, Priority.ALWAYS);
+        HBox.setHgrow(activityHistoryWidget, Priority.ALWAYS);
         HBox.setHgrow(quickAddWidget, Priority.NEVER);
 
-        row3.getChildren().addAll(recentWidget, quickAddWidget);
+        row2.getChildren().addAll(activityHistoryWidget, quickAddWidget);
 
-        content.getChildren().addAll(row1, row2, row3);
+        content.getChildren().addAll(row1, row2);
         return content;
     }
 
@@ -301,11 +398,59 @@ public class DashboardView {
         chartStack.setPrefSize(200, 200);
         chartStack.setPadding(new Insets(20, 0, 20, 0));
 
-        Canvas canvas = new Canvas(200, 200);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
+        // Create canvas and store reference
+        caloriesCanvas = new Canvas(200, 200);
+        updateCaloriesChart();
+
+        // Center text
+        VBox centerText = new VBox(2);
+        centerText.setAlignment(Pos.CENTER);
+
+        // Use ViewModel data
+        caloriesValueLabel = new Label(String.valueOf(viewModel.getCaloriesRemaining()));
+        caloriesValueLabel.setFont(Font.font("Inter", FontWeight.BOLD, 48));
+        caloriesValueLabel.setTextFill(Color.web("#111827"));
+
+        Label remainingLabel = new Label("remaining");
+        remainingLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+        remainingLabel.setTextFill(Color.web("#6B7280"));
+
+        centerText.getChildren().addAll(caloriesValueLabel, remainingLabel);
+
+        chartStack.getChildren().addAll(caloriesCanvas, centerText);
+
+        widget.getChildren().addAll(header, chartStack);
+        return widget;
+    }
+
+    /**
+     * Update calories chart based on viewModel data
+     */
+    private void updateCaloriesChart() {
+        if (caloriesCanvas == null) {
+            return; // Canvas not yet created
+        }
+
+        GraphicsContext gc = caloriesCanvas.getGraphicsContext2D();
+
+        // Clear canvas
+        gc.clearRect(0, 0, 200, 200);
+
+        // Get values from viewModel (uses Profile settings)
+        double remaining = viewModel.getCaloriesRemaining();
+        double total = viewModel.getDailyCalorieGoal();
+
+        if (total == 0) {
+            total = 2000.0; // Fallback
+        }
+
+        // Update calorie value label
+        if (caloriesValueLabel != null) {
+            caloriesValueLabel.setText(String.valueOf(Math.max(0, (int) remaining)));
+        }
 
         // Calculate progress
-        double progress = (double) caloriesRemaining / caloriesTotal;
+        double progress = remaining / total;
         double angle = progress * 360;
 
         // Draw background circle
@@ -318,25 +463,6 @@ public class DashboardView {
         gc.setLineWidth(25);
         gc.setLineCap(StrokeLineCap.ROUND);
         gc.strokeArc(25, 25, 150, 150, 90, -angle, javafx.scene.shape.ArcType.OPEN);
-
-        // Center text
-        VBox centerText = new VBox(2);
-        centerText.setAlignment(Pos.CENTER);
-
-        Label caloriesValue = new Label(String.valueOf(caloriesRemaining));
-        caloriesValue.setFont(Font.font("Inter", FontWeight.BOLD, 48));
-        caloriesValue.setTextFill(Color.web("#111827"));
-
-        Label remainingLabel = new Label("remaining");
-        remainingLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
-        remainingLabel.setTextFill(Color.web("#6B7280"));
-
-        centerText.getChildren().addAll(caloriesValue, remainingLabel);
-
-        chartStack.getChildren().addAll(canvas, centerText);
-
-        widget.getChildren().addAll(header, chartStack);
-        return widget;
     }
 
     /**
@@ -349,56 +475,52 @@ public class DashboardView {
         macrosRow.setAlignment(Pos.CENTER);
         macrosRow.setPadding(new Insets(30, 40, 30, 40));
 
+        // Create macro columns and store label references
         // Carbs
-        VBox carbsBox = createMacroColumn(
-                String.format("%.0f%%", carbsPercent),
-                String.format("%.1fg", carbsGrams),
-                "Carbs",
-                "#B91C1C"
-        );
+        VBox carbsBox = new VBox(5);
+        carbsBox.setAlignment(Pos.CENTER);
+        carbsPercentLabel = new Label("0%");
+        carbsPercentLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        carbsPercentLabel.setTextFill(Color.web("#B91C1C"));
+        carbsGramsLabel = new Label("0.0g");
+        carbsGramsLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
+        carbsGramsLabel.setTextFill(Color.web("#6B7280"));
+        Label carbsLabel = new Label("Carbs");
+        carbsLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+        carbsLabel.setTextFill(Color.web("#374151"));
+        carbsBox.getChildren().addAll(carbsPercentLabel, carbsGramsLabel, carbsLabel);
 
         // Fat
-        VBox fatBox = createMacroColumn(
-                String.format("%.0f%%", fatPercent),
-                String.format("%.1fg", fatGrams),
-                "Fat",
-                "#B26B00"
-        );
+        VBox fatBox = new VBox(5);
+        fatBox.setAlignment(Pos.CENTER);
+        fatPercentLabel = new Label("0%");
+        fatPercentLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        fatPercentLabel.setTextFill(Color.web("#B26B00"));
+        fatGramsLabel = new Label("0.0g");
+        fatGramsLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
+        fatGramsLabel.setTextFill(Color.web("#6B7280"));
+        Label fatLabel = new Label("Fat");
+        fatLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+        fatLabel.setTextFill(Color.web("#374151"));
+        fatBox.getChildren().addAll(fatPercentLabel, fatGramsLabel, fatLabel);
 
         // Protein
-        VBox proteinBox = createMacroColumn(
-                String.format("%.0f%%", proteinPercent),
-                String.format("%.1fg", proteinGrams),
-                "Protein",
-                "#1B9DBB"
-        );
+        VBox proteinBox = new VBox(5);
+        proteinBox.setAlignment(Pos.CENTER);
+        proteinPercentLabel = new Label("0%");
+        proteinPercentLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        proteinPercentLabel.setTextFill(Color.web("#1B9DBB"));
+        proteinGramsLabel = new Label("0.0g");
+        proteinGramsLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
+        proteinGramsLabel.setTextFill(Color.web("#6B7280"));
+        Label proteinLabel = new Label("Protein");
+        proteinLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+        proteinLabel.setTextFill(Color.web("#374151"));
+        proteinBox.getChildren().addAll(proteinPercentLabel, proteinGramsLabel, proteinLabel);
 
         macrosRow.getChildren().addAll(carbsBox, fatBox, proteinBox);
         widget.getChildren().add(macrosRow);
         return widget;
-    }
-
-    /**
-     * Create a single macro column
-     */
-    private VBox createMacroColumn(String percent, String grams, String label, String color) {
-        VBox column = new VBox(5);
-        column.setAlignment(Pos.CENTER);
-
-        Label percentLabel = new Label(percent);
-        percentLabel.setFont(Font.font("Inter", FontWeight.BOLD, 40));
-        percentLabel.setTextFill(Color.web(color));
-
-        Label gramsLabel = new Label(grams);
-        gramsLabel.setFont(Font.font("Inter", FontWeight.BOLD, 20));
-        gramsLabel.setTextFill(Color.web("#111827"));
-
-        Label nameLabel = new Label(label);
-        nameLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 18));
-        nameLabel.setTextFill(Color.web("#6B7280"));
-
-        column.getChildren().addAll(percentLabel, gramsLabel, nameLabel);
-        return column;
     }
 
     /**
@@ -424,6 +546,116 @@ public class DashboardView {
 
         widget.getChildren().addAll(title, quote);
         return widget;
+    }
+
+    /**
+     * Create activity history widget with real data from ViewModel
+     */
+    private VBox createActivityHistoryWidget() {
+        VBox widget = createWidgetBox();
+        widget.setPrefHeight(400);
+
+        // Header
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(0, 0, 15, 0));
+
+        Label title = new Label("Activity History");
+        title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label arrow = new Label("▶");
+        arrow.setFont(Font.font(16));
+        arrow.setTextFill(Color.web("#6B7280"));
+        arrow.setStyle("-fx-cursor: hand;");
+
+        // Make arrow clickable to navigate to full activity tracker
+        arrow.setOnMouseClicked(e -> {
+            if (activityLogButton != null) {
+                activityLogButton.fire();
+            }
+        });
+
+        header.getChildren().addAll(title, spacer, arrow);
+
+        // ✅ Activity history ListView bound to ViewModel
+        activityHistoryListView = new ListView<>(activityHistoryViewModel.getHistory());
+        activityHistoryListView.setPrefHeight(300);
+        activityHistoryListView.setStyle(
+                "-fx-background-color: transparent; " +
+                        "-fx-border-color: transparent;"
+        );
+
+        // ✅ Custom cell renderer matching ActivityView style
+        activityHistoryListView.setCellFactory(list -> new ActivityHistoryCell());
+
+        widget.getChildren().addAll(header, activityHistoryListView);
+        return widget;
+    }
+
+    /**
+     * Custom cell for activity history items
+     */
+    private static class ActivityHistoryCell extends ListCell<ActivityItem> {
+        @Override
+        protected void updateItem(ActivityItem item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty || item == null) {
+                setGraphic(null);
+                return;
+            }
+
+            // Left side: name + duration + calories
+            Label nameLabel = new Label(item.getName());
+            nameLabel.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 18));
+            nameLabel.setTextFill(Color.web("#111827"));
+
+            Label durationLabel = new Label(item.getDuration());
+            durationLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            durationLabel.setTextFill(Color.web("#27692A"));
+
+            Label caloriesLabel = new Label(item.getCalories() + " cal");
+            caloriesLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            caloriesLabel.setTextFill(Color.web("#27692A"));
+
+            HBox details = new HBox(10, durationLabel, caloriesLabel);
+            VBox left = new VBox(4, nameLabel, details);
+            HBox.setHgrow(left, Priority.ALWAYS);
+
+            // Right side: date
+            Label dateLabel = new Label(item.getDate());
+            dateLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            dateLabel.setTextFill(Color.web("#6B7280"));
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+            // Complete row
+            HBox row = new HBox(20, left, spacer, dateLabel);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.setPadding(new Insets(18, 10, 18, 10));
+            row.setStyle(
+                    "-fx-border-color: #E5E7EB; " +
+                            "-fx-border-width: 0 0 1 0;"
+            );
+
+            // Hover effect
+            row.setOnMouseEntered(e -> row.setStyle(
+                    "-fx-border-color: #E5E7EB; " +
+                            "-fx-border-width: 0 0 1 0; " +
+                            "-fx-background-color: #F9FAFB; " +
+                            "-fx-cursor: hand;"
+            ));
+            row.setOnMouseExited(e -> row.setStyle(
+                    "-fx-border-color: #E5E7EB; " +
+                            "-fx-border-width: 0 0 1 0;"
+            ));
+
+            setGraphic(row);
+        }
     }
 
     /**

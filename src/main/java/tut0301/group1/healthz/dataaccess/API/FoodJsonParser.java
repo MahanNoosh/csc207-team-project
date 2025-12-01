@@ -15,86 +15,6 @@ import java.util.regex.Pattern;
  */
 public class FoodJsonParser {
 
-    /**
-     * Pa the
-    API .
-     *
-    raw servinges the JSON response from FatSecret foods.search API and extracts
-     * all food_id and food_name pairs.
-     *
-     * @param jsonResponse the JSON string returned from API
-     * @return a list of "food_id - food_name" strings
-     */
-    public static List<String> parseFoodsList(String jsonResponse) {
-        List<String> foodsList = new ArrayList<>();
-
-        try {
-            JSONObject root = new JSONObject(jsonResponse);
-
-            if (!root.has("foods")) {
-                System.err.println("❌ Invalid JSON: missing 'foods' object.");
-                return foodsList;
-            }
-
-            JSONObject foodsObj = root.getJSONObject("foods");
-            JSONArray foodArray = foodsObj.optJSONArray("food");
-
-            if (foodArray == null) {
-                System.err.println("⚠️ No 'food' array found in JSON.");
-                return foodsList;
-            }
-
-            for (int i = 0; i < foodArray.length(); i++) {
-                JSONObject food = foodArray.getJSONObject(i);
-                long id = food.optLong("food_id", -1);
-                String name = food.optString("food_name", "unknown");
-                foodsList.add(id + " - " + name);
-            }
-
-        } catch (Exception e) {
-            System.err.println("❌ Failed to parse foods list: " + e.getMessage());
-        }
-
-        return foodsList;
-    }
-
-    /**
-     * Extracts Macro information (calories, protein, fat, carbs) for a given food name.
-     * This assumes the JSON structure follows FatSecret's standard format.
-     *
-     * @param jsonResponse   the JSON string returned from API
-     * @param targetFoodName the food name to search for
-     * @return a Macro object with nutritional data (or null if not found)
-     */
-    public static Macro getMacroByName(String jsonResponse, String targetFoodName) {
-        try {
-            JSONObject root = new JSONObject(jsonResponse);
-            if (!root.has("foods")) {
-                System.err.println("❌ Invalid JSON: missing 'foods' object.");
-                return null;
-            }
-
-            JSONObject foodsObj = root.getJSONObject("foods");
-            JSONArray foodArray = foodsObj.optJSONArray("food");
-            if (foodArray == null) return null;
-
-            for (int i = 0; i < foodArray.length(); i++) {
-                JSONObject food = foodArray.getJSONObject(i);
-                String foodName = food.optString("food_name", "");
-
-                if (foodName.equalsIgnoreCase(targetFoodName)) {
-                    // Parse food_description like:
-                    // "Per 100g - Calories: 89kcal | Fat: 0.3g | Carbs: 23g | Protein: 1.1g"
-                    String desc = food.optString("food_description", "");
-                    return parseMacroFromDescription(desc);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("❌ Failed to extract macro info: " + e.getMessage());
-        }
-
-        return null;
-    }
 
     /**
      * Helper: Parses "Calories: 89kcal | Fat: 0.3g | Carbs: 23g | Protein: 1.1g"
@@ -128,40 +48,6 @@ public class FoodJsonParser {
     }
 
     /**
-     * Extracts macro results for the list of foods returned by the search API.
-     * Each result includes the food name, the raw serving description, and parsed macros.
-     */
-    public static List<MacroSearchResult> parseMacroResults(String jsonResponse) {
-        List<MacroSearchResult> results = new ArrayList<>();
-
-        try {
-            JSONObject root = new JSONObject(jsonResponse);
-            if (!root.has("foods")) {
-                return results;
-            }
-
-            JSONObject foodsObj = root.getJSONObject("foods");
-            JSONArray foodArray = foodsObj.optJSONArray("food");
-            if (foodArray == null) {
-                return results;
-            }
-
-            for (int i = 0; i < foodArray.length(); i++) {
-                JSONObject food = foodArray.getJSONObject(i);
-                long foodId = food.optLong("food_id", -1);
-                String foodName = food.optString("food_name", "");
-                String description = food.optString("food_description", "");
-                Macro macro = parseMacroFromDescription(description);
-                results.add(new MacroSearchResult(foodId, foodName, description, macro));
-            }
-        } catch (Exception e) {
-            System.err.println("❌ Failed to parse macro results: " + e.getMessage());
-        }
-
-        return results;
-    }
-
-    /**
      * Extracts the first numeric value after the colon (or after "Calories", "Fat", etc.).
      * Example:
      * - "Per 1 apple - Calories: 100kcal" → 100.0
@@ -173,17 +59,14 @@ public class FoodJsonParser {
             if (split.length < 2) return 0;
             String afterColon = split[1];
 
-            // Use regex to find the first number after colon
             java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("(\\d+(\\.\\d+)?)").matcher(afterColon);
             if (matcher.find()) {
                 return Double.parseDouble(matcher.group(1));
             }
         } catch (Exception e) {
-            // ignore
         }
         return 0;
     }
-
     /**
      * Parse a full food detail response from FatSecret into a rich
      * nutrition model.
@@ -210,15 +93,33 @@ public class FoodJsonParser {
         for (int i = 0; i < servingArray.length(); i++) {
             JSONObject s = servingArray.getJSONObject(i);
 
+            double amount;
+            String unit;
+
+            if (s.has("measurement_description") && s.has("number_of_units")) {
+                unit = s.getString("measurement_description");
+                amount = s.getDouble("number_of_units");
+            } else {
+                String desc = s.getString("serving_description");
+                ParsedServing parsed = parseUnitFromDescription(desc);
+
+                if (parsed != null) {
+                    amount = parsed.amount;
+                    unit = parsed.unit;
+                } else {
+                    // Case 3: Fallback to metric
+                    amount = s.optDouble("metric_serving_amount", 100.0);
+                    unit = s.optString("metric_serving_unit", "g");
+                }
+            }
+
             ServingInfo info = new ServingInfo(
                     s.getLong("serving_id"),
                     s.getString("serving_description"),
 
-                    // Metric amount for your parsed fields
-                    s.getDouble("metric_serving_amount"),
-                    s.getString("metric_serving_unit"),
+                    amount,
+                    unit,
 
-                    // Nutrition fields (use opt to handle missing values)
                     parseDouble(s, "calories"),
                     parseDouble(s, "protein"),
                     parseDouble(s, "fat"),
@@ -234,7 +135,33 @@ public class FoodJsonParser {
         return new FoodDetails(foodId, name, foodType, brandName, foodUrl, servings);
     }
 
-    // Utility: safely parse a double field (may be missing)
+    private record ParsedServing(double amount, String unit) {}
+
+    private static ParsedServing parseUnitFromDescription(String description) {
+        if (description == null || description.isBlank()) return null;
+        try {
+            String cleanDesc = description.trim();
+
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile("^([0-9]+(?:\\.[0-9]+)?)\\s+(.+)");
+            java.util.regex.Matcher m = p.matcher(cleanDesc);
+
+            if (m.find()) {
+                double val = Double.parseDouble(m.group(1));
+                String text = m.group(2);
+
+                int bracketIdx = text.indexOf("(");
+                if (bracketIdx > 0) text = text.substring(0, bracketIdx).trim();
+
+                int dashIdx = text.indexOf(" -");
+                if (dashIdx > 0) text = text.substring(0, dashIdx).trim();
+
+                return new ParsedServing(val, text);
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
     private static Double parseDouble(JSONObject obj, String key) {
         if (!obj.has(key)) return null;
         String raw = obj.optString(key, "");
@@ -353,30 +280,6 @@ public class FoodJsonParser {
     }
 
     /**
-     * Extract numeric value from text like "Calories: 22kcal" or "Fat: 0.34g"
-     *
-     * @param text The text containing the numeric value
-     * @return The extracted number, or 0 if not found
-     */
-    private double extractNumber(String text) {
-        try {
-            String[] split = text.split(":");
-            if (split.length < 2) return 0;
-            String afterColon = split[1];
-
-            // Use regex to find the first number
-            Pattern pattern = Pattern.compile("(\\d+(?:\\.\\d+)?)");
-            Matcher matcher = pattern.matcher(afterColon);
-            if (matcher.find()) {
-                return Double.parseDouble(matcher.group(1));
-            }
-        } catch (Exception e) {
-            // ignore
-        }
-        return 0;
-    }
-
-    /**
      * Parse serving information from description.
      * Example: "Per 100g - ..." → ServingInfo(100.0, "g")
      *          "Per 1 cup - ..." → ServingInfo(1.0, "cup")
@@ -404,7 +307,6 @@ public class FoodJsonParser {
                 servingPart = description.substring(4).trim();
             }
 
-            // Parse amount and unit (e.g., "100g", "1 cup")
             Pattern pattern = Pattern.compile("(\\d+(?:\\.\\d+)?)\\s*([a-zA-Z]+)");
             Matcher matcher = pattern.matcher(servingPart);
 

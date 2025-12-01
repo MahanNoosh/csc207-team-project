@@ -340,24 +340,49 @@ public class SignupView {
         System.out.println("Email: " + signupData.email);
         System.out.println("Goal: " + signupData.goal);
 
-        var signupVM = new SignupViewModel();
-        var signupPresenter = new SignupPresenter(this, signupVM);
-        String url  = System.getenv("SUPABASE_URL");
+        // Get environment variables
+        String url = System.getenv("SUPABASE_URL");
         String anon = System.getenv("SUPABASE_ANON_KEY");
         if (url == null || anon == null) {
-            System.err.println("Set SUPABASE_URL and SUPABASE_ANON_KEY");
-            System.exit(1);
+            showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
+            return;
         }
-        var client = new SupabaseClient(url, anon);
+
+        // Create Clean Architecture components
+        SignupViewModel signupVM = new SignupViewModel();
+        SignupPresenter signupPresenter = new SignupPresenter(signupVM);
+
+        SupabaseClient client = new SupabaseClient(url, anon);
         AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
-        SignupInputBoundary signupUC = new SignupInteractor(authGateway, signupPresenter);
-        SignupController signupController = new SignupController(signupUC, signupPresenter);
-        signupController.signup(signupData.email, signupData.password, signupData.confirmPassword, signupData.fullName);
 
-        // TODO: show only when successful sign up (email can be wrong)
-        Navigator.getInstance().showEmailVerification(signupData);
+        SignupInputBoundary signupInteractor = new SignupInteractor(authGateway, signupPresenter);
+        SignupController signupController = new SignupController(signupInteractor, signupPresenter);
 
-        showSuccess("Account created successfully!");
+        // Call signup
+        signupController.signup(
+                signupData.email,
+                signupData.password,
+                signupData.confirmPassword,
+                signupData.fullName
+        );
+
+        // Wait a moment for async processing
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            // ignore
+        }
+
+        // Check if signup was successful
+        if (signupVM.isSignupSuccessful()) {
+            System.out.println("Signup successful! Showing email verification...");
+            Navigator.getInstance().showEmailVerification(signupData);
+        } else {
+            // Show error and stay on signup page
+            String errorMsg = signupVM.getErrorMessage();
+            System.err.println("Signup failed: " + errorMsg);
+            showError(errorMsg != null ? errorMsg : "Signup failed. Please try again.");
+        }
     }
 
     // show error
@@ -452,8 +477,6 @@ public class SignupView {
             return confirmPassword;
         }
     }
-
-
 
     public void display(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
