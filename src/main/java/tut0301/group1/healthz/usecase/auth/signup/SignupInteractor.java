@@ -45,7 +45,6 @@ public class SignupInteractor implements SignupInputBoundary {
             presenter.prepareSuccessView(new SignupOutputData(input.getEmail()));
 
         } catch (Exception ex) {
-            // This line WILL violate IllegalCatch unless authGateway throws a checked exception.
             String message = extractMessage(ex.getMessage());
             presenter.prepareFailView("Sign-up failed: " + message);
         }
