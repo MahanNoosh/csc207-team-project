@@ -136,7 +136,6 @@ public class Navigator {
     private SupabaseClient authenticatedClient;
 
     private Navigator() {
-        // private so we can prevent instantiation
     }
 
     /**
@@ -193,7 +192,6 @@ public class Navigator {
      * Navigate to Macro Search page
      */
     public void showMacroSearch() {
-        // Clean Architecture Layer Setup:
         // 1. ViewModel (Interface Adapter)
         MacroSearchViewModel macroSearchViewModel = new MacroSearchViewModel();
 
@@ -336,7 +334,6 @@ public class Navigator {
                 return null;
             }
 
-            // Use your partner's OAuth class
             tut0301.group1.healthz.dataaccess.API.OAuth.OAuth fetcher =
                     new tut0301.group1.healthz.dataaccess.API.OAuth.OAuth(clientId, clientSecret);
 
@@ -665,7 +662,7 @@ public class Navigator {
             // restart 3-minute auto-login window (your existing helper)
             startEmailCheckTimeline();
 
-            // NEW: start the visible resend cooldown for ~2 minutes
+            // start the visible resend cooldown for ~2 minutes
             view.startResendCooldown(120);
         });
 
@@ -823,20 +820,6 @@ public class Navigator {
         primaryStage.setTitle("HealthZ - Food Log");
     }
 
-    /**
-     * Navigate to Activity Log Page
-     */
-
-    /**
-     * Go back to previous page
-     * (Can implement navigation history stack later)
-     */
-    public void goBack() {
-        // TODO: Implement navigation history stack
-        System.out.println("Going back...");
-        showLogin();
-    }
-
     // ========== PRIVATE HELPER METHODS ==========
 
     /**
@@ -853,8 +836,6 @@ public class Navigator {
         // Connect Log In button
         landingView.getLogInButton().setOnAction(e -> {
             System.out.println("Logging in...");
-            // TODO: show actual login form or validate credentials
-            // For now, just go to main app
             showLogin();
         });
     }
