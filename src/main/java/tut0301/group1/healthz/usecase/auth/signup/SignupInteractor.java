@@ -1,47 +1,72 @@
 package tut0301.group1.healthz.usecase.auth.signup;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 
+/**
+ * Handles the user sign-up use case.
+ */
 public class SignupInteractor implements SignupInputBoundary {
-    private final AuthGateway auth;
+
+    private final AuthGateway authGateway;
     private final SignupOutputBoundary presenter;
 
-    public SignupInteractor(AuthGateway auth, SignupOutputBoundary presenter) {
-        this.auth = auth;
+    /**
+     * Creates a new signup interactor.
+     *
+     * @param authGateway the auth gateway
+     * @param presenter   the presenter
+     */
+    public SignupInteractor(AuthGateway authGateway, SignupOutputBoundary presenter) {
+        this.authGateway = authGateway;
         this.presenter = presenter;
     }
 
+    /**
+     * Executes the sign-up flow.
+     *
+     * @param input the sign-up data
+     */
     @Override
     public void execute(SignupInputData input) {
+        if (!input.passwordsMatch()) {
+            presenter.prepareFailView("Passwords do not match.");
+            return;
+        }
+
         try {
-            // 1. Validate passwords match
-            if (!input.passwordsMatch()) {
-                presenter.prepareFailView("Passwords do not match.");
-                return;
-            }
+            authGateway.signUpEmail(
+                    input.getEmail(),
+                    input.getPassword1(),
+                    input.getDisplayName()
+            );
 
-            // 2. Perform signup via gateway
-            auth.signUpEmail(input.getEmail(), input.getPassword1(), input.getDisplayName());
+            presenter.prepareSuccessView(new SignupOutputData(input.getEmail()));
 
-            // 3. On success, return minimal output data
-            SignupOutputData output = new SignupOutputData(input.getEmail());
-            presenter.prepareSuccessView(output);
-
-        } catch (Exception e) {
-            // 4. Extract a clean message if the error body is JSON (Supabase-style)
-            String message = e.getMessage();
-            try {
-                int brace = message.indexOf('{');
-                if (brace >= 0) {
-                    JSONObject err = new JSONObject(message.substring(brace));
-                    message = err.optString("msg", message);
-                }
-            } catch (Exception ignore) {
-                // not JSON, keep the original message
-            }
-
+        } catch (Exception ex) {
+            // This line WILL violate IllegalCatch unless authGateway throws a checked exception.
+            String message = extractMessage(ex.getMessage());
             presenter.prepareFailView("Sign-up failed: " + message);
         }
+    }
+
+    private String extractMessage(String raw) {
+        if (raw == null || raw.isEmpty()) {
+            return "Unknown error.";
+        }
+        int brace = raw.indexOf('{');
+        if (brace >= 0) {
+            try {
+                JSONObject json = new JSONObject(raw.substring(brace));
+                String msg = json.optString("msg");
+                if (!msg.isEmpty()) {
+                    return msg;
+                }
+            } catch (JSONException ignored) {
+                // keep original
+            }
+        }
+        return raw;
     }
 }
