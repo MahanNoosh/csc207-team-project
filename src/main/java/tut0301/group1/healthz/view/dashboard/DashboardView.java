@@ -13,13 +13,13 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryController;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
 import tut0301.group1.healthz.interfaceadapter.activity.ActivityHistoryViewModel;
 import tut0301.group1.healthz.interfaceadapter.activity.ActivityItem;
+import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryViewModel;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -30,24 +30,29 @@ public class DashboardView {
 
     private Scene scene;
     private String userName;
+    private String userId;
 
     // Clean Architecture components
     private final DashboardViewModel viewModel;
     private final DashboardController controller;
     private final ActivityHistoryViewModel activityHistoryViewModel;
 
+    // GetDailyCalorieSummary components
+    private final GetDailyMacroSummaryController summaryController;
+    private final GetDailyMacroSummaryViewModel summaryViewModel;
+
     // Store references for updating
     private Label caloriesValueLabel;
     private Canvas caloriesCanvas;
     private ListView<ActivityItem> activityHistoryListView;
 
-    // TODO: Get from actual data sources
-    private double carbsPercent = 42;
-    private double carbsGrams = 32.6;
-    private double fatPercent = 15;
-    private double fatGrams = 12.4;
-    private double proteinPercent = 20;
-    private double proteinGrams = 22.5;
+    // Macro labels for dynamic updates
+    private Label carbsPercentLabel;
+    private Label carbsGramsLabel;
+    private Label fatPercentLabel;
+    private Label fatGramsLabel;
+    private Label proteinPercentLabel;
+    private Label proteinGramsLabel;
 
     // Navigation buttons
     private Button settingsButton;
@@ -64,30 +69,99 @@ public class DashboardView {
     public DashboardView(DashboardController controller,
                          DashboardViewModel viewModel,
                          ActivityHistoryViewModel activityHistoryViewModel,
+                         GetDailyMacroSummaryController summaryController,
+                         GetDailyMacroSummaryViewModel summaryViewModel,
                          String userId,
                          String userName) {
         this.controller = controller;
         this.viewModel = viewModel;
         this.activityHistoryViewModel = activityHistoryViewModel;
+        this.summaryController = summaryController;
+        this.summaryViewModel = summaryViewModel;
+        this.userId = userId;
         this.userName = userName != null ? userName : "User";
 
-        // Load dashboard data
-        System.out.println("DashboardView: Loading data...");
+        // Load dashboard profile data
+        System.out.println("DashboardView: Loading profile data...");
         controller.loadDashboard(userId);
 
-        // Wait for data to load
+        // Wait for profile data to load
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             // ignore
         }
 
-        System.out.println("   DashboardView: Data loaded");
+        System.out.println("   DashboardView: Profile data loaded");
         System.out.println("   Daily Goal: " + viewModel.getDailyCalorieGoal());
         System.out.println("   Remaining: " + viewModel.getCaloriesRemaining());
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 1200);
+
+        // Set up property listeners for reactive UI updates
+        setupPropertyListeners();
+
+        // Load calorie summary data for today
+        System.out.println("DashboardView: Loading calorie summary for today...");
+        summaryController.executeToday(userId);
+    }
+
+    /**
+     * Set up property listeners for reactive UI updates.
+     * When summaryViewModel data changes, the UI will automatically update.
+     */
+    private void setupPropertyListeners() {
+        // Listen to totalMacro changes
+        summaryViewModel.totalMacroProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("DashboardView: Macro data updated - " + newValue);
+            updateMacrosDisplay();
+            updateCaloriesChart();
+        });
+    }
+
+
+    /**
+     * Update macros display based on summaryViewModel data
+     */
+    private void updateMacrosDisplay() {
+        if (carbsPercentLabel == null || carbsGramsLabel == null ||
+            fatPercentLabel == null || fatGramsLabel == null ||
+            proteinPercentLabel == null || proteinGramsLabel == null) {
+            return; // Labels not yet created
+        }
+
+        double carbs = summaryViewModel.getTotalCarbs();
+        double fat = summaryViewModel.getTotalFat();
+        double protein = summaryViewModel.getTotalProtein();
+        double totalMacroGrams = carbs + fat + protein;
+
+        // Update carbs
+        if (totalMacroGrams > 0) {
+            double carbsPercent = (carbs / totalMacroGrams) * 100;
+            carbsPercentLabel.setText(String.format("%.0f%%", carbsPercent));
+        } else {
+            carbsPercentLabel.setText("0%");
+        }
+        carbsGramsLabel.setText(String.format("%.1fg", carbs));
+
+        // Update fat
+        if (totalMacroGrams > 0) {
+            double fatPercent = (fat / totalMacroGrams) * 100;
+            fatPercentLabel.setText(String.format("%.0f%%", fatPercent));
+        } else {
+            fatPercentLabel.setText("0%");
+        }
+        fatGramsLabel.setText(String.format("%.1fg", fat));
+
+        // Update protein
+        if (totalMacroGrams > 0) {
+            double proteinPercent = (protein / totalMacroGrams) * 100;
+            proteinPercentLabel.setText(String.format("%.0f%%", proteinPercent));
+        } else {
+            proteinPercentLabel.setText("0%");
+        }
+        proteinGramsLabel.setText(String.format("%.1fg", protein));
     }
 
     /**
@@ -350,24 +424,33 @@ public class DashboardView {
     }
 
     /**
-     * Update calories chart based on ViewModel data
+     * Update calories chart based on viewModel data
      */
     private void updateCaloriesChart() {
+        if (caloriesCanvas == null) {
+            return; // Canvas not yet created
+        }
+
         GraphicsContext gc = caloriesCanvas.getGraphicsContext2D();
 
         // Clear canvas
         gc.clearRect(0, 0, 200, 200);
 
-        // Get values from ViewModel
-        int remaining = viewModel.getCaloriesRemaining();
-        int total = viewModel.getDailyCalorieGoal();
+        // Get values from viewModel (uses Profile settings)
+        double remaining = viewModel.getCaloriesRemaining();
+        double total = viewModel.getDailyCalorieGoal();
 
         if (total == 0) {
-            total = 2000; // Fallback
+            total = 2000.0; // Fallback
+        }
+
+        // Update calorie value label
+        if (caloriesValueLabel != null) {
+            caloriesValueLabel.setText(String.valueOf(Math.max(0, (int) remaining)));
         }
 
         // Calculate progress
-        double progress = (double) remaining / total;
+        double progress = remaining / total;
         double angle = progress * 360;
 
         // Draw background circle
@@ -392,56 +475,52 @@ public class DashboardView {
         macrosRow.setAlignment(Pos.CENTER);
         macrosRow.setPadding(new Insets(30, 40, 30, 40));
 
+        // Create macro columns and store label references
         // Carbs
-        VBox carbsBox = createMacroColumn(
-                String.format("%.0f%%", carbsPercent),
-                String.format("%.1fg", carbsGrams),
-                "Carbs",
-                "#B91C1C"
-        );
+        VBox carbsBox = new VBox(5);
+        carbsBox.setAlignment(Pos.CENTER);
+        carbsPercentLabel = new Label("0%");
+        carbsPercentLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        carbsPercentLabel.setTextFill(Color.web("#B91C1C"));
+        carbsGramsLabel = new Label("0.0g");
+        carbsGramsLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
+        carbsGramsLabel.setTextFill(Color.web("#6B7280"));
+        Label carbsLabel = new Label("Carbs");
+        carbsLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+        carbsLabel.setTextFill(Color.web("#374151"));
+        carbsBox.getChildren().addAll(carbsPercentLabel, carbsGramsLabel, carbsLabel);
 
         // Fat
-        VBox fatBox = createMacroColumn(
-                String.format("%.0f%%", fatPercent),
-                String.format("%.1fg", fatGrams),
-                "Fat",
-                "#B26B00"
-        );
+        VBox fatBox = new VBox(5);
+        fatBox.setAlignment(Pos.CENTER);
+        fatPercentLabel = new Label("0%");
+        fatPercentLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        fatPercentLabel.setTextFill(Color.web("#B26B00"));
+        fatGramsLabel = new Label("0.0g");
+        fatGramsLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
+        fatGramsLabel.setTextFill(Color.web("#6B7280"));
+        Label fatLabel = new Label("Fat");
+        fatLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+        fatLabel.setTextFill(Color.web("#374151"));
+        fatBox.getChildren().addAll(fatPercentLabel, fatGramsLabel, fatLabel);
 
         // Protein
-        VBox proteinBox = createMacroColumn(
-                String.format("%.0f%%", proteinPercent),
-                String.format("%.1fg", proteinGrams),
-                "Protein",
-                "#1B9DBB"
-        );
+        VBox proteinBox = new VBox(5);
+        proteinBox.setAlignment(Pos.CENTER);
+        proteinPercentLabel = new Label("0%");
+        proteinPercentLabel.setFont(Font.font("Inter", FontWeight.BOLD, 32));
+        proteinPercentLabel.setTextFill(Color.web("#1B9DBB"));
+        proteinGramsLabel = new Label("0.0g");
+        proteinGramsLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
+        proteinGramsLabel.setTextFill(Color.web("#6B7280"));
+        Label proteinLabel = new Label("Protein");
+        proteinLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+        proteinLabel.setTextFill(Color.web("#374151"));
+        proteinBox.getChildren().addAll(proteinPercentLabel, proteinGramsLabel, proteinLabel);
 
         macrosRow.getChildren().addAll(carbsBox, fatBox, proteinBox);
         widget.getChildren().add(macrosRow);
         return widget;
-    }
-
-    /**
-     * Create a single macro column
-     */
-    private VBox createMacroColumn(String percent, String grams, String label, String color) {
-        VBox column = new VBox(5);
-        column.setAlignment(Pos.CENTER);
-
-        Label percentLabel = new Label(percent);
-        percentLabel.setFont(Font.font("Inter", FontWeight.BOLD, 40));
-        percentLabel.setTextFill(Color.web(color));
-
-        Label gramsLabel = new Label(grams);
-        gramsLabel.setFont(Font.font("Inter", FontWeight.BOLD, 20));
-        gramsLabel.setTextFill(Color.web("#111827"));
-
-        Label nameLabel = new Label(label);
-        nameLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 18));
-        nameLabel.setTextFill(Color.web("#6B7280"));
-
-        column.getChildren().addAll(percentLabel, gramsLabel, nameLabel);
-        return column;
     }
 
     /**

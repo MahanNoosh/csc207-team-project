@@ -1,17 +1,30 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
+import tut0301.group1.healthz.entities.Dashboard.ActivityEntry;
 import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tut0301.group1.healthz.entities.nutrition.FoodLog;
+import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogDataAccessInterface;
+import tut0301.group1.healthz.usecase.food.logging.FoodLogGateway;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Interactor for Dashboard Use Case
  */
 public class DashboardInteractor implements DashboardInputBoundary {
     private final UserDataDataAccessInterface userDataAccess;
+    private final FoodLogGateway foodLogGateway;
+    private final ActivityLogDataAccessInterface activityLogDataAccess;
     private final DashboardOutputBoundary presenter;
 
     public DashboardInteractor(UserDataDataAccessInterface userDataAccess,
+                               FoodLogGateway foodLogGateway,
+                               ActivityLogDataAccessInterface activityLogDataAccess,
                                DashboardOutputBoundary presenter) {
         this.userDataAccess = userDataAccess;
+        this.foodLogGateway = foodLogGateway;
+        this.activityLogDataAccess = activityLogDataAccess;
         this.presenter = presenter;
     }
 
@@ -20,7 +33,7 @@ public class DashboardInteractor implements DashboardInputBoundary {
         try {
             System.out.println("Loading dashboard for user: " + userId);
 
-            // Load profile from Supabase
+            // Supabase
             Profile profile = userDataAccess.loadCurrentUserProfile()
                     .orElseGet(() -> {
                         try {
@@ -31,22 +44,33 @@ public class DashboardInteractor implements DashboardInputBoundary {
                         }
                     });
 
-            // Log profile details
-            System.out.println("   Profile loaded:");
-            System.out.println("   Weight: " + profile.getWeightKg() + " kg");
-            System.out.println("   Height: " + profile.getHeightCm() + " cm");
-            System.out.println("   Age: " + profile.getAgeYears());
-            System.out.println("   Sex: " + profile.getSex());
-            System.out.println("   Goal: " + profile.getGoal());
-            System.out.println("   Activity: " + profile.getActivityLevelMET());
-
             // Calculate daily calorie goal
             int dailyCalorieGoal = CalorieCalculator.calculateDailyCalorieGoal(profile);
             System.out.println("🔥 Calculated daily calorie goal: " + dailyCalorieGoal);
 
-            // Get calories consumed (TODO: implement food log integration)
+            // Get today's date for filtering
+            LocalDate today = LocalDate.now();
+
+            // Get activity logs for today and calculate calories burned
+            List<ActivityEntry> activities = activityLogDataAccess.getActivitiesForUser();
+
+            int activityCalories = 0;
+            for (ActivityEntry entry : activities) {
+                if (entry.getTimestamp().toLocalDate().equals(today)) {
+                    activityCalories += (int) entry.getCaloriesBurned();
+                }
+            }
+
+            // Get food logs for today and calculate calories consumed
+            List<FoodLog> foodLogs = foodLogGateway.getFoodLogsByDate(userId, today);
+
             int caloriesConsumed = 0;
-            int caloriesRemaining = dailyCalorieGoal - caloriesConsumed;
+            for (FoodLog entry : foodLogs) {
+                caloriesConsumed += (int) entry.getActualMacro().calories();
+            }
+
+            // Calculate remaining calories
+            int caloriesRemaining = dailyCalorieGoal - caloriesConsumed + activityCalories;
 
             // User name will be set by Navigator
             String userName = "User";
