@@ -2,11 +2,9 @@ package tut0301.group1.healthz.usecase.food.logging;
 
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 
-import java.time.LocalDateTime;
 
 /**
  * Interactor for logging food intake.
- *
  * This class implements the business logic for recording
  * food consumption, following Clean Architecture principles.
  */
