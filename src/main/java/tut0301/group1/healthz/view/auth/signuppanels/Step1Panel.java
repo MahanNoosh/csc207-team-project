@@ -23,12 +23,12 @@ public class Step1Panel {
         VBox container = new VBox(20);
         container.setAlignment(Pos.TOP_CENTER);
 
-        Label title = new Label("What's your full name?");
+        Label title = new Label("What's your first name?");
         title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
         title.setTextFill(Color.web("#111827"));
 
         nameField = new TextField();
-        nameField.setPromptText("Enter your full name");
+        nameField.setPromptText("Enter your first name");
         nameField.setPrefHeight(55);
         nameField.setStyle(
                 "-fx-background-color: white; " +

@@ -1,6 +1,5 @@
 package tut0301.group1.healthz.usecase.nutritionadvice;
-import tut0301.group1.healthz.entities.NutritionAdvice;
-import tut0301.group1.healthz.usecase.dashboard.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
 
 public class NutritionAdvisorHelper {
 
@@ -14,6 +13,19 @@ public class NutritionAdvisorHelper {
             case WEIGHT_GAIN -> tdee + 300;
             default -> tdee;
         };
+    }
+
+    public static double calculateGoalAdjustedCalories(Profile profile) {
+        double currentWeight = profile.getWeightKg();
+        double targetWeight = profile.getTargetWeightKg();
+        double tdee = HealthMetricsCalculator.calculateTDEE(profile);
+
+        // Each 0.5 kg = ~3500 kcal deficit/surplus per week
+        double weightDiff = targetWeight - currentWeight;
+        double totalCaloriesToAdjust = weightDiff * 7700; // kcal per kg of fat
+        double dailyAdjustment = totalCaloriesToAdjust / (profile.getTargetWeeks() * 7);
+
+        return tdee + dailyAdjustment; // surplus or deficit
     }
 
     public static double calculateProtein(Profile profile) {

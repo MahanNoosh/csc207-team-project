@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**s
+/**
  * Fetch recipe data from the FatSecret API.
  */
 public class RecipeAPI implements SearchRecipe {
@@ -30,20 +30,21 @@ public class RecipeAPI implements SearchRecipe {
      * Call the FatSecret API using an existing token to search for recipe name(s).
      *
      * @param searchExpression the search term
-     * @param maxResults the maximum number of results to display
-     * @param pageNumber the page of results to show
-     * @param recipeType the type of recipe to search for
+     * @param maxResults       the maximum number of results to display
+     * @param pageNumber       the page of results to show
+     * @param recipeType       the type of recipe to search for
      * @return a list of the names of the recipes
      * @throws RecipeNotFoundException if there are no recipes found
      */
+    @Override
     public List<String> getRecipeNames(String searchExpression, Integer maxResults,
                                        Integer pageNumber, String recipeType)
-            throws SearchRecipe.RecipeNotFoundException{
+            throws SearchRecipe.RecipeNotFoundException {
         HttpUrl httpUrl = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder()
-                .addQueryParameter("search_term", searchExpression)
+                .addQueryParameter("search_expression", searchExpression)
                 .addQueryParameter("max_results", String.valueOf(maxResults))
                 .addQueryParameter("page_number", String.valueOf(pageNumber))
-                .addQueryParameter("recipe_type", recipeType)
+                .addQueryParameter("recipe_types", recipeType)
                 .addQueryParameter("format", "json")
                 .build();
 
@@ -80,13 +81,63 @@ public class RecipeAPI implements SearchRecipe {
     }
 
     /**
+     * Call the FatSecret API using an existing token and id to search for recipe(s) by name.
+     *
+     * @param searchExpression the search term
+     * @param maxResults       the maximum number of results to display
+     * @param pageNumber       the page of results to show
+     * @param recipeType       the type of recipe to search for
+     * @return the list of Recipe objects that is found
+     * @throws RecipeNotFoundException if there are no recipes found
+     */
+    @Override
+    public List<Recipe> searchByName(String searchExpression, Integer maxResults,
+                                     Integer pageNumber, String recipeType)
+            throws SearchRecipe.RecipeNotFoundException {
+        HttpUrl httpUrl = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder()
+                .addQueryParameter("search_expression", searchExpression)
+                .addQueryParameter("max_results", String.valueOf(maxResults))
+                .addQueryParameter("page_number", String.valueOf(pageNumber))
+                .addQueryParameter("recipe_types", recipeType)
+                .addQueryParameter("format", "json")
+                .build();
+
+        Request request = new Request.Builder()
+                .url(httpUrl)
+                .addHeader("Authorization", "Bearer " + token)
+                .get()
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful() || response.body() == null) {
+                throw new SearchRecipe.RecipeNotFoundException();
+            }
+
+            String responseBody = response.body().string();
+            JSONObject recipeObject = new JSONObject(responseBody);
+            JSONArray recipes = recipeObject.getJSONObject("recipes").getJSONArray("recipe");
+
+            if (recipes.isEmpty()) {
+                throw new SearchRecipe.RecipeNotFoundException();
+            }
+
+            return RecipeJsonParser.getRecipesByName(responseBody);
+
+        } catch (IOException e) {
+            throw new SearchRecipe.RecipeNotFoundException();
+        }
+    }
+
+
+    /**
      * Call the FatSecret API using an existing token and id to search for recipe(s) by ID.
      *
      * @param id the id of the recipe to search for
      * @return the recipe that is found
      * @throws RecipeNotFoundException if there are no recipes found
      */
-    public Recipe searchById(String id) throws SearchRecipe.RecipeNotFoundException{
+    @Override
+    public Recipe searchById(String id) throws SearchRecipe.RecipeNotFoundException {
         HttpUrl httpUrl = Objects.requireNonNull(HttpUrl.parse(searchByIdUrl)).newBuilder()
                 .addQueryParameter("recipe_id", id)
                 .addQueryParameter("format", "json")
@@ -109,51 +160,6 @@ public class RecipeAPI implements SearchRecipe {
 
         } catch (IOException e) {
             throw new SearchRecipe.RecipeNotFoundException();
-        }
-    }
-
-    public static void main(String[] args) {
-        try {
-            String clientId = System.getenv("FATSECRET_CLIENT_ID");
-            String clientSecret = System.getenv("FATSECRET_CLIENT_SECRET");
-
-            // Check if environment variables are properly set
-            if (clientId == null || clientSecret == null) {
-                System.err.println("❌ Environment variables FATSECRET_CLIENT_ID or FATSECRET_CLIENT_SECRET not found!");
-                System.err.println("👉 Please set them in your system or IDE before running this program.");
-                return;
-            }
-
-            FatSecretOAuthTokenFetcher fetcher = new FatSecretOAuthTokenFetcher(clientId, clientSecret);
-            String jsonResponse = fetcher.getAccessTokenRaw("basic");
-
-            System.out.println("\n=== Raw Token JSON ===");
-            System.out.println(jsonResponse);
-            System.out.println("======================\n");
-
-            String token = FatSecretOAuthTokenFetcher.TokenParser.extractAccessToken(jsonResponse);
-            if (token == null) {
-                System.err.println("❌ Failed to extract access token. Stopping execution.");
-                return;
-            }
-
-            try {
-                RecipeAPI recipe = new RecipeAPI(token);
-                // example of searching for one vegetarian recipe
-                List<String> names = recipe.getRecipeNames("vegetarian", 10, 0,
-                        "All");
-                System.out.println("List of recipe names found:" + names);
-
-                // example of searching for a recipe by id
-                Recipe recipeEntity = recipe.searchById("91");
-                // print the name of the recipe found
-                System.out.println("Name of recipe with ID 91: " + recipeEntity.getName());
-
-            } catch (SearchRecipe.RecipeNotFoundException e) {
-                System.out.println("Recipe not found!");
-            }
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 }

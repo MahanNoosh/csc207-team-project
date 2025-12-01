@@ -6,21 +6,39 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+
+import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tut0301.group1.healthz.entities.Dashboard.Sex;
+import tut0301.group1.healthz.entities.Dashboard.Goal;
+import tut0301.group1.healthz.entities.Dashboard.HealthCondition;
+import tut0301.group1.healthz.entities.Dashboard.DietPreference;
+
+import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserController;
+import tut0301.group1.healthz.navigation.Navigator;
+import tut0301.group1.healthz.view.components.Sidebar;
+
+import java.util.Optional;
 
 /**
  * Settings View includes:
  * - Sidebar navigation
- * - Profile header
  * - Personal details section
  * - Biometrics section
  * - Goals section
  * - Delete account button
  */
-
 public class SettingsView {
+
+    private final Navigator navigator;
+    private final UpdateUserController updateUserController;
+    private final Profile currentProfile;
+
+    // User identity (from login)
+    private final String displayName;
+    private final String email;
+
     private Scene scene;
 
     // Personal details fields
@@ -35,7 +53,7 @@ public class SettingsView {
     private TextField weightField;
     private ComboBox<String> genderCombo;
     private ComboBox<String> activityLevelCombo;
-    private TextField dietField;
+    private ComboBox<String> dietCombo;
 
     // Goals fields
     private TextField targetWeightField;
@@ -43,7 +61,20 @@ public class SettingsView {
     private ComboBox<String> goalCombo;
     private TextField dailyActivityField;
 
-    public SettingsView() {
+    // save settings button
+    private Button saveButton;
+
+    public SettingsView(Navigator navigator,
+                        UpdateUserController updateUserController,
+                        Profile currentProfile,
+                        String displayName,
+                        String email) {
+        this.navigator = navigator;
+        this.updateUserController = updateUserController;
+        this.currentProfile = currentProfile;
+        this.displayName = (displayName != null && !displayName.isEmpty()) ? displayName : "User";
+        this.email = email != null ? email : "";
+
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1200, 800);
 
@@ -57,8 +88,8 @@ public class SettingsView {
         BorderPane root = new BorderPane();
         root.getStylesheets().add("root");
 
-        // left sidebar
-        VBox sidebar = createSidebar();
+        // left sidebar with real user info
+        Sidebar sidebar = new Sidebar(navigator, "Settings", displayName, email);
         root.setLeft(sidebar);
 
         // main content area
@@ -70,91 +101,7 @@ public class SettingsView {
         return root;
     }
 
-    // left sidebar
-    private VBox createSidebar() {
-        VBox sidebar = new VBox(0);
-        sidebar.getStyleClass().add("sidebar");
-        sidebar.setPrefWidth(220);
-
-        // Profile section at top
-        VBox profileSection = createProfileSection();
-
-        // Navigation menu
-        VBox navigation = createNavigation();
-
-        // Log out button at bottom
-        Button logoutButton = new Button("Log Out");
-        logoutButton.getStyleClass().addAll("nav-item", "logout-button");
-        logoutButton.setMaxWidth(Double.MAX_VALUE);
-        logoutButton.setOnAction(e -> handleLogout());
-
-        // Spacer to push logout to bottom
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
-
-        sidebar.getChildren().addAll(profileSection, navigation, spacer, logoutButton);
-        return sidebar;
-    }
-
-    // profile section at the top of the left sidebar
-    private VBox createProfileSection() {
-        VBox profileBox = new VBox(8);
-        profileBox.getStyleClass().add("profile-section");
-        profileBox.setAlignment(Pos.CENTER);
-        profileBox.setPadding(new Insets(30, 20, 20, 20));
-
-        // Profile picture (circle with initials)
-        Circle profilePic = new Circle(30);
-        profilePic.setFill(Color.web("#CCCCCC"));
-        profilePic.getStyleClass().add("profile-picture");
-
-        // Name
-        Label nameLabel = new Label("Bob Dylan");
-        nameLabel.getStyleClass().add("profile-name");
-
-        // Email
-        Label emailLabel = new Label("bob.dylan@gmail.com");
-        emailLabel.getStyleClass().add("profile-email");
-
-        profileBox.getChildren().addAll(profilePic, nameLabel, emailLabel);
-        return profileBox;
-    }
-
-    // navigation menu
-    private VBox createNavigation() {
-        VBox navBox = new VBox(0);
-        navBox.getStyleClass().add("navigation");
-
-        Button dashboardBtn = createNavButton("Dashboard", "📊", false);
-        Button mealTrackerBtn = createNavButton("Meal Tracker", "🍴", false);
-        Button activityTrackerBtn = createNavButton("Activity Tracker", "🏃", false);
-        Button settingsBtn = createNavButton("Settings", "⚙", true);  // Active
-        Button notificationsBtn = createNavButton("Notifications", "🔔", false);
-
-        navBox.getChildren().addAll(
-                dashboardBtn,
-                mealTrackerBtn,
-                activityTrackerBtn,
-                settingsBtn,
-                notificationsBtn
-        );
-
-        return navBox;
-    }
-
-    // navigation button
-    private Button createNavButton(String text, String icon, boolean isActive) {
-        Button button = new Button(icon + "  " + text);
-        button.getStyleClass().add("nav-item");
-        if (isActive) {
-            button.getStyleClass().add("nav-item-active");
-        }
-        button.setMaxWidth(Double.MAX_VALUE);
-        button.setAlignment(Pos.CENTER_LEFT);
-        return button;
-    }
-
-    // content area = header + 3 sections + delete account button
+    // content area = header + 3 sections + delete account button + save
     private VBox createContentArea() {
         VBox content = new VBox(30);
         content.getStyleClass().add("content-area");
@@ -165,7 +112,7 @@ public class SettingsView {
         headerTitle.getStyleClass().add("content-header");
         headerTitle.setWrapText(true);
 
-        // Three main sections
+        // Sections
         VBox personalDetailsSection = createPersonalDetailsSection();
         VBox biometricsSection = createBiometricsSection();
         VBox goalsSection = createGoalsSection();
@@ -175,23 +122,59 @@ public class SettingsView {
         deleteAccountBtn.getStyleClass().add("delete-account-button");
         deleteAccountBtn.setOnAction(e -> handleDeleteAccount());
 
-        HBox deleteBox = new HBox();
-        deleteBox.setAlignment(Pos.CENTER);
-        deleteBox.setPadding(new Insets(20, 0, 0, 0));
-        deleteBox.getChildren().add(deleteAccountBtn);
+        // Save Settings button
+        saveButton = new Button("Save");
+        saveButton.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 14));
+        saveButton.setTextFill(Color.web("white"));
+        saveButton.setStyle("-fx-background-color: #27692A;" +
+                "    -fx-padding: 14px 40px;" +
+                "    -fx-background-radius: 25px;" +
+                "    -fx-cursor: hand;" +
+                "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.3), 10, 0, 0, 4);");
+        saveButton.setOnMouseClicked(e -> {
+                saveButton.setStyle("-fx-background-color: #205425;" +
+                        "    -fx-padding: 14px 40px;" +
+                        "    -fx-background-radius: 25px;" +
+                        "    -fx-cursor: hand;" +
+                        "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 15, 0, 0, 6);"
+                );
+        });
+        saveButton.setOnMouseEntered(e -> {
+            saveButton.setStyle("-fx-background-color: #205425;" +
+                    "    -fx-padding: 14px 40px;" +
+                    "    -fx-background-radius: 25px;" +
+                    "    -fx-cursor: hand;" +
+                    "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 15, 0, 0, 6);"
+            );
+        });
+        saveButton.setOnMouseExited(e -> {
+            saveButton.setStyle("-fx-background-color: #27692A;" +
+                    "    -fx-padding: 14px 40px;" +
+                    "    -fx-background-radius: 25px;" +
+                    "    -fx-cursor: hand;" +
+                    "    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 15, 0, 0, 6);"
+            );
+        });
+
+        saveButton.setOnAction(e -> saveSettings());
+
+        HBox buttonArea = new HBox(20);
+        buttonArea.setAlignment(Pos.CENTER);
+        buttonArea.setPadding(new Insets(20, 20, 0, 0));
+        buttonArea.getChildren().addAll(deleteAccountBtn, saveButton);
 
         content.getChildren().addAll(
                 headerTitle,
                 personalDetailsSection,
                 biometricsSection,
                 goalsSection,
-                deleteBox
+                buttonArea
         );
 
         return content;
     }
 
-    // personal details section
+    // Personal details section (uses displayName + email)
     private VBox createPersonalDetailsSection() {
         VBox section = new VBox(20);
         section.getStyleClass().add("form-section");
@@ -204,30 +187,29 @@ public class SettingsView {
         grid.setHgap(20);
         grid.setVgap(15);
 
-        // Row 1: Full Name and Email
         Label fullNameLabel = new Label("Full Name");
         fullNameLabel.getStyleClass().add("field-label");
-        fullNameField = new TextField("Bob Dylan");
+        fullNameField = new TextField(displayName);
         fullNameField.getStyleClass().add("form-field");
 
         Label emailLabel = new Label("Email");
         emailLabel.getStyleClass().add("field-label");
-        emailField = new TextField("bob.dylan@gmail.com");
+        emailField = new TextField(email);
         emailField.getStyleClass().addAll("form-field", "disabled-field");
         emailField.setDisable(true);
 
-        // Row 2: Phone Number and Billing Address
         Label phoneLabel = new Label("Phone Number");
         phoneLabel.getStyleClass().add("field-label");
-        phoneField = new TextField("+1 477 466 3344");
+        phoneField = new TextField("");
+        phoneField.setPromptText("Enter your phone number");
         phoneField.getStyleClass().add("form-field");
 
         Label billingLabel = new Label("Billing Address");
         billingLabel.getStyleClass().add("field-label");
-        billingAddressField = new TextField("st. Fake Address");
+        billingAddressField = new TextField();
+        billingAddressField.setPromptText("Enter your billing address");
         billingAddressField.getStyleClass().add("form-field");
 
-        // Add to grid
         grid.add(fullNameLabel, 0, 0);
         grid.add(fullNameField, 0, 1);
         grid.add(emailLabel, 1, 0);
@@ -237,7 +219,6 @@ public class SettingsView {
         grid.add(billingLabel, 1, 2);
         grid.add(billingAddressField, 1, 3);
 
-        // Make columns equal width
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
         ColumnConstraints col2 = new ColumnConstraints();
@@ -245,11 +226,10 @@ public class SettingsView {
         grid.getColumnConstraints().addAll(col1, col2);
 
         section.getChildren().addAll(sectionTitle, grid);
-
         return section;
     }
 
-    // Biometrics section
+    // Biometrics section (pre-filled from currentProfile if available)
     private VBox createBiometricsSection() {
         VBox section = new VBox(20);
         section.getStyleClass().add("form-section");
@@ -265,25 +245,30 @@ public class SettingsView {
         // Row 1: Age and Height
         Label ageLabel = new Label("Age");
         ageLabel.getStyleClass().add("field-label");
-        ageField = new TextField("24");
+        Integer ageVal = (currentProfile != null) ? currentProfile.getAgeYears() : null;
+        ageField = new TextField(ageVal != null ? String.valueOf(ageVal) : "24");
         ageField.getStyleClass().add("form-field");
 
         Label heightLabel = new Label("Height (cm)");
         heightLabel.getStyleClass().add("field-label");
-        heightField = new TextField("175");
+        Double heightVal = (currentProfile != null) ? currentProfile.getHeightCm() : null;
+        heightField = new TextField(heightVal != null ? String.valueOf(heightVal) : "175");
         heightField.getStyleClass().add("form-field");
 
         // Row 2: Weight and Gender
         Label weightLabel = new Label("Weight (kg)");
         weightLabel.getStyleClass().add("field-label");
-        weightField = new TextField("82");
+        Double weightVal = (currentProfile != null) ? currentProfile.getWeightKg() : null;
+        weightField = new TextField(weightVal != null ? String.valueOf(weightVal) : "82");
         weightField.getStyleClass().add("form-field");
 
         Label genderLabel = new Label("Gender");
         genderLabel.getStyleClass().add("field-label");
         genderCombo = new ComboBox<>();
         genderCombo.getItems().addAll("Male", "Female", "Other", "Prefer not to say");
-        genderCombo.setValue("Male");
+        genderCombo.setValue(
+                currentProfile != null ? mapSexToCombo(currentProfile.getSex()) : "Male"
+        );
         genderCombo.getStyleClass().add("form-combo");
         genderCombo.setMaxWidth(Double.MAX_VALUE);
 
@@ -298,14 +283,36 @@ public class SettingsView {
                 "Very Active",
                 "Extremely Active"
         );
-        activityLevelCombo.setValue("Moderately Active");
+
+        Double metVal = null;
+        if (currentProfile != null) {
+            // getActivityLevelMET() is a Double (nullable)
+            metVal = currentProfile.getActivityLevelMET();
+        }
+        String activityInitial = mapMETToActivityLevel(metVal);
+        activityLevelCombo.setValue(activityInitial);
         activityLevelCombo.getStyleClass().add("form-combo");
         activityLevelCombo.setMaxWidth(Double.MAX_VALUE);
 
         Label dietLabel = new Label("Diet");
         dietLabel.getStyleClass().add("field-label");
-        dietField = new TextField("Vegan");
-        dietField.getStyleClass().add("form-field");
+
+        dietCombo = new ComboBox<>();
+        dietCombo.getItems().addAll(
+                "None",
+                "Vegetarian",
+                "Vegan",
+                "Pescetarian",
+                "Gluten Free",
+                "Dairy Free",
+                "Halal",
+                "Kosher"
+        );
+
+        DietPreference dietPref = (currentProfile != null) ? currentProfile.getDietPreference() : null;
+        dietCombo.setValue(mapDietPreferenceToString(dietPref));
+        dietCombo.getStyleClass().add("form-combo");
+        dietCombo.setMaxWidth(Double.MAX_VALUE);
 
         // Add to grid
         grid.add(ageLabel, 0, 0);
@@ -319,9 +326,8 @@ public class SettingsView {
         grid.add(activityLabel, 0, 4);
         grid.add(activityLevelCombo, 0, 5);
         grid.add(dietLabel, 1, 4);
-        grid.add(dietField, 1, 5);
+        grid.add(dietCombo, 1, 5);
 
-        // Make columns equal width
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
         ColumnConstraints col2 = new ColumnConstraints();
@@ -332,7 +338,27 @@ public class SettingsView {
         return section;
     }
 
-    // goals section
+    /**
+     * Map DietPreference enum to user-friendly string
+     */
+    private String mapDietPreferenceToString(DietPreference pref) {
+        if (pref == null) return "None";
+
+        switch (pref) {
+            case VEGETARIAN: return "Vegetarian";
+            case VEGAN: return "Vegan";
+            case PESCETARIAN: return "Pescetarian";
+            case GLUTEN_FREE: return "Gluten Free";
+            case DAIRY_FREE: return "Dairy Free";
+            case HALAL: return "Halal";
+            case KOSHER: return "Kosher";
+            case NONE:
+            default:
+                return "None";
+        }
+    }
+
+    // Goals section (pre-filled from currentProfile if available)
     private VBox createGoalsSection() {
         VBox section = new VBox(20);
         section.getStyleClass().add("form-section");
@@ -345,12 +371,14 @@ public class SettingsView {
         grid.setHgap(20);
         grid.setVgap(15);
 
-        // Row 1: Target Weight and Daily Calorie Target
         Label targetWeightLabel = new Label("Target Weight");
         targetWeightLabel.getStyleClass().add("field-label");
 
         HBox targetWeightBox = new HBox(10);
-        targetWeightField = new TextField("82");
+        Double targetVal = (currentProfile != null) ? currentProfile.getTargetWeightKg() : null;
+        targetWeightField = new TextField(
+                targetVal != null ? String.valueOf(targetVal) : "82"
+        );
         targetWeightField.getStyleClass().add("form-field");
         Label kgLabel = new Label("kg");
         kgLabel.getStyleClass().add("unit-label");
@@ -359,10 +387,18 @@ public class SettingsView {
 
         Label dailyCalorieLabel = new Label("Daily Calorie Target");
         dailyCalorieLabel.getStyleClass().add("field-label");
-        dailyCalorieField = new TextField("2200");
+
+        Optional<Double> caloriesOpt =
+                (currentProfile != null && currentProfile.getDailyCalorieTarget() != null)
+                        ? currentProfile.getDailyCalorieTarget()
+                        : Optional.empty();
+        Double caloriesVal = caloriesOpt.orElse(null);
+
+        dailyCalorieField = new TextField(
+                caloriesVal != null ? String.valueOf(caloriesVal) : "2200"
+        );
         dailyCalorieField.getStyleClass().add("form-field");
 
-        // Row 2: Goal and Daily Activity Target
         Label goalLabel = new Label("Goal");
         goalLabel.getStyleClass().add("field-label");
         goalCombo = new ComboBox<>();
@@ -372,7 +408,11 @@ public class SettingsView {
                 "Gain Weight",
                 "Build Muscle"
         );
-        goalCombo.setValue("Maintain Weight");
+        goalCombo.setValue(
+                currentProfile != null
+                        ? mapGoalEnumToString(currentProfile.getGoal())
+                        : "Maintain Weight"
+        );
         goalCombo.getStyleClass().add("form-combo");
         goalCombo.setMaxWidth(Double.MAX_VALUE);
 
@@ -381,7 +421,6 @@ public class SettingsView {
         dailyActivityField = new TextField("2 hours");
         dailyActivityField.getStyleClass().add("form-field");
 
-        // Add to grid
         grid.add(targetWeightLabel, 0, 0);
         grid.add(targetWeightBox, 0, 1);
         grid.add(dailyCalorieLabel, 1, 0);
@@ -391,7 +430,6 @@ public class SettingsView {
         grid.add(dailyActivityLabel, 1, 2);
         grid.add(dailyActivityField, 1, 3);
 
-        // Make columns equal width
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
         ColumnConstraints col2 = new ColumnConstraints();
@@ -400,21 +438,6 @@ public class SettingsView {
 
         section.getChildren().addAll(sectionTitle, grid);
         return section;
-    }
-
-    // EVENT HANDLERS
-    private void handleLogout() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Log Out");
-        alert.setHeaderText("Are you sure you want to log out?");
-        alert.setContentText("You will need to log in again to access your account.");
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                // TODO: Navigate to login screen
-                System.out.println("Logging out...");
-            }
-        });
     }
 
     private void handleDeleteAccount() {
@@ -435,35 +458,173 @@ public class SettingsView {
         });
     }
 
-    /**
-     * Returns the scene for this view
-     */
     public Scene getScene() {
         return scene;
     }
 
-    /**
-     * Public method to get form values (for saving)
-     */
-    public void saveSettings() {
-        // TODO: Collect all values and call UpdateUserSettingsUseCase
-        String fullName = fullNameField.getText();
-        String phone = phoneField.getText();
-        String billingAddress = billingAddressField.getText();
+    // --- mapping helpers ---
 
-        int age = Integer.parseInt(ageField.getText());
-        int height = Integer.parseInt(heightField.getText());
-        int weight = Integer.parseInt(weightField.getText());
-        String gender = genderCombo.getValue();
-        String activityLevel = activityLevelCombo.getValue();
-        String diet = dietField.getText();
-
-        int targetWeight = Integer.parseInt(targetWeightField.getText());
-        int dailyCalorie = Integer.parseInt(dailyCalorieField.getText());
-        String goal = goalCombo.getValue();
-        String dailyActivity = dailyActivityField.getText();
-
-        System.out.println("Saving settings...");
-        // updateSettingsUseCase.execute(new UpdateSettingsRequest(...));
+    private String mapSexToCombo(Sex sex) {
+        if (sex == null) return "Other";
+        switch (sex) {
+            case MALE:
+                return "Male";
+            case FEMALE:
+                return "Female";
+            case OTHER:
+            default:
+                return "Other";
+        }
     }
+
+    private String mapMETToActivityLevel(Double met) {
+        if (met == null) {
+            return "Moderately Active"; // default for blank profiles
+        }
+        if (met <= 1.2) return "Sedentary";
+        if (met <= 1.375) return "Lightly Active";
+        if (met <= 1.55) return "Moderately Active";
+        if (met <= 1.725) return "Very Active";
+        return "Extremely Active";
+    }
+
+    private String mapGoalEnumToString(Goal goal) {
+        if (goal == null) return "Maintain Weight";
+        switch (goal) {
+            case WEIGHT_LOSS:
+                return "Lose Weight";
+            case WEIGHT_GAIN:
+                return "Gain Weight";
+            case MUSCLE_GAIN:
+                return "Build Muscle";
+            case GENERAL_HEALTH:
+            default:
+                return "Maintain Weight";
+        }
+    }
+
+    private Sex mapGenderToSex(String gender) {
+        if (gender == null) return Sex.OTHER;
+        switch (gender.toLowerCase()) {
+            case "male":
+                return Sex.MALE;
+            case "female":
+                return Sex.FEMALE;
+            case "other":
+            case "prefer not to say":
+            default:
+                return Sex.OTHER;
+        }
+    }
+
+    private Goal mapGoalStringToEnum(String goalText) {
+        if (goalText == null) return Goal.GENERAL_HEALTH;
+        switch (goalText.toLowerCase()) {
+            case "lose weight":
+                return Goal.WEIGHT_LOSS;
+            case "gain weight":
+                return Goal.WEIGHT_GAIN;
+            case "build muscle":
+                return Goal.MUSCLE_GAIN;
+            case "maintain weight":
+            default:
+                return Goal.GENERAL_HEALTH;
+        }
+    }
+
+    private DietPreference mapDietToDietPreference(String dietText) {
+        if (dietText == null) return DietPreference.NONE;
+        switch (dietText.trim().toLowerCase()) {
+            case "none":          return DietPreference.NONE;
+            case "vegetarian":    return DietPreference.VEGETARIAN;
+            case "vegan":         return DietPreference.VEGAN;
+            case "pescetarian":   return DietPreference.PESCETARIAN;
+            case "gluten free":   return DietPreference.GLUTEN_FREE;
+            case "dairy free":    return DietPreference.DAIRY_FREE;
+            case "halal":         return DietPreference.HALAL;
+            case "kosher":        return DietPreference.KOSHER;
+            default:
+                System.out.println("Unknown diet preference: " + dietText);
+                return DietPreference.NONE;
+        }
+    }
+
+    private double mapActivityLevelToMET(String level) {
+        if (level == null) return 1.2;
+        switch (level) {
+            case "Sedentary":
+                return 1.2;
+            case "Lightly Active":
+                return 1.375;
+            case "Moderately Active":
+                return 1.55;
+            case "Very Active":
+                return 1.725;
+            case "Extremely Active":
+                return 1.9;
+            default:
+                return 1.2;
+        }
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    /**
+     * Collect form values and call UpdateUser use case via controller.
+     */
+    private void saveSettings() {
+        try {
+            // Read text fields
+            int age = Integer.parseInt(ageField.getText());
+            double height = Double.parseDouble(heightField.getText());
+            double weight = Double.parseDouble(weightField.getText());
+            double targetWeight = Double.parseDouble(targetWeightField.getText());
+            double dailyCalories = Double.parseDouble(dailyCalorieField.getText());
+
+            // Read dropdowns
+            Sex sex = mapGenderToSex(genderCombo.getValue());
+            DietPreference dietPref = mapDietToDietPreference(dietCombo.getValue());
+            Goal goal = mapGoalStringToEnum(goalCombo.getValue());
+            double activityLevel = mapActivityLevelToMET(activityLevelCombo.getValue());
+
+            // Create updated profile
+            Profile updatedProfile = new Profile(
+                    null,                // userId
+                    weight,              // weightKg
+                    height,              // heightCm
+                    age,                 // ageYears
+                    sex,                 // sex
+                    goal,                // goal
+                    activityLevel,         // activityLevelMET
+                    targetWeight,        // targetWeightKg
+                    Optional.of(dailyCalories),     // dailyCalorieTarget
+                    HealthCondition.NONE,     // healthCondition   (10)
+                    dietPref       // dietPreference    (11)
+            );
+
+            // Pass to controller
+            updateUserController.updateUser(updatedProfile);
+
+            // Notify user
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText("Profile Updated");
+            alert.setContentText("Your settings have been saved.");
+            alert.show();
+
+        } catch (Exception ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not save settings");
+            alert.setContentText(ex.getMessage());
+            alert.show();
+        }
+    }
+
 }

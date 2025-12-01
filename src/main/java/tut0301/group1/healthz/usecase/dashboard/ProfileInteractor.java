@@ -1,17 +1,12 @@
 package tut0301.group1.healthz.usecase.dashboard;
 
-import java.util.NoSuchElementException;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
 
 public class ProfileInteractor implements ProfileInputBoundary {
-    private final UserDataGateway gateway;
+    private final UserDataDataAccessInterface userDataDataAccessInterface;
 
-    public ProfileInteractor(UserDataGateway gateway) {
-        this.gateway = gateway;
-    }
-
-    @Override
-    public void createProfile(Profile profile) {
-        throw new UnsupportedOperationException("createProfile not implemented yet");
+    public ProfileInteractor(UserDataDataAccessInterface userDataDataAccessInterface) {
+        this.userDataDataAccessInterface = userDataDataAccessInterface;
     }
 
     @Override
@@ -23,9 +18,9 @@ public class ProfileInteractor implements ProfileInputBoundary {
     public Profile getProfile(String userId) {
         try {
             // If missing, create a blank row (via Supabase defaults) and return it.
-            return gateway.loadCurrentUserProfile()
+            return userDataDataAccessInterface.loadCurrentUserProfile()
                     .orElseGet(() -> {
-                        try { return gateway.createBlankForCurrentUserIfMissing(); }
+                        try { return userDataDataAccessInterface.createBlankForCurrentUserIfMissing(); }
                         catch (Exception e) { throw new RuntimeException(e); }
                     });
         } catch (RuntimeException e) {
@@ -35,4 +30,3 @@ public class ProfileInteractor implements ProfileInputBoundary {
         }
     }
 }
-

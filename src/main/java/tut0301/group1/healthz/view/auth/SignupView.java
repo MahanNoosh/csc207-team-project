@@ -1,3 +1,4 @@
+
 package tut0301.group1.healthz.view.auth;
 
 import javafx.geometry.Insets;
@@ -8,17 +9,14 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthGateway;
+import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataGateway;
-import tut0301.group1.healthz.interfaceadapter.auth.mapping.SignupProfileMapper;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupPresenter;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 import tut0301.group1.healthz.usecase.auth.signup.SignupInputBoundary;
 import tut0301.group1.healthz.usecase.auth.signup.SignupInteractor;
-import tut0301.group1.healthz.usecase.dashboard.Profile;
 import tut0301.group1.healthz.view.auth.signuppanels.*;
 import tut0301.group1.healthz.interfaceadapter.auth.signup.SignupController;
 import java.util.List;
@@ -49,8 +47,23 @@ public class SignupView {
 
     public SignupView() {
         signupData = new SignupData();
-        root = createMainLayout();
-        scene = new Scene(root, 900, 700);
+        BorderPane mainLayout = createMainLayout();
+
+        ScrollPane scrollPane = new ScrollPane(mainLayout);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(false);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setStyle(
+                "-fx-background: #F8FBF5; " +
+                        "-fx-background-color: #F8FBF5; " +
+                        "-fx-border-width: 0;"
+        );
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setPannable(true);
+        scrollPane.setVvalue(0);
+
+        scene = new Scene(scrollPane, 1280, 900);
 
         showStep(1);
     }
@@ -131,7 +144,7 @@ public class SignupView {
                 if (step6Panel == null) {
                     step6Panel = new Step6Panel(signupData);
                 }
-                step6Panel.updateGoalWeightFromData(); // Auto-fill
+                step6Panel.updateGoalWeightFromData();
                 stepPanel = step6Panel.getPanel();
                 break;
             case 7:
@@ -240,7 +253,7 @@ public class SignupView {
 
         nextButton.setOnMouseExited(e ->
                 nextButton.setStyle(
-                        "-fx-background-color: #059669; " +
+                        "-fx-background-color: #27692A; " +
                                 "-fx-text-fill: white; " +
                                 "-fx-font-size: 14px; " +
                                 "-fx-font-weight: 600; " +
@@ -298,10 +311,10 @@ public class SignupView {
                 return signupData.activityLevel != null;
             case 4:
                 signupData.dietaryRestrictions = step4Panel.getSelectedDiets();
-                return true; // Optional
+                return true;
             case 5:
                 signupData.medicalConsiderations = step5Panel.getMedicalInfo();
-                return true; // Optional
+                return true;
             case 6:
                 signupData.sex = step6Panel.getSex();
                 signupData.dateOfBirth = step6Panel.getDateOfBirth();
@@ -326,26 +339,50 @@ public class SignupView {
         System.out.println("Name: " + signupData.fullName);
         System.out.println("Email: " + signupData.email);
         System.out.println("Goal: " + signupData.goal);
-        // ... etc
 
-        // TODO: Call SignupController here
-        var signupVM = new SignupViewModel();
-        var signupPresenter = new SignupPresenter(this, signupVM);
-        String url  = System.getenv("SUPABASE_URL");
+        // Get environment variables
+        String url = System.getenv("SUPABASE_URL");
         String anon = System.getenv("SUPABASE_ANON_KEY");
         if (url == null || anon == null) {
-            System.err.println("Set SUPABASE_URL and SUPABASE_ANON_KEY");
-            System.exit(1);
+            showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
+            return;
         }
-        var client = new SupabaseClient(url, anon);
-        AuthGateway authGateway = new SupabaseAuthGateway(client);
-        SignupInputBoundary signupUC = new SignupInteractor(authGateway, signupPresenter);
-        SignupController signupController = new SignupController(signupUC, signupPresenter);
-        signupController.signup(signupData.email, signupData.password, signupData.confirmPassword, signupData.fullName);
 
-        Navigator.getInstance().showEmailVerification(signupData);
+        // Create Clean Architecture components
+        SignupViewModel signupVM = new SignupViewModel();
+        SignupPresenter signupPresenter = new SignupPresenter(signupVM);
 
-        showSuccess("Account created successfully!");
+        SupabaseClient client = new SupabaseClient(url, anon);
+        AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
+
+        SignupInputBoundary signupInteractor = new SignupInteractor(authGateway, signupPresenter);
+        SignupController signupController = new SignupController(signupInteractor, signupPresenter);
+
+        // Call signup
+        signupController.signup(
+                signupData.email,
+                signupData.password,
+                signupData.confirmPassword,
+                signupData.fullName
+        );
+
+        // Wait a moment for async processing
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            // ignore
+        }
+
+        // Check if signup was successful
+        if (signupVM.isSignupSuccessful()) {
+            System.out.println("Signup successful! Showing email verification...");
+            Navigator.getInstance().showEmailVerification(signupData);
+        } else {
+            // Show error and stay on signup page
+            String errorMsg = signupVM.getErrorMessage();
+            System.err.println("Signup failed: " + errorMsg);
+            showError(errorMsg != null ? errorMsg : "Signup failed. Please try again.");
+        }
     }
 
     // show error
@@ -373,7 +410,7 @@ public class SignupView {
     // data class for storing sign up info
     public static class SignupData {
         String fullName;
-        public String goal;  // you had this public already
+        public String goal;
         String activityLevel;
         List<String> dietaryRestrictions;
         String medicalConsiderations;
@@ -386,7 +423,7 @@ public class SignupView {
         String password;
         String confirmPassword;
 
-        // --- getters (you can add more as needed) ---
+        // getters
 
         public String getFullName() {
             return fullName;
@@ -440,8 +477,6 @@ public class SignupView {
             return confirmPassword;
         }
     }
-
-
 
     public void display(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

@@ -27,17 +27,29 @@ public class Step7Panel {
         title.setTextFill(Color.web("#111827"));
         title.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-        emailField = (TextField) createStyledField("Email address", false);
-        passwordField = (PasswordField) createStyledField("Create a password", true);
-        confirmPasswordField = (PasswordField) createStyledField("Confirm password", true);
+        VBox emailBox = createLabeledField("Email address", false);
+        emailField = (TextField) emailBox.getUserData();
 
-        container.getChildren().addAll(title, emailField, passwordField, confirmPasswordField);
+        VBox passwordBox = createLabeledField("Create a password", true);
+        passwordField = (PasswordField) passwordBox.getUserData();
+
+        VBox confirmPasswordBox = createLabeledField("Confirm password", true);
+        confirmPasswordField = (PasswordField) confirmPasswordBox.getUserData();
+
+        container.getChildren().addAll(title, emailBox, passwordBox, confirmPasswordBox);
         return container;
     }
 
-    private Control createStyledField(String prompt, boolean isPassword) {
+    private VBox createLabeledField(String labelText, boolean isPassword) {
+        VBox fieldBox = new VBox(8);
+        fieldBox.setAlignment(Pos.TOP_LEFT);
+
+        Label label = new Label(labelText);
+        label.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 14));
+        label.setTextFill(Color.web("#374151"));
+
         Control field = isPassword ? new PasswordField() : new TextField();
-        ((TextInputControl) field).setPromptText(prompt);
+        ((TextInputControl) field).setPromptText(labelText);
         field.setPrefHeight(55);
         field.setStyle(
                 "-fx-background-color: white; " +
@@ -47,7 +59,12 @@ public class Step7Panel {
                         "-fx-font-size: 16px; " +
                         "-fx-padding: 10px 15px;"
         );
-        return field;
+
+        fieldBox.getChildren().addAll(label, field);
+
+        fieldBox.setUserData(field);
+
+        return fieldBox;
     }
 
     public String getEmail() {
