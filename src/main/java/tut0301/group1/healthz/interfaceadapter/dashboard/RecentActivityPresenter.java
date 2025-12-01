@@ -1,32 +1,27 @@
-package tut0301.group1.healthz.interfaceadapter.activity;
+package tut0301.group1.healthz.interfaceadapter.dashboard;
 
-import javafx.scene.control.Label;
 import tut0301.group1.healthz.entities.Dashboard.ActivityEntry;
-import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogLoadOutputBoundary;
-import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogLoadOutputData;
+import tut0301.group1.healthz.interfaceadapter.activity.ActivityItem;
 import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderInputBoundary;
+import tut0301.group1.healthz.usecase.activity.recent.RecentActivityOutputBoundary;
+import tut0301.group1.healthz.usecase.activity.recent.RecentActivityOutputData;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class ActivityLogLoadPresenter implements ActivityLogLoadOutputBoundary {
-    private final ActivityHistoryViewModel viewModel;
+public class RecentActivityPresenter implements RecentActivityOutputBoundary {
+    private final RecentActivityViewModel viewModel;
     private final ExerciseFinderInputBoundary exerciseFinderInteractor;
 
-    public ActivityLogLoadPresenter(ActivityHistoryViewModel viewModel, ExerciseFinderInputBoundary exerciseFinderInteractor) {
+    public RecentActivityPresenter(RecentActivityViewModel viewModel, ExerciseFinderInputBoundary exerciseFinderInteractor) {
         this.viewModel = viewModel;
         this.exerciseFinderInteractor = exerciseFinderInteractor;
     }
-
     @Override
-    public void prepareFailView(String failedToLoadActivityLogs) {
+    public void presentRecentActivities(RecentActivityOutputData outputData) {
+        List<ActivityEntry> logs = outputData.getRecentActivities();
 
-    }
-
-    @Override
-    public void presentActivityLogs(ActivityLogLoadOutputData activityLogLoadOutputData) {
-        List<ActivityEntry> logs = activityLogLoadOutputData.getLogs();
-
+        // Convert to ViewModel items
         List<ActivityItem> items = logs.stream()
                 .map(entry -> {
                     try {
@@ -43,6 +38,13 @@ public class ActivityLogLoadPresenter implements ActivityLogLoadOutputBoundary {
                 })
                 .toList();
 
-        viewModel.setHistory(items);
+        // Update the UI model
+        viewModel.setRecent(items);
+
+    }
+
+    @Override
+    public void prepareFailView(String error) {
+        System.err.println("❌ " + error);
     }
 }
