@@ -380,39 +380,16 @@ public class FavoriteRecipeView {
         nameLabel.setTextFill(Color.web("#111827"));
         nameLabel.setWrapText(true);
 
-        // Ingredients preview (first 3)
-        String ingredientsText = "";
-        if (!recipe.getIngredients().isEmpty()) {
-            int count = Math.min(3, recipe.getIngredients().size());
-            List<String> ingredientNames = new ArrayList<>();
-            for (int i = 0; i < count; i++) {
-                ingredientNames.add(recipe.getIngredients().get(i).getName());
-            }
-            ingredientsText = String.join(", ", ingredientNames);
-            if (recipe.getIngredients().size() > 3) {
-                ingredientsText += "...";
-            }
-        }
-
-        Label ingredientsLabel = new Label(ingredientsText);
-        ingredientsLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
-        ingredientsLabel.setTextFill(Color.web("#6B7280"));
-        ingredientsLabel.setWrapText(true);
-        ingredientsLabel.setMaxHeight(50);
-
         // Stats
         HBox stats = new HBox(20);
         stats.setAlignment(Pos.CENTER_LEFT);
 
-        Label ingredientCount = new Label("📋 " + recipe.getIngredients().size() + " ingredients");
-        ingredientCount.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
-
         Label servings = new Label("👥 " + recipe.getServings().orElse(1) + " servings");
         servings.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
 
-        stats.getChildren().addAll(ingredientCount, servings);
+        stats.getChildren().addAll(servings);
 
-        content.getChildren().addAll(nameLabel, ingredientsLabel, stats);
+        content.getChildren().addAll(nameLabel, stats);
         card.getChildren().addAll(imageContainer, content);
 
         // Click to view details
