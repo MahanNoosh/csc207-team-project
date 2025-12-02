@@ -1,0 +1,39 @@
+package tut0301.group1.healthz.usecase.activity.activitylog;
+
+import tut0301.group1.healthz.entities.Dashboard.ActivityEntry;
+import tut0301.group1.healthz.entities.Dashboard.Profile;
+
+import java.time.DayOfWeek;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Interface for accessing and persisting activity logs.
+ */
+public interface ActivityLogDataAccessInterface {
+
+    /**
+     * Saves a new activity entry for a given user profile.
+     *
+     * @param entry   The activity entry to save.
+     * @param profile The profile associated with the activity.
+     * @throws Exception if saving fails.
+     */
+    void saveActivityLog(ActivityEntry entry, Profile profile) throws Exception;
+
+    /**
+     * Retrieves all activity entries for the current user.
+     *
+     * @return A list of ActivityEntry objects.
+     * @throws Exception if retrieval fails.
+     */
+    List<ActivityEntry> getActivitiesForUser() throws Exception;
+
+    /**
+     * Returns a summary of activity duration (in minutes or METs) by day of the week.
+     *
+     * @return A map of DayOfWeek to activity total.
+     * @throws Exception if calculation fails.
+     */
+    Map<DayOfWeek, Double> getWeeklyActivitySummary() throws Exception;
+}

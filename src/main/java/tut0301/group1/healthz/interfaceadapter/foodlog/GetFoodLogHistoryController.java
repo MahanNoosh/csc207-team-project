@@ -1,0 +1,37 @@
+package tut0301.group1.healthz.interfaceadapter.foodlog;
+
+import java.time.LocalDate;
+
+import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInputBoundary;
+import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInputData;
+
+/**
+ * Controller for Get Food Log History functionality.
+ * Responsible for handling user requests to retrieve food log history
+ * and converting them into use case input.
+ * Clean Architecture compliance:
+ * - Controller (Interface Adapter layer) depends on InputBoundary (Use Case layer interface)
+ * - Controller converts user requests into InputData format
+ * - Controller does not know about Presenter or ViewModel
+ */
+public class GetFoodLogHistoryController {
+    private final GetFoodLogHistoryInputBoundary interactor;
+
+    public GetFoodLogHistoryController(GetFoodLogHistoryInputBoundary interactor) {
+        if (interactor == null) {
+            throw new IllegalArgumentException("Interactor cannot be null");
+        }
+        this.interactor = interactor;
+    }
+
+    /**
+     * Execute the use case to retrieve food log history for a specific user and date.
+     *
+     * @param userId The ID of the user
+     * @param date The date to retrieve logs for
+     */
+    public void execute(String userId, LocalDate date) {
+        final GetFoodLogHistoryInputData inputData = new GetFoodLogHistoryInputData(userId, date);
+        interactor.execute(inputData);
+    }
+}
