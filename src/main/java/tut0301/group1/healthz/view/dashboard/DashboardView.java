@@ -21,7 +21,6 @@ import tut0301.group1.healthz.interfaceadapter.dashboard.WeeklySummaryViewModel;
 import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryController;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
-import tut0301.group1.healthz.interfaceadapter.activity.ActivityHistoryViewModel;
 import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryViewModel;
 
 import java.beans.PropertyChangeEvent;
@@ -735,15 +734,15 @@ public VBox createActivityTrackerWidget() {
 
         for (ActivityItem log : logs) {
             VBox entryBox = new VBox(5);
-            Label title = new Label("Activity: " + log.getName());
+            Label title = new Label("Activity: " + log.name());
             title.setFont(Font.font("Inter", FontWeight.BOLD, 18));
 
-            Label details = new Label(String.format(log.getDuration() + " min · " + log.getCalories() + " cal"));
+            Label details = new Label(String.format(log.duration() + " min · " + log.calories() + " cal"));
 
             details.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
             details.setTextFill(Color.web("#27692A"));
 
-            Label date = new Label(log.getDate());
+            Label date = new Label(log.date());
             date.setTextFill(Color.web("#6B7280"));
 
             entryBox.getChildren().addAll(title, details, date);
