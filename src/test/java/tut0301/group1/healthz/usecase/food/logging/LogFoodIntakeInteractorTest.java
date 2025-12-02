@@ -4,6 +4,7 @@ import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.entities.nutrition.ServingInfo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -73,15 +74,15 @@ public class LogFoodIntakeInteractorTest {
     }
 
     // Capturing gateway to verify saves
-    private static class CapturingGateway implements FoodLogGateway {
+    private static class CapturingGateway implements FoodLogDataAccessInterface {
         private final List<FoodLog> savedLogs = new ArrayList<>();
         private final List<String> savedUserIds = new ArrayList<>();
         private boolean shouldThrowException = false;
 
         @Override
-        public void saveFoodLog(String userId, FoodLog foodLog) {
+        public void saveFoodLog(String userId, FoodLog foodLog) throws IOException {
             if (shouldThrowException) {
-                throw new RuntimeException("Database connection failed");
+                throw new IOException("Database connection failed");
             }
             savedLogs.add(foodLog);
             savedUserIds.add(userId);
@@ -247,6 +248,151 @@ public class LogFoodIntakeInteractorTest {
             assertEquals(10.0, savedLog.getActualMacro().proteinG(), 0.001);
             assertEquals(4.0, savedLog.getActualMacro().fatG(), 0.001);
             assertEquals(40.0, savedLog.getActualMacro().carbsG(), 0.001);
+            passed++;
+        } catch (AssertionError e) { failed++; }
+
+        // Test 6: InputData validation - all IllegalArgumentException cases
+        try {
+            ServingInfo serving = new ServingInfo(
+                1001, "100 g", 100.0, "g",
+                52.0, 0.3, 0.2, 14.0,
+                null, null, null
+            );
+            FoodDetails apple = new FoodDetails(
+                1, "Apple", "Generic", null,
+                "http://example.com/apple",
+                Collections.singletonList(serving)
+            );
+
+            // Test null userId
+            boolean exceptionThrown = false;
+            try {
+                new LogFoodIntakeInputData(null, apple, serving, 1.0, "Breakfast");
+            } catch (IllegalArgumentException e) {
+                exceptionThrown = true;
+                assertTrue(e.getMessage().contains("User ID cannot be null or empty"));
+            }
+            assertTrue(exceptionThrown);
+
+            // Test blank userId
+            exceptionThrown = false;
+            try {
+                new LogFoodIntakeInputData("", apple, serving, 1.0, "Breakfast");
+            } catch (IllegalArgumentException e) {
+                exceptionThrown = true;
+                assertTrue(e.getMessage().contains("User ID cannot be null or empty"));
+            }
+            assertTrue(exceptionThrown);
+
+            // Test null food
+            exceptionThrown = false;
+            try {
+                new LogFoodIntakeInputData("user123", null, serving, 1.0, "Breakfast");
+            } catch (IllegalArgumentException e) {
+                exceptionThrown = true;
+                assertTrue(e.getMessage().contains("Food cannot be null"));
+            }
+            assertTrue(exceptionThrown);
+
+            // Test null servingInfo
+            exceptionThrown = false;
+            try {
+                new LogFoodIntakeInputData("user123", apple, null, 1.0, "Breakfast");
+            } catch (IllegalArgumentException e) {
+                exceptionThrown = true;
+                assertTrue(e.getMessage().contains("ServingInfo cannot be null"));
+            }
+            assertTrue(exceptionThrown);
+
+            // Test null meal
+            exceptionThrown = false;
+            try {
+                new LogFoodIntakeInputData("user123", apple, serving, 1.0, null);
+            } catch (IllegalArgumentException e) {
+                exceptionThrown = true;
+                assertTrue(e.getMessage().contains("Meal cannot be null or empty"));
+            }
+            assertTrue(exceptionThrown);
+
+            // Test blank meal
+            exceptionThrown = false;
+            try {
+                new LogFoodIntakeInputData("user123", apple, serving, 1.0, "");
+            } catch (IllegalArgumentException e) {
+                exceptionThrown = true;
+                assertTrue(e.getMessage().contains("Meal cannot be null or empty"));
+            }
+            assertTrue(exceptionThrown);
+
+            // Test zero servingMultiplier
+            exceptionThrown = false;
+            try {
+                new LogFoodIntakeInputData("user123", apple, serving, 0.0, "Breakfast");
+            } catch (IllegalArgumentException e) {
+                exceptionThrown = true;
+                assertTrue(e.getMessage().contains("Serving multiplier must be positive"));
+            }
+            assertTrue(exceptionThrown);
+
+            // Test negative servingMultiplier
+            exceptionThrown = false;
+            try {
+                new LogFoodIntakeInputData("user123", apple, serving, -1.5, "Breakfast");
+            } catch (IllegalArgumentException e) {
+                exceptionThrown = true;
+                assertTrue(e.getMessage().contains("Serving multiplier must be positive"));
+            }
+            assertTrue(exceptionThrown);
+
+            passed++;
+        } catch (AssertionError e) { failed++; }
+
+        // Test 7: Custom timestamp constructor
+        try {
+            ServingInfo serving = new ServingInfo(
+                1001, "100 g", 100.0, "g",
+                52.0, 0.3, 0.2, 14.0,
+                null, null, null
+            );
+            FoodDetails apple = new FoodDetails(
+                1, "Apple", "Generic", null,
+                "http://example.com/apple",
+                Collections.singletonList(serving)
+            );
+
+            java.time.LocalDateTime customTime = java.time.LocalDateTime.of(2024, 1, 15, 10, 30);
+            LogFoodIntakeInputData inputData = new LogFoodIntakeInputData(
+                "user123", apple, serving, 1.0, "Breakfast", customTime
+            );
+
+            assertEquals(customTime, inputData.getLoggedAt());
+            passed++;
+        } catch (AssertionError e) { failed++; }
+
+        // Test 8: Getter verification
+        try {
+            ServingInfo serving = new ServingInfo(
+                1001, "100 g", 100.0, "g",
+                52.0, 0.3, 0.2, 14.0,
+                null, null, null
+            );
+            FoodDetails apple = new FoodDetails(
+                1, "Apple", "Generic", null,
+                "http://example.com/apple",
+                Collections.singletonList(serving)
+            );
+
+            LogFoodIntakeInputData inputData = new LogFoodIntakeInputData(
+                "user123", apple, serving, 1.5, "Lunch"
+            );
+
+            assertEquals("user123", inputData.getUserId());
+            assertEquals(apple, inputData.getFood());
+            assertEquals(serving, inputData.getServingInfo());
+            assertEquals(1.5, inputData.getServingMultiplier(), 0.001);
+            assertEquals("Lunch", inputData.getMeal());
+            assertNotNull(inputData.getLoggedAt());
+
             passed++;
         } catch (AssertionError e) { failed++; }
 

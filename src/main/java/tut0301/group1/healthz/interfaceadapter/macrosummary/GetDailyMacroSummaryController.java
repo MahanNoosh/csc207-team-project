@@ -1,7 +1,7 @@
 package tut0301.group1.healthz.interfaceadapter.macrosummary;
 
-import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInputBoundary;
-import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInputData;
+import tut0301.group1.healthz.usecase.macrosummary.GetDailyMacroSummaryInputBoundary;
+import tut0301.group1.healthz.usecase.macrosummary.GetDailyMacroSummaryInputData;
 
 import java.time.LocalDate;
 
@@ -20,9 +20,9 @@ import java.time.LocalDate;
  */
 public class GetDailyMacroSummaryController {
 
-    private final GetDailyCalorieSummaryInputBoundary interactor;
+    private final GetDailyMacroSummaryInputBoundary interactor;
 
-    public GetDailyMacroSummaryController(GetDailyCalorieSummaryInputBoundary interactor) {
+    public GetDailyMacroSummaryController(GetDailyMacroSummaryInputBoundary interactor) {
         if (interactor == null) {
             throw new IllegalArgumentException("Interactor cannot be null");
         }
@@ -45,7 +45,7 @@ public class GetDailyMacroSummaryController {
             throw new IllegalArgumentException("Date cannot be null");
         }
 
-        GetDailyCalorieSummaryInputData inputData = new GetDailyCalorieSummaryInputData(userId, date);
+        GetDailyMacroSummaryInputData inputData = new GetDailyMacroSummaryInputData(userId, date);
         interactor.execute(inputData);
     }
 

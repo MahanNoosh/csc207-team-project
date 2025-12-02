@@ -7,25 +7,20 @@ import tut0301.group1.healthz.entities.nutrition.Macro;
 import java.time.LocalDate;
 
 /**
- * ViewModel for Get Daily Calorie Summary functionality.
+ * ViewModel for Get Daily Macro Summary functionality.
  *
- * Holds the presentation state for displaying calorie summary statistics.
- * This includes macronutrients, activity calories, and daily target.
+ * Holds the presentation state for displaying macronutrient summary statistics.
  */
 public class GetDailyMacroSummaryViewModel {
     private LocalDate date;
 
     private final ObjectProperty<Macro> totalMacro = new SimpleObjectProperty<>(Macro.ZERO);
-    private double totalActivityCalories;
-    private double dailyCalorieTarget;
 
     private String errorMessage;
     private boolean loading;
 
     public GetDailyMacroSummaryViewModel() {
         // totalMacro is initialized to ZERO above
-        this.totalActivityCalories = 0.0;
-        this.dailyCalorieTarget = 2000.0;
         this.loading = false;
     }
 
@@ -70,29 +65,9 @@ public class GetDailyMacroSummaryViewModel {
     public double getTotalFat() { return getTotalMacro().fatG(); }
     public double getTotalCarbs() { return getTotalMacro().carbsG(); }
 
-    public double getTotalActivityCalories() { return totalActivityCalories; }
-    public void setTotalActivityCalories(double totalActivityCalories) {
-        this.totalActivityCalories = totalActivityCalories;
-    }
-
-    public double getDailyCalorieTarget() { return dailyCalorieTarget; }
-    public void setDailyCalorieTarget(double dailyCalorieTarget) {
-        this.dailyCalorieTarget = dailyCalorieTarget;
-    }
-
-    /**
-     * Calculate net remaining calories.
-     * Formula: target - consumed + burned
-     */
-    public double getNetRemainingCalories() {
-        return dailyCalorieTarget - getTotalCalories() + totalActivityCalories;
-    }
-
     public void clear() {
         this.date = null;
         this.totalMacro.set(Macro.ZERO);
-        this.totalActivityCalories = 0.0;
-        this.dailyCalorieTarget = 2000.0;
         this.errorMessage = null;
         this.loading = false;
     }

@@ -9,6 +9,7 @@
       <list>
         <ConfigurationLocation id="bundled-sun-checks" type="BUNDLED" scope="All" description="Sun Checks">(bundled)</ConfigurationLocation>
         <ConfigurationLocation id="bundled-google-checks" type="BUNDLED" scope="All" description="Google Checks">(bundled)</ConfigurationLocation>
+        <ConfigurationLocation id="f0b7f119-027f-4f45-9e27-fb142e021db6" type="LOCAL_FILE" scope="All" description="CSC207 Checks">$PROJECT_DIR$/../../refactoring/mystyle.xml</ConfigurationLocation>
       </list>
     </option>
   </component>

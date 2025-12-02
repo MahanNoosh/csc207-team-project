@@ -1,7 +1,8 @@
-package tut0301.group1.healthz.usecase.food.foodloghistory;
+package tut0301.group1.healthz.usecase.macrosummary;
 
 import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
+import tut0301.group1.healthz.entities.nutrition.Macro;
 import tut0301.group1.healthz.entities.nutrition.ServingInfo;
 import tut0301.group1.healthz.usecase.food.logging.FoodLogDataAccessInterface;
 
@@ -13,18 +14,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Unit test for GetFoodLogHistoryInteractor with Clean Architecture compliance.
- * Run directly: java -ea GetFoodLogHistoryInteractorTest
- * Or via Maven: mvn test
+ * Unit test for GetDailyMacroSummaryInteractor with Clean Architecture compliance.
  */
-public class GetFoodLogHistoryInteractorTest {
-    private static void assertEquals(int expected, int actual) {
-        assert expected == actual : "Expected: " + expected + ", but got: " + actual;
+public class GetDailyCalorieSummaryInteractorTest {
+    private static void assertEquals(double expected, double actual, double delta) {
+        assert Math.abs(expected - actual) < delta : "Expected: " + expected + ", but got: " + actual;
     }
 
-    private static void assertEquals(String expected, String actual) {
-        assert (expected == null && actual == null) || (expected != null && expected.equals(actual))
-            : "Expected: " + expected + ", but got: " + actual;
+    private static void assertEquals(int expected, int actual) {
+        assert expected == actual : "Expected: " + expected + ", but got: " + actual;
     }
 
     private static void assertEquals(Object expected, Object actual) {
@@ -36,22 +34,18 @@ public class GetFoodLogHistoryInteractorTest {
         assert condition : "Expected true, but got false";
     }
 
-    private static void assertFalse(boolean condition) {
-        assert !condition : "Expected false, but got true";
-    }
-
     private static void assertNotNull(Object obj) {
         assert obj != null : "Expected non-null object";
     }
 
-    // Capturing presenter to verify outputs
-    private static class CapturingPresenter implements GetFoodLogHistoryOutputBoundary {
-        private GetFoodLogHistoryOutputData capturedOutput;
+    // Capturing presenter
+    private static class CapturingPresenter implements GetDailyMacroSummaryOutputBoundary {
+        private GetDailyMacroSummaryOutputData capturedOutput;
         private String capturedError;
         private int callCount = 0;
 
         @Override
-        public void presentFoodLogHistory(GetFoodLogHistoryOutputData outputData) {
+        public void presentDailySummary(GetDailyMacroSummaryOutputData outputData) {
             this.capturedOutput = outputData;
             this.callCount++;
         }
@@ -62,7 +56,7 @@ public class GetFoodLogHistoryInteractorTest {
             this.callCount++;
         }
 
-        public GetFoodLogHistoryOutputData getCapturedOutput() {
+        public GetDailyMacroSummaryOutputData getCapturedOutput() {
             return capturedOutput;
         }
 
@@ -73,56 +67,30 @@ public class GetFoodLogHistoryInteractorTest {
         public int getCallCount() {
             return callCount;
         }
-
-        public void reset() {
-            capturedOutput = null;
-            capturedError = null;
-            callCount = 0;
-        }
     }
 
-    // Capturing gateway to verify queries
-    private static class CapturingGateway implements FoodLogDataAccessInterface {
+    // Mock FoodLogGateway
+    private static class MockFoodLogGateway implements FoodLogDataAccessInterface {
         private final List<FoodLog> foodLogsToReturn = new ArrayList<>();
         private boolean shouldThrowException = false;
-        private String lastQueriedUserId;
-        private LocalDate lastQueriedDate;
 
         @Override
-        public void saveFoodLog(String userId, FoodLog foodLog) {
-        }
+        public void saveFoodLog(String userId, FoodLog foodLog) {}
 
         @Override
         public List<FoodLog> getFoodLogsByDate(String userId, LocalDate date) throws IOException {
             if (shouldThrowException) {
-                throw new IOException("Database connection failed");
+                throw new RuntimeException("Database error");
             }
-            this.lastQueriedUserId = userId;
-            this.lastQueriedDate = date;
             return new ArrayList<>(foodLogsToReturn);
         }
 
-        public void addFoodLogToReturn(FoodLog foodLog) {
+        public void addFoodLog(FoodLog foodLog) {
             foodLogsToReturn.add(foodLog);
         }
 
         public void setShouldThrowException(boolean shouldThrow) {
             this.shouldThrowException = shouldThrow;
-        }
-
-        public String getLastQueriedUserId() {
-            return lastQueriedUserId;
-        }
-
-        public LocalDate getLastQueriedDate() {
-            return lastQueriedDate;
-        }
-
-        public void reset() {
-            foodLogsToReturn.clear();
-            shouldThrowException = false;
-            lastQueriedUserId = null;
-            lastQueriedDate = null;
         }
     }
 
@@ -130,13 +98,13 @@ public class GetFoodLogHistoryInteractorTest {
         int passed = 0;
         int failed = 0;
 
-        // Test 1: Constructor throws exception when gateway is null
+        // Test 1: Constructor throws exception when foodLogGateway is null
         try {
             CapturingPresenter presenter = new CapturingPresenter();
             boolean exceptionThrown = false;
 
             try {
-                new GetFoodLogHistoryInteractor(null, presenter);
+                new GetDailyMacroSummaryInteractor(null, presenter);
             } catch (IllegalArgumentException e) {
                 exceptionThrown = true;
                 assertTrue(e.getMessage().contains("FoodLogGateway cannot be null"));
@@ -148,11 +116,11 @@ public class GetFoodLogHistoryInteractorTest {
 
         // Test 2: Constructor throws exception when outputBoundary is null
         try {
-            CapturingGateway gateway = new CapturingGateway();
+            MockFoodLogGateway foodGateway = new MockFoodLogGateway();
             boolean exceptionThrown = false;
 
             try {
-                new GetFoodLogHistoryInteractor(gateway, null);
+                new GetDailyMacroSummaryInteractor(foodGateway, null);
             } catch (IllegalArgumentException e) {
                 exceptionThrown = true;
                 assertTrue(e.getMessage().contains("OutputBoundary cannot be null"));
@@ -162,104 +130,80 @@ public class GetFoodLogHistoryInteractorTest {
             passed++;
         } catch (AssertionError e) { failed++; }
 
-        // Test 3: Execute retrieves food logs successfully
+        // Test 3: Execute calculates macro summary with food logs
         try {
-            CapturingGateway gateway = new CapturingGateway();
+            MockFoodLogGateway foodGateway = new MockFoodLogGateway();
             CapturingPresenter presenter = new CapturingPresenter();
-            GetFoodLogHistoryInteractor interactor = new GetFoodLogHistoryInteractor(gateway, presenter);
 
-            // Create test food logs
+            // Add food logs
             ServingInfo serving = new ServingInfo(
                 1001, "100 g", 100.0, "g",
-                52.0, 0.3, 0.2, 14.0,
+                100.0, 5.0, 2.0, 20.0,
                 null, null, null
             );
-
             FoodDetails apple = new FoodDetails(
-                1, "Apple", "Fruit", null,
-                "http://example.com/apple",
+                1, "Apple", "Fruit", null, "",
                 Collections.singletonList(serving)
             );
-
-            FoodLog foodLog1 = new FoodLog(apple, serving, 1.0, "Breakfast", LocalDateTime.now());
+            FoodLog foodLog1 = new FoodLog(apple, serving, 2.0, "Breakfast", LocalDateTime.now());
             FoodLog foodLog2 = new FoodLog(apple, serving, 1.5, "Lunch", LocalDateTime.now());
-
-            gateway.addFoodLogToReturn(foodLog1);
-            gateway.addFoodLogToReturn(foodLog2);
+            foodGateway.addFoodLog(foodLog1);
+            foodGateway.addFoodLog(foodLog2);
 
             LocalDate testDate = LocalDate.of(2024, 1, 15);
-            GetFoodLogHistoryInputData inputData = new GetFoodLogHistoryInputData("user123", testDate);
+            GetDailyMacroSummaryInteractor interactor = new GetDailyMacroSummaryInteractor(
+                foodGateway, presenter
+            );
 
+            GetDailyMacroSummaryInputData inputData = new GetDailyMacroSummaryInputData("user123", testDate);
             interactor.execute(inputData);
 
-            // Verify gateway was called with correct parameters
-            assertEquals("user123", gateway.getLastQueriedUserId());
-            assertEquals(testDate, gateway.getLastQueriedDate());
-
-            // Verify presenter received output with all getters
+            // Verify output with all getters
             assertEquals(1, presenter.getCallCount());
-            GetFoodLogHistoryOutputData output = presenter.getCapturedOutput();
+            GetDailyMacroSummaryOutputData output = presenter.getCapturedOutput();
             assertNotNull(output);
             assertEquals(testDate, output.getDate());
-            assertEquals(2, output.getTotalEntries());
-            assertTrue(output.hasLogs());
-            assertEquals(2, output.getFoodLogs().size());
+
+            // Verify getTotalMacro() and its components
+            assertEquals(350.0, output.getTotalMacro().calories(), 0.01);  // 2.0*100 + 1.5*100 = 350
+            assertEquals(17.5, output.getTotalMacro().proteinG(), 0.01);   // (2.0 + 1.5) * 5.0 = 17.5
+            assertEquals(7.0, output.getTotalMacro().fatG(), 0.01);        // (2.0 + 1.5) * 2.0 = 7.0
+            assertEquals(70.0, output.getTotalMacro().carbsG(), 0.01);     // (2.0 + 1.5) * 20.0 = 70.0
 
             passed++;
         } catch (AssertionError e) { failed++; }
 
-        // Test 4: Execute handles empty food logs
+        // Test 4: Execute handles exception from gateway
         try {
-            CapturingGateway gateway = new CapturingGateway();
+            MockFoodLogGateway foodGateway = new MockFoodLogGateway();
+            foodGateway.setShouldThrowException(true);
             CapturingPresenter presenter = new CapturingPresenter();
-            GetFoodLogHistoryInteractor interactor = new GetFoodLogHistoryInteractor(gateway, presenter);
 
-            LocalDate testDate = LocalDate.of(2024, 1, 16);
-            GetFoodLogHistoryInputData inputData = new GetFoodLogHistoryInputData("user456", testDate);
-
-            interactor.execute(inputData);
-
-            // Verify output for empty logs (testing hasLogs = false branch)
-            assertEquals(1, presenter.getCallCount());
-            GetFoodLogHistoryOutputData output = presenter.getCapturedOutput();
-            assertNotNull(output);
-            assertEquals(testDate, output.getDate());
-            assertEquals(0, output.getTotalEntries());
-            assertFalse(output.hasLogs());
-            assertEquals(0, output.getFoodLogs().size());
-
-            passed++;
-        } catch (AssertionError e) { failed++; }
-
-        // Test 5: Execute handles gateway exception
-        try {
-            CapturingGateway gateway = new CapturingGateway();
-            gateway.setShouldThrowException(true);
-            CapturingPresenter presenter = new CapturingPresenter();
-            GetFoodLogHistoryInteractor interactor = new GetFoodLogHistoryInteractor(gateway, presenter);
+            GetDailyMacroSummaryInteractor interactor = new GetDailyMacroSummaryInteractor(
+                foodGateway, presenter
+            );
 
             LocalDate testDate = LocalDate.of(2024, 1, 17);
-            GetFoodLogHistoryInputData inputData = new GetFoodLogHistoryInputData("user789", testDate);
-
+            GetDailyMacroSummaryInputData inputData = new GetDailyMacroSummaryInputData("user789", testDate);
             interactor.execute(inputData);
 
             // Verify error was presented
             assertEquals(1, presenter.getCallCount());
             assertNotNull(presenter.getCapturedError());
-            assertTrue(presenter.getCapturedError().contains("Failed to retrieve food log history"));
-            assertTrue(presenter.getCapturedError().contains("Database connection failed"));
+            assertTrue(presenter.getCapturedError().contains("Failed to retrieve daily summary"));
+            assertTrue(presenter.getCapturedError().contains("Database error"));
 
             passed++;
         } catch (AssertionError e) { failed++; }
 
-        // Test 6: InputData validation
+        // Test 5: InputData validation
         try {
-            LocalDate testDate = LocalDate.of(2024, 1, 18);
+            LocalDate testDate = LocalDate.of(2024, 1, 20);
 
             // Test null userId
             boolean exceptionThrown = false;
             try {
-                new GetFoodLogHistoryInputData(null, testDate);
+                new GetDailyMacroSummaryInputData(null, testDate);
             } catch (IllegalArgumentException e) {
                 exceptionThrown = true;
                 assertTrue(e.getMessage().contains("User ID cannot be null or empty"));
@@ -269,7 +213,7 @@ public class GetFoodLogHistoryInteractorTest {
             // Test blank userId
             exceptionThrown = false;
             try {
-                new GetFoodLogHistoryInputData("  ", testDate);
+                new GetDailyMacroSummaryInputData("  ", testDate);
             } catch (IllegalArgumentException e) {
                 exceptionThrown = true;
                 assertTrue(e.getMessage().contains("User ID cannot be null or empty"));
@@ -279,7 +223,7 @@ public class GetFoodLogHistoryInteractorTest {
             // Test null date
             exceptionThrown = false;
             try {
-                new GetFoodLogHistoryInputData("user123", null);
+                new GetDailyMacroSummaryInputData("user123", null);
             } catch (IllegalArgumentException e) {
                 exceptionThrown = true;
                 assertTrue(e.getMessage().contains("Date cannot be null"));
@@ -287,35 +231,35 @@ public class GetFoodLogHistoryInteractorTest {
             assertTrue(exceptionThrown);
 
             // Test valid InputData with getters
-            GetFoodLogHistoryInputData validInput = new GetFoodLogHistoryInputData("user123", testDate);
+            GetDailyMacroSummaryInputData validInput = new GetDailyMacroSummaryInputData("user123", testDate);
             assertEquals("user123", validInput.getUserId());
             assertEquals(testDate, validInput.getDate());
 
             passed++;
         } catch (AssertionError e) { failed++; }
 
-        // Test 7: OutputData validation
+        // Test 6: OutputData validation
         try {
-            LocalDate testDate = LocalDate.of(2024, 1, 19);
-            List<FoodLog> emptyList = new ArrayList<>();
+            LocalDate testDate = LocalDate.of(2024, 1, 21);
+            Macro testMacro = new Macro(100.0, 5.0, 2.0, 20.0);
 
             // Test null date
             boolean exceptionThrown = false;
             try {
-                new GetFoodLogHistoryOutputData(null, emptyList);
+                new GetDailyMacroSummaryOutputData(null, testMacro);
             } catch (IllegalArgumentException e) {
                 exceptionThrown = true;
                 assertTrue(e.getMessage().contains("Date cannot be null"));
             }
             assertTrue(exceptionThrown);
 
-            // Test null foodLogs
+            // Test null totalMacro
             exceptionThrown = false;
             try {
-                new GetFoodLogHistoryOutputData(testDate, null);
+                new GetDailyMacroSummaryOutputData(testDate, null);
             } catch (IllegalArgumentException e) {
                 exceptionThrown = true;
-                assertTrue(e.getMessage().contains("Food logs list cannot be null"));
+                assertTrue(e.getMessage().contains("Total macro cannot be null"));
             }
             assertTrue(exceptionThrown);
 

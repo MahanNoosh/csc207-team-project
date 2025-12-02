@@ -2,7 +2,6 @@ package tut0301.group1.healthz.usecase.food.foodloghistory;
 
 /**
  * Input Boundary for Get Food Log History use case.
- *
  * Defines the contract for retrieving food log history.
  * This interface is defined in the Use Case layer and implemented by the Interactor.
  */

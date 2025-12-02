@@ -2,7 +2,6 @@ package tut0301.group1.healthz.usecase.food.logging;
 
 /**
  * Input Boundary for logging food intake.
- *
  * The Controller calls this interface.
  * The Interactor implements this interface.
  */
