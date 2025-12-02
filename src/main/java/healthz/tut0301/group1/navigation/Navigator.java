@@ -2,11 +2,6 @@ package healthz.tut0301.group1.navigation;
 
 import healthz.tut0301.group1.dataaccess.api.OAuth.OAuth;
 import healthz.tut0301.group1.dataaccess.api.OAuth.OAuthDataAccessObject;
-import healthz.tut0301.group1.dataaccess.supabase.*;
-import healthz.tut0301.group1.interfaceadapter.activity.*;
-import healthz.tut0301.group1.interfaceadapter.dashboard.*;
-import healthz.tut0301.group1.interfaceadapter.recipe.*;
-import healthz.tut0301.group1.usecase.favoriterecipe.*;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import healthz.tut0301.group1.dataaccess.api.FatSecret.FatSecretFoodDetailDataAccessObject;
@@ -84,12 +79,6 @@ import healthz.tut0301.group1.usecase.food.foodloghistory.GetFoodLogHistoryInter
 import healthz.tut0301.group1.usecase.macrosummary.GetDailyCalorieSummaryInputBoundary;
 import healthz.tut0301.group1.usecase.macrosummary.GetDailyCalorieSummaryInteractor;
 import healthz.tut0301.group1.usecase.activity.activitylog.ActivityLogDataAccessInterface;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailGateway;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInputBoundary;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroDetailInteractor;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchGateway;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInputBoundary;
-//import tut0301.group1.healthz.usecase.macrosearch.MacroSearchInteractor;
 import healthz.tut0301.group1.usecase.recipesearch.metadata.RecipeSearchDataAccessInterface;
 import healthz.tut0301.group1.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 import healthz.tut0301.group1.usecase.recipesearch.metadata.RecipeSearchInteractor;
@@ -111,7 +100,20 @@ import healthz.tut0301.group1.view.dashboard.DashboardView;
 import healthz.tut0301.group1.view.recipe.RecipeSearchView;
 import healthz.tut0301.group1.view.recipe.FavoriteRecipeView;
 import healthz.tut0301.group1.view.nutrition.FoodLogView;
-
+import healthz.tut0301.group1.dataaccess.supabase.*;
+import healthz.tut0301.group1.interfaceadapter.activity.*;
+import healthz.tut0301.group1.dataaccess.supabase.SupabaseAuthDataAccessObject;
+import healthz.tut0301.group1.dataaccess.supabase.SupabaseClient;
+import healthz.tut0301.group1.dataaccess.supabase.SupabaseFavoriteRecipeDataAccessObject;
+import healthz.tut0301.group1.dataaccess.supabase.SupabaseUserDataDataAccessObject;
+import healthz.tut0301.group1.dataaccess.supabase.SupabaseActivityLogDataAccessObject;
+import healthz.tut0301.group1.interfaceadapter.dashboard.*;
+import healthz.tut0301.group1.interfaceadapter.dashboard.DashboardController;
+import healthz.tut0301.group1.interfaceadapter.dashboard.DashboardPresenter;
+import healthz.tut0301.group1.interfaceadapter.dashboard.DashboardViewModel;
+import healthz.tut0301.group1.interfaceadapter.recipe.*;
+import healthz.tut0301.group1.usecase.activity.activitylog.*;
+import healthz.tut0301.group1.usecase.favoriterecipe.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
@@ -134,7 +136,6 @@ public class Navigator {
     private SupabaseClient authenticatedClient;
 
     private Navigator() {
-        // private so we can prevent instantiation
     }
 
     /**
@@ -191,7 +192,6 @@ public class Navigator {
      * Navigate to Macro Search page
      */
     public void showMacroSearch() {
-        // Clean Architecture Layer Setup:
         // 1. ViewModel (Interface Adapter)
         MacroSearchViewModel macroSearchViewModel = new MacroSearchViewModel();
 
@@ -480,6 +480,10 @@ public class Navigator {
         ActivityLogSaveOutputBoundary activityLogSavePresenter = new ActivityLogSavePresenter(historyVM);
         ActivityLogLoadOutputBoundary activityLogLoadPresenter = new ActivityLogLoadPresenter(historyVM,exerciseFinder);
 
+        // needed user info
+        String displayName = getUserDisplayName();
+        String email = getCurrentUserEmail();
+
         CalorieCalculatorInputBoundary calorieCalculator = new CalorieCalculatorInteractor(exerciseFinder, caloriePresenter);
         ActivityLogInputBoundary activityLog = new ActivityLogInteractor(
                 activityLogDAO,
@@ -496,7 +500,8 @@ public class Navigator {
             if (maybeProfile.isPresent()) {
                 currentProfile = maybeProfile.get();
 
-                ActivityView view = new ActivityView(controller, exerciseListVM, historyVM, currentProfile, this);
+                ActivityView view = new ActivityView(controller, exerciseListVM, historyVM,
+                        currentProfile, this, displayName, email);
                 primaryStage.setScene(view.getScene());
                 primaryStage.setTitle("HealthZ - Activity Tracker");
 
@@ -658,7 +663,7 @@ public class Navigator {
             // restart 3-minute auto-login window (your existing helper)
             startEmailCheckTimeline();
 
-            // NEW: start the visible resend cooldown for ~2 minutes
+            // start the visible resend cooldown for ~2 minutes
             view.startResendCooldown(120);
         });
 
@@ -793,6 +798,10 @@ public class Navigator {
                 foodLogHistoryPresenter);
         GetFoodLogHistoryController foodLogHistoryController = new GetFoodLogHistoryController(foodLogHistoryInteractor);
 
+        // user info needed for sidebar
+        String displayName = getUserDisplayName();
+        String email = getCurrentUserEmail();
+
         FoodLogView foodLogView = new FoodLogView(
                 this,
                 macroSearchController,
@@ -803,25 +812,13 @@ public class Navigator {
                 macroDetailViewModel,
                 foodLogHistoryController,
                 foodLogHistoryViewModel,
-                userId
+                userId,
+                displayName,
+                email
         );
 
         primaryStage.setScene(foodLogView.getScene());
         primaryStage.setTitle("HealthZ - Food Log");
-    }
-
-    /**
-     * Navigate to Activity Log Page
-     */
-
-    /**
-     * Go back to previous page
-     * (Can implement navigation history stack later)
-     */
-    public void goBack() {
-        // TODO: Implement navigation history stack
-        System.out.println("Going back...");
-        showLogin();
     }
 
     // ========== PRIVATE HELPER METHODS ==========
@@ -840,8 +837,6 @@ public class Navigator {
         // Connect Log In button
         landingView.getLogInButton().setOnAction(e -> {
             System.out.println("Logging in...");
-            // TODO: show actual login form or validate credentials
-            // For now, just go to main app
             showLogin();
         });
     }

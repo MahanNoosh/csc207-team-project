@@ -18,7 +18,7 @@ import healthz.tut0301.group1.navigation.Navigator;
 import healthz.tut0301.group1.usecase.auth.AuthGateway;
 import healthz.tut0301.group1.usecase.auth.signup.SignupInputBoundary;
 import healthz.tut0301.group1.usecase.auth.signup.SignupInteractor;
-import tut0301.group1.healthz.view.auth.signuppanels.*;
+import healthz.tut0301.group1.view.auth.signuppanels.*;
 import healthz.tut0301.group1.interfaceadapter.auth.signup.SignupController;
 import java.util.List;
 

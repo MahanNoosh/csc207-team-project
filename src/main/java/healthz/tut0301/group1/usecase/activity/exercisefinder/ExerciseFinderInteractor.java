@@ -8,8 +8,8 @@ public class ExerciseFinderInteractor implements ExerciseFinderInputBoundary {
     private final ExerciseDataAccessInterface exerciseDataAccess;
     private final ExerciseFinderOutputBoundary presenter;
 
-
-    public ExerciseFinderInteractor(ExerciseDataAccessInterface exerciseDataAccess, ExerciseFinderOutputBoundary presenter) {
+    public ExerciseFinderInteractor(ExerciseDataAccessInterface exerciseDataAccess,
+                                    ExerciseFinderOutputBoundary presenter) {
         this.exerciseDataAccess = exerciseDataAccess;
         this.presenter = presenter;
     }
@@ -35,5 +35,4 @@ public class ExerciseFinderInteractor implements ExerciseFinderInputBoundary {
         List<String> result = exerciseDataAccess.searchExercisesByQuery(exerciseInputData.getQuery());
         presenter.presentExerciseList(new ExerciseListOutputData(result));
     }
-
 }

@@ -9,7 +9,8 @@ public class WeeklySummaryInteractor implements WeeklySummaryInputBoundary{
     private final ActivityLogDataAccessInterface dataAccess;
     private final WeeklySummaryOutputBoundary presenter;
 
-    public WeeklySummaryInteractor(ActivityLogDataAccessInterface dataAccess, WeeklySummaryOutputBoundary presenter) {
+    public WeeklySummaryInteractor(ActivityLogDataAccessInterface dataAccess,
+                                   WeeklySummaryOutputBoundary presenter) {
         this.dataAccess = dataAccess;
         this.presenter = presenter;
     }
