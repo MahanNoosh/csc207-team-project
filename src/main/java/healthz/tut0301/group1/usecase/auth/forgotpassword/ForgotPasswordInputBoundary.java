@@ -1,0 +1,5 @@
+package healthz.tut0301.group1.usecase.auth.forgotpassword;
+
+public interface ForgotPasswordInputBoundary {
+    void execute(ForgotPasswordInputData input);
+}

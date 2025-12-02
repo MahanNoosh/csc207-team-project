@@ -1,0 +1,9 @@
+package healthz.tut0301.group1.entities.nutrition;
+
+/**
+ * Represents a single result returned from a macro lookup query.
+ * Contains the food id, food name, the original serving description from the api,
+ * and the parsed macro composition for that serving.
+ */
+public record MacroSearchResult(long foodId, String foodName, String servingDescription, Macro macro) {
+}
