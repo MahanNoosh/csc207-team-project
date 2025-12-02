@@ -80,7 +80,7 @@ public class GetDailyCalorieSummaryInteractorTest {
         @Override
         public List<FoodLog> getFoodLogsByDate(String userId, LocalDate date) throws IOException {
             if (shouldThrowException) {
-                throw new RuntimeException("Database error");
+                throw new IOException("Database error");
             }
             return new ArrayList<>(foodLogsToReturn);
         }
@@ -262,6 +262,155 @@ public class GetDailyCalorieSummaryInteractorTest {
                 assertTrue(e.getMessage().contains("Total macro cannot be null"));
             }
             assertTrue(exceptionThrown);
+
+            passed++;
+        } catch (AssertionError e) { failed++; }
+
+        // Test 7: Execute with empty food logs list
+        try {
+            MockFoodLogGateway foodGateway = new MockFoodLogGateway();
+            CapturingPresenter presenter = new CapturingPresenter();
+
+            // Don't add any food logs - gateway will return empty list
+            LocalDate testDate = LocalDate.of(2024, 1, 22);
+            GetDailyMacroSummaryInteractor interactor = new GetDailyMacroSummaryInteractor(
+                foodGateway, presenter
+            );
+
+            GetDailyMacroSummaryInputData inputData = new GetDailyMacroSummaryInputData("user456", testDate);
+            interactor.execute(inputData);
+
+            // Verify output shows zero macros
+            assertEquals(1, presenter.getCallCount());
+            GetDailyMacroSummaryOutputData output = presenter.getCapturedOutput();
+            assertNotNull(output);
+            assertEquals(testDate, output.getDate());
+            assertEquals(0.0, output.getTotalMacro().calories(), 0.01);
+            assertEquals(0.0, output.getTotalMacro().proteinG(), 0.01);
+            assertEquals(0.0, output.getTotalMacro().fatG(), 0.01);
+            assertEquals(0.0, output.getTotalMacro().carbsG(), 0.01);
+
+            passed++;
+        } catch (AssertionError e) { failed++; }
+
+        // Test 8: Execute with single food log
+        try {
+            MockFoodLogGateway foodGateway = new MockFoodLogGateway();
+            CapturingPresenter presenter = new CapturingPresenter();
+
+            // Add single food log
+            ServingInfo serving = new ServingInfo(
+                2001, "1 cup", 240.0, "ml",
+                150.0, 8.0, 4.0, 12.0,
+                2.0, 10.0, 100.0
+            );
+            FoodDetails milk = new FoodDetails(
+                2, "Milk", "Dairy", "Organic Valley", "",
+                Collections.singletonList(serving)
+            );
+            FoodLog foodLog = new FoodLog(milk, serving, 1.0, "Breakfast", LocalDateTime.now());
+            foodGateway.addFoodLog(foodLog);
+
+            LocalDate testDate = LocalDate.of(2024, 1, 23);
+            GetDailyMacroSummaryInteractor interactor = new GetDailyMacroSummaryInteractor(
+                foodGateway, presenter
+            );
+
+            GetDailyMacroSummaryInputData inputData = new GetDailyMacroSummaryInputData("user789", testDate);
+            interactor.execute(inputData);
+
+            // Verify output matches the single food log
+            assertEquals(1, presenter.getCallCount());
+            GetDailyMacroSummaryOutputData output = presenter.getCapturedOutput();
+            assertNotNull(output);
+            assertEquals(testDate, output.getDate());
+            assertEquals(150.0, output.getTotalMacro().calories(), 0.01);
+            assertEquals(8.0, output.getTotalMacro().proteinG(), 0.01);
+            assertEquals(4.0, output.getTotalMacro().fatG(), 0.01);
+            assertEquals(12.0, output.getTotalMacro().carbsG(), 0.01);
+
+            passed++;
+        } catch (AssertionError e) { failed++; }
+
+        // Test 9: Execute with IOException (different exception path)
+        try {
+            MockFoodLogGateway foodGateway = new MockFoodLogGateway();
+            foodGateway.setShouldThrowException(true);
+            CapturingPresenter presenter = new CapturingPresenter();
+
+            GetDailyMacroSummaryInteractor interactor = new GetDailyMacroSummaryInteractor(
+                foodGateway, presenter
+            );
+
+            LocalDate testDate = LocalDate.of(2024, 1, 24);
+            GetDailyMacroSummaryInputData inputData = new GetDailyMacroSummaryInputData("user999", testDate);
+            interactor.execute(inputData);
+
+            // Verify error was presented with correct format
+            assertEquals(1, presenter.getCallCount());
+            String error = presenter.getCapturedError();
+            assertNotNull(error);
+            assertTrue(error.startsWith("Failed to retrieve daily summary:"));
+
+            passed++;
+        } catch (AssertionError e) { failed++; }
+
+        // Test 10: Execute with multiple food logs of different types
+        try {
+            MockFoodLogGateway foodGateway = new MockFoodLogGateway();
+            CapturingPresenter presenter = new CapturingPresenter();
+
+            // Add multiple different food logs
+            ServingInfo serving1 = new ServingInfo(
+                3001, "1 slice", 30.0, "g",
+                80.0, 3.0, 1.0, 15.0,
+                1.0, 2.0, 120.0
+            );
+            FoodDetails bread = new FoodDetails(
+                3, "Bread", "Grain", "Wonder", "",
+                Collections.singletonList(serving1)
+            );
+
+            ServingInfo serving2 = new ServingInfo(
+                4001, "1 tbsp", 15.0, "ml",
+                50.0, 0.0, 5.0, 0.0,
+                null, null, 50.0
+            );
+            FoodDetails butter = new FoodDetails(
+                4, "Butter", "Dairy", null, "",
+                Collections.singletonList(serving2)
+            );
+
+            FoodLog log1 = new FoodLog(bread, serving1, 2.0, "Breakfast", LocalDateTime.now());
+            FoodLog log2 = new FoodLog(butter, serving2, 1.0, "Breakfast", LocalDateTime.now());
+            FoodLog log3 = new FoodLog(bread, serving1, 1.0, "Lunch", LocalDateTime.now());
+
+            foodGateway.addFoodLog(log1);
+            foodGateway.addFoodLog(log2);
+            foodGateway.addFoodLog(log3);
+
+            LocalDate testDate = LocalDate.of(2024, 1, 25);
+            GetDailyMacroSummaryInteractor interactor = new GetDailyMacroSummaryInteractor(
+                foodGateway, presenter
+            );
+
+            GetDailyMacroSummaryInputData inputData = new GetDailyMacroSummaryInputData("user111", testDate);
+            interactor.execute(inputData);
+
+            // Verify output aggregates all food logs correctly
+            assertEquals(1, presenter.getCallCount());
+            GetDailyMacroSummaryOutputData output = presenter.getCapturedOutput();
+            assertNotNull(output);
+            assertEquals(testDate, output.getDate());
+
+            // 2.0*80 + 1.0*50 + 1.0*80 = 290
+            assertEquals(290.0, output.getTotalMacro().calories(), 0.01);
+            // 2.0*3.0 + 1.0*0.0 + 1.0*3.0 = 9.0
+            assertEquals(9.0, output.getTotalMacro().proteinG(), 0.01);
+            // 2.0*1.0 + 1.0*5.0 + 1.0*1.0 = 8.0
+            assertEquals(8.0, output.getTotalMacro().fatG(), 0.01);
+            // 2.0*15.0 + 1.0*0.0 + 1.0*15.0 = 45.0
+            assertEquals(45.0, output.getTotalMacro().carbsG(), 0.01);
 
             passed++;
         } catch (AssertionError e) { failed++; }

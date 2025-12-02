@@ -53,10 +53,10 @@ public class FoodlogTest {
                     servings        // servings
             );
 
-            System.out.println("Food: " + apple.name);
-            System.out.println("Available servings: " + apple.servings.size());
-            System.out.println("Selected serving: " + serving100g.servingDescription +
-                    " → " + serving100g.calories + " kcal\n");
+            System.out.println("Food: " + apple.getName());
+            System.out.println("Available servings: " + apple.getServings().size());
+            System.out.println("Selected serving: " + serving100g.getServingDescription() +
+                    " → " + serving100g.getCalories() + " kcal\n");
 
             // Test 1: Create FoodLog with 1.5x the serving (150g) for Breakfast
             System.out.println("--- Test 1: Create FoodLog (150g = 1.5 servings, Breakfast) ---");

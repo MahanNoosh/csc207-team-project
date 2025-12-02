@@ -61,35 +61,35 @@ public class FoodLog {
      */
     private Macro createMacroFromServingInfo(final ServingInfo serving, final double multiplier) {
         final double caloriesValue;
-        if (serving.calories == null) {
+        if (serving.getCalories() == null) {
             caloriesValue = 0.0;
         }
         else {
-            caloriesValue = serving.calories * multiplier;
+            caloriesValue = serving.getCalories() * multiplier;
         }
 
         final double proteinValue;
-        if (serving.protein == null) {
+        if (serving.getProtein() == null) {
             proteinValue = 0.0;
         }
         else {
-            proteinValue = serving.protein * multiplier;
+            proteinValue = serving.getProtein() * multiplier;
         }
 
         final double fatValue;
-        if (serving.fat == null) {
+        if (serving.getFat() == null) {
             fatValue = 0.0;
         }
         else {
-            fatValue = serving.fat * multiplier;
+            fatValue = serving.getFat() * multiplier;
         }
 
         final double carbsValue;
-        if (serving.carbs == null) {
+        if (serving.getCarbs() == null) {
             carbsValue = 0.0;
         }
         else {
-            carbsValue = serving.carbs * multiplier;
+            carbsValue = serving.getCarbs() * multiplier;
         }
 
         return new Macro(caloriesValue, proteinValue, fatValue, carbsValue);
@@ -110,7 +110,7 @@ public class FoodLog {
      * @return consumed size
      */
     public double getActualServingSize() {
-        return servingInfo.servingAmount * servingMultiplier;
+        return servingInfo.getServingAmount() * servingMultiplier;
     }
 
     /**
@@ -119,7 +119,7 @@ public class FoodLog {
      * @return serving unit
      */
     public String getServingUnit() {
-        return servingInfo.servingUnit;
+        return servingInfo.getServingUnit();
     }
 
     /**
@@ -128,7 +128,7 @@ public class FoodLog {
      * @return description text
      */
     public String getServingDescription() {
-        return servingInfo.servingDescription;
+        return servingInfo.getServingDescription();
     }
 
     /**
@@ -204,7 +204,7 @@ public class FoodLog {
                     "New amount must be positive: " + newAmount
             );
         }
-        this.servingMultiplier = newAmount / servingInfo.servingAmount;
+        this.servingMultiplier = newAmount / servingInfo.getServingAmount();
         this.actualMacro = createMacroFromServingInfo(servingInfo, servingMultiplier);
     }
 }

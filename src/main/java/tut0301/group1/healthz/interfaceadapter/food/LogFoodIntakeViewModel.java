@@ -29,7 +29,6 @@ public class LogFoodIntakeViewModel {
         this.message = message;
     }
 
-
     public void setFoodLog(FoodLog foodLog) {
         this.foodLog = foodLog;
     }

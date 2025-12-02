@@ -140,17 +140,17 @@ public class SupabaseFoodLogDataAccess implements FoodLogDataAccessInterface {
         json.put(FoodLogFields.USER_ID, userId);
 
         final FoodDetails food = foodLog.getFood();
-        json.put(FoodLogFields.FOOD_ID, food.foodId);
-        json.put(FoodLogFields.FOOD_NAME, food.name);
-        json.put(FoodLogFields.FOOD_TYPE, JSONObject.wrap(food.foodType));
-        json.put(FoodLogFields.BRAND_NAME, JSONObject.wrap(food.brandName));
-        json.put(FoodLogFields.FOOD_URL, JSONObject.wrap(food.foodUrl));
+        json.put(FoodLogFields.FOOD_ID, food.getFoodId());
+        json.put(FoodLogFields.FOOD_NAME, food.getName());
+        json.put(FoodLogFields.FOOD_TYPE, JSONObject.wrap(food.getFoodType()));
+        json.put(FoodLogFields.BRAND_NAME, JSONObject.wrap(food.getBrandName()));
+        json.put(FoodLogFields.FOOD_URL, JSONObject.wrap(food.getFoodUrl()));
 
         final ServingInfo serving = foodLog.getServingInfo();
-        json.put(FoodLogFields.SERVING_ID, serving.servingId);
-        json.put(FoodLogFields.SERVING_DESCRIPTION, serving.servingDescription);
-        json.put(FoodLogFields.SERVING_AMOUNT, serving.servingAmount);
-        json.put(FoodLogFields.SERVING_UNIT, serving.servingUnit);
+        json.put(FoodLogFields.SERVING_ID, serving.getServingId());
+        json.put(FoodLogFields.SERVING_DESCRIPTION, serving.getServingDescription());
+        json.put(FoodLogFields.SERVING_AMOUNT, serving.getServingAmount());
+        json.put(FoodLogFields.SERVING_UNIT, serving.getServingUnit());
 
         final double multiplier = foodLog.getServingMultiplier();
         json.put(FoodLogFields.SERVING_MULTIPLIER, multiplier);
@@ -164,9 +164,9 @@ public class SupabaseFoodLogDataAccess implements FoodLogDataAccessInterface {
         json.put(FoodLogFields.CARBS, totalMacro.carbsG());
 
         // Optional macros: Use wrap + multiply helper to avoid inline ternary
-        json.put(FoodLogFields.FIBER, JSONObject.wrap(multiply(serving.fiber, multiplier)));
-        json.put(FoodLogFields.SUGAR, JSONObject.wrap(multiply(serving.sugar, multiplier)));
-        json.put(FoodLogFields.SODIUM, JSONObject.wrap(multiply(serving.sodium, multiplier)));
+        json.put(FoodLogFields.FIBER, JSONObject.wrap(multiply(serving.getFiber(), multiplier)));
+        json.put(FoodLogFields.SUGAR, JSONObject.wrap(multiply(serving.getSugar(), multiplier)));
+        json.put(FoodLogFields.SODIUM, JSONObject.wrap(multiply(serving.getSodium(), multiplier)));
 
         // Log Metadata
         json.put(FoodLogFields.MEAL, foodLog.getMeal());

@@ -2,18 +2,18 @@ package tut0301.group1.healthz.entities.nutrition;
 
 public class ServingInfo {
 
-    public final long servingId;
-    public final String servingDescription;
-    public final double servingAmount;
-    public final String servingUnit;
+    private final long servingId;
+    private final String servingDescription;
+    private final double servingAmount;
+    private final String servingUnit;
 
-    public final Double calories;
-    public final Double protein;
-    public final Double fat;
-    public final Double carbs;
-    public final Double fiber;
-    public final Double sugar;
-    public final Double sodium;
+    private final Double calories;
+    private final Double protein;
+    private final Double fat;
+    private final Double carbs;
+    private final Double fiber;
+    private final Double sugar;
+    private final Double sodium;
 
     public ServingInfo(long servingId,
                        String servingDescription,
@@ -37,6 +37,50 @@ public class ServingInfo {
         this.fiber = fiber;
         this.sugar = sugar;
         this.sodium = sodium;
+    }
+
+    public long getServingId() {
+        return this.servingId;
+    }
+
+    public String getServingDescription() {
+        return this.servingDescription;
+    }
+
+    public double getServingAmount() {
+        return this.servingAmount;
+    }
+
+    public String getServingUnit() {
+        return this.servingUnit;
+    }
+
+    public Double getCalories() {
+        return this.calories;
+    }
+
+    public Double getProtein() {
+        return this.protein;
+    }
+
+    public Double getFat() {
+        return this.fat;
+    }
+
+    public Double getCarbs() {
+        return this.carbs;
+    }
+
+    public Double getFiber() {
+        return this.fiber;
+    }
+
+    public Double getSugar() {
+        return this.sugar;
+    }
+
+    public Double getSodium() {
+        return this.sodium;
     }
 
     @Override

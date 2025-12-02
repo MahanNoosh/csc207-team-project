@@ -129,7 +129,7 @@ public class SingleMacroPage {
             return;
         }
 
-        if (details.servings == null || details.servings.isEmpty()) {
+        if (details.getServings() == null || details.getServings().isEmpty()) {
             Label empty = new Label("No serving information available.");
             empty.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
             empty.setTextFill(Color.web("#6B7280"));
@@ -137,16 +137,16 @@ public class SingleMacroPage {
             return;
         }
 
-        currentServing = details.servings.get(0);
-        foodItem = new FoodItem(details.name,
-                currentServing.calories != null ? currentServing.calories : 0,
-                currentServing.protein != null ? currentServing.protein : 0,
-                currentServing.fat != null ? currentServing.fat : 0,
-                currentServing.carbs != null ? currentServing.carbs : 0,
-                currentServing.servingDescription,
-                currentServing.fiber,
-                currentServing.sugar,
-                currentServing.sodium);
+        currentServing = details.getServings().get(0);
+        foodItem = new FoodItem(details.getName(),
+                currentServing.getCalories() != null ? currentServing.getCalories() : 0,
+                currentServing.getProtein() != null ? currentServing.getProtein() : 0,
+                currentServing.getFat() != null ? currentServing.getFat() : 0,
+                currentServing.getCarbs() != null ? currentServing.getCarbs() : 0,
+                currentServing.getServingDescription(),
+                currentServing.getFiber(),
+                currentServing.getSugar(),
+                currentServing.getSodium());
 
         contentWrapper.getChildren().addAll(createTopContent(), createCenterContent(), createMicronutrientSection());
     }
@@ -245,8 +245,8 @@ public class SingleMacroPage {
 
         // 4. Find the correct ServingInfo object
         ServingInfo selectedServing = null;
-        for (ServingInfo s : foodDetails.servings) {
-            if (s.servingDescription.equals(servingSizeDesc)) {
+        for (ServingInfo s : foodDetails.getServings()) {
+            if (s.getServingDescription().equals(servingSizeDesc)) {
                 selectedServing = s;
                 break;
             }
@@ -264,7 +264,7 @@ public class SingleMacroPage {
         }
 
         // 6. Execute Use Case
-        System.out.println("LOGGING: " + foodDetails.name + " | x" + multiplier + " | " + meal);
+        System.out.println("LOGGING: " + foodDetails.getName() + " | x" + multiplier + " | " + meal);
 
         logController.logFood(
                 userId,
@@ -279,8 +279,8 @@ public class SingleMacroPage {
         alert.setTitle("Success");
         alert.setHeaderText("Food Logged");
         alert.setContentText(
-                "Successfully added " + foodDetails.name + "\n"
-                        + "(" + multiplier + "x " + selectedServing.servingDescription + ") to " + meal + "."
+                "Successfully added " + foodDetails.getName() + "\n"
+                        + "(" + multiplier + "x " + selectedServing.getServingDescription() + ") to " + meal + "."
         );
         alert.showAndWait();
     }
@@ -360,12 +360,12 @@ public class SingleMacroPage {
 
         servingComboBox = new ComboBox<>();
         FoodDetails details = viewModel.getDetails();
-        if (details != null && details.servings != null) {
-            for (ServingInfo serving : details.servings) {
-                servingComboBox.getItems().add(serving.servingDescription);
+        if (details != null && details.getServings() != null) {
+            for (ServingInfo serving : details.getServings()) {
+                servingComboBox.getItems().add(serving.getServingDescription());
             }
-            if (!details.servings.isEmpty()) {
-                servingComboBox.setValue(details.servings.get(0).servingDescription);
+            if (!details.getServings().isEmpty()) {
+                servingComboBox.setValue(details.getServings().get(0).getServingDescription());
             }
         }
 
@@ -444,22 +444,22 @@ public class SingleMacroPage {
         }
 
         FoodDetails details = viewModel.getDetails();
-        if (details == null || details.servings == null) {
+        if (details == null || details.getServings() == null) {
             return;
         }
 
-        for (ServingInfo serving : details.servings) {
-            if (serving.servingDescription.equals(selectedServing)) {
+        for (ServingInfo serving : details.getServings()) {
+            if (serving.getServingDescription().equals(selectedServing)) {
                 currentServing = serving;
-                foodItem = new FoodItem(details.name,
-                        serving.calories != null ? serving.calories : 0,
-                        serving.protein != null ? serving.protein : 0,
-                        serving.fat != null ? serving.fat : 0,
-                        serving.carbs != null ? serving.carbs : 0,
-                        serving.servingDescription,
-                        serving.fiber,
-                        serving.sugar,
-                        serving.sodium);
+                foodItem = new FoodItem(details.getName(),
+                        serving.getCalories() != null ? serving.getCalories() : 0,
+                        serving.getProtein() != null ? serving.getProtein() : 0,
+                        serving.getFat() != null ? serving.getFat() : 0,
+                        serving.getCarbs() != null ? serving.getCarbs() : 0,
+                        serving.getServingDescription(),
+                        serving.getFiber(),
+                        serving.getSugar(),
+                        serving.getSodium());
                 updateChartDisplay();
                 break;
             }
@@ -627,7 +627,7 @@ public class SingleMacroPage {
         servingLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
         servingLabel.setTextFill(Color.web("#374151"));
 
-        Label servingValue = new Label(currentServing.servingDescription);
+        Label servingValue = new Label(currentServing.getServingDescription());
         servingValue.setFont(Font.font("Inter", FontWeight.BOLD, 16));
         servingValue.setTextFill(Color.web("#111827"));
 
@@ -643,10 +643,10 @@ public class SingleMacroPage {
                         "-fx-padding: 0;"
         );
 
-        if (currentServing.calories != null) {
+        if (currentServing.getCalories() != null) {
             nutritionPanel.getChildren().add(createNutritionRow(
                     "Calories",
-                    String.format("%.0f", currentServing.calories),
+                    String.format("%.0f", currentServing.getCalories()),
                     "",
                     true,
                     false
@@ -686,10 +686,10 @@ public class SingleMacroPage {
             ));
 
             // Sugar as indent
-            if (currentServing.sugar != null && currentServing.sugar > 0) {
+            if (currentServing.getSugar() != null && currentServing.getSugar() > 0) {
                 nutritionPanel.getChildren().add(createNutritionRow(
                         "  Sugars",
-                        String.format("%.1fg", currentServing.sugar),
+                        String.format("%.1fg", currentServing.getSugar()),
                         "",
                         false,
                         true
@@ -697,11 +697,11 @@ public class SingleMacroPage {
             }
 
             // Fiber as indent
-            if (currentServing.fiber != null && currentServing.fiber > 0) {
-                String fiberDV = String.format("%.0f%%", (currentServing.fiber / 28) * 100);
+            if (currentServing.getFiber() != null && currentServing.getFiber() > 0) {
+                String fiberDV = String.format("%.0f%%", (currentServing.getFiber() / 28) * 100);
                 nutritionPanel.getChildren().add(createNutritionRow(
                         "  Dietary Fiber",
-                        String.format("%.1fg", currentServing.fiber),
+                        String.format("%.1fg", currentServing.getFiber()),
                         fiberDV,
                         false,
                         true
@@ -726,11 +726,11 @@ public class SingleMacroPage {
         nutritionPanel.getChildren().add(createDivider(8));
 
         // Sodium
-        if (currentServing.sodium != null && currentServing.sodium > 0) {
-            String sodiumDV = String.format("%.0f%%", (currentServing.sodium / 2300) * 100);
+        if (currentServing.getSodium() != null && currentServing.getSodium() > 0) {
+            String sodiumDV = String.format("%.0f%%", (currentServing.getSodium() / 2300) * 100);
             nutritionPanel.getChildren().add(createNutritionRow(
                     "Sodium",
-                    String.format("%.0fmg", currentServing.sodium),
+                    String.format("%.0fmg", currentServing.getSodium()),
                     sodiumDV,
                     false,
                     false

@@ -22,7 +22,7 @@ public class FoodLogAndDetailsTest {
             FoodLog log = new FoodLog(f, s, 1.5, "Breakfast", t);
 
             assert log.getFood() == f;
-            assert log.getFood().name.equals("Apple");
+            assert log.getFood().getName().equals("Apple");
             assert log.getServingInfo() == s;
             assert Math.abs(log.getServingMultiplier() - 1.5) < 0.001;
             assert log.getLoggedAt().equals(t);
@@ -262,8 +262,8 @@ public class FoodLogAndDetailsTest {
 
             FoodDetails result = log.getFood();
             assert result == f;
-            assert result.foodId == 1;
-            assert result.name.equals("Apple");
+            assert result.getFoodId() == 1;
+            assert result.getName().equals("Apple");
             passed++;
         } catch (AssertionError e) { failed++; }
 
@@ -275,8 +275,8 @@ public class FoodLogAndDetailsTest {
 
             ServingInfo result = log.getServingInfo();
             assert result == s;
-            assert result.servingId == 1001;
-            assert result.servingDescription.equals("100 g");
+            assert result.getServingId() == 1001;
+            assert result.getServingDescription().equals("100 g");
             passed++;
         } catch (AssertionError e) { failed++; }
 

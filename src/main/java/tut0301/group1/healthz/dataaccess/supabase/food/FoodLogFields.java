@@ -40,6 +40,7 @@ public final class FoodLogFields {
 
     /**
      * Returns all field names as a comma-separated string for SELECT queries.
+     * @return String
      */
     public static String projection() {
         return String.join(",",
