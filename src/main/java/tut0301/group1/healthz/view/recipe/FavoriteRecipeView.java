@@ -15,20 +15,16 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import tut0301.group1.healthz.entities.nutrition.Recipe;
-import tut0301.group1.healthz.entities.nutrition.RecipeIngredient;
 import tut0301.group1.healthz.navigation.Navigator;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
 import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeViewModel;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Favorite Recipes View
  */
-
 public class FavoriteRecipeView {
     private Scene scene;
     private String username;
@@ -510,5 +506,4 @@ public class FavoriteRecipeView {
      * Get back button - for navigation logic
      */
     public Button getBackButton() { return backButton; }
-
 }
