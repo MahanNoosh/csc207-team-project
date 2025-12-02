@@ -51,6 +51,12 @@ public class SingleMacroPage {
 
     /**
      * Updated Constructor to accept LogFoodIntake dependencies
+     * @param controller the MacroDetailController
+     * @param viewModel the MacroDetailViewModel
+     * @param logController LogFoodIntakeController
+     * @param logViewModel LogFoodIntakeViewModel
+     * @param userId the ID
+     * @param navigator the navigator
      */
     public SingleMacroPage(MacroDetailController controller,
                            MacroDetailViewModel viewModel,
@@ -201,9 +207,9 @@ public class SingleMacroPage {
     // [New Implementation] Handle Adding Food to Log
     private void handleAddToLog() {
         // 1. Get raw input
-        String servingSizeDesc = servingComboBox.getValue();
-        String servingsCountStr = servingsCountField.getText();
-        String meal = mealComboBox.getValue();
+        final String servingSizeDesc = servingComboBox.getValue();
+        final String servingsCountStr = servingsCountField.getText();
+        final String meal = mealComboBox.getValue();
 
         // 2. Validate input
         if (servingSizeDesc == null || servingSizeDesc.isEmpty()) {
@@ -216,10 +222,11 @@ public class SingleMacroPage {
             return;
         }
 
-        double multiplier;
+        final double multiplier;
         try {
             multiplier = Double.parseDouble(servingsCountStr);
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException numberFormatException) {
             showErrorMessage("Please enter a valid number for servings");
             return;
         }
@@ -230,7 +237,7 @@ public class SingleMacroPage {
         }
 
         // 3. Get FoodDetails
-        FoodDetails foodDetails = viewModel.getDetails();
+        final FoodDetails foodDetails = viewModel.getDetails();
         if (foodDetails == null) {
             showErrorMessage("Food details not loaded.");
             return;
@@ -268,12 +275,12 @@ public class SingleMacroPage {
         );
 
         // 7. Show success feedback
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        final Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Success");
         alert.setHeaderText("Food Logged");
         alert.setContentText(
-                "Successfully added " + foodDetails.name + "\n" +
-                        "(" + multiplier + "x " + selectedServing.servingDescription + ") to " + meal + "."
+                "Successfully added " + foodDetails.name + "\n"
+                        + "(" + multiplier + "x " + selectedServing.servingDescription + ") to " + meal + "."
         );
         alert.showAndWait();
     }
@@ -365,12 +372,11 @@ public class SingleMacroPage {
         servingComboBox.setPrefHeight(55);
         servingComboBox.setPrefWidth(400);
         servingComboBox.setStyle(
-                "-fx-background-color: white; " +
-                        "-fx-border-color: #D1D5DB; " +
-                        "-fx-border-radius: 8px; " +
-                        "-fx-background-radius: 8px; " +
-                        "-fx-border-width: 2px; " +
-                        "-fx-font-size: 16px;"
+                "-fx-background-color: white; " + "-fx-border-color: #D1D5DB; "
+                        +"-fx-border-radius: 8px; "
+                        +"-fx-background-radius: 8px; "
+                        +"-fx-border-width: 2px; "
+                        +"-fx-font-size: 16px;"
         );
 
         servingComboBox.setOnAction(e -> updateServingSelection());

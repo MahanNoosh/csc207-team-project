@@ -1,7 +1,11 @@
 package tut0301.group1.healthz.view.nutrition;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,7 +14,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import tut0301.group1.healthz.entities.nutrition.BasicFood;
 import tut0301.group1.healthz.entities.nutrition.Macro;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
 import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
@@ -23,12 +26,6 @@ import tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryViewMode
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.view.components.Sidebar;
 import tut0301.group1.healthz.navigation.Navigator;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class FoodLogView {
     private Scene scene;

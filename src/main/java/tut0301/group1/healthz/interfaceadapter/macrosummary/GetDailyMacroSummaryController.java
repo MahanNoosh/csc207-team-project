@@ -1,18 +1,16 @@
 package tut0301.group1.healthz.interfaceadapter.macrosummary;
 
+import java.time.LocalDate;
+
 import tut0301.group1.healthz.usecase.macrosummary.GetDailyMacroSummaryInputBoundary;
 import tut0301.group1.healthz.usecase.macrosummary.GetDailyMacroSummaryInputData;
 
-import java.time.LocalDate;
-
 /**
  * Controller for Get Daily Calorie Summary functionality.
- *
  * Responsibilities:
  * - Receives user input from the View
  * - Creates InputData objects
  * - Calls the Interactor (Use Case)
- *
  * Clean Architecture compliance:
  * - Controller does NOT know about Presenter or ViewModel
  * - Controller only knows about Interactor (through InputBoundary interface)
@@ -36,6 +34,7 @@ public class GetDailyMacroSummaryController {
      *
      * @param userId The user ID
      * @param date The date to get summary for
+     * @throws IllegalArgumentException if userId date  is null
      */
     public void execute(String userId, LocalDate date) {
         if (userId == null || userId.trim().isEmpty()) {
@@ -45,7 +44,7 @@ public class GetDailyMacroSummaryController {
             throw new IllegalArgumentException("Date cannot be null");
         }
 
-        GetDailyMacroSummaryInputData inputData = new GetDailyMacroSummaryInputData(userId, date);
+        final GetDailyMacroSummaryInputData inputData = new GetDailyMacroSummaryInputData(userId, date);
         interactor.execute(inputData);
     }
 

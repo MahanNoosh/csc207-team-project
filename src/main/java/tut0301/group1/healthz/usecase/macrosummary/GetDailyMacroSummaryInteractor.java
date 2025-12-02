@@ -1,5 +1,6 @@
 package tut0301.group1.healthz.usecase.macrosummary;
 
+import java.io.IOException;
 import java.util.List;
 
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
@@ -58,7 +59,7 @@ public class GetDailyMacroSummaryInteractor implements GetDailyMacroSummaryInput
             outputBoundary.presentDailySummary(outputData);
 
         }
-        catch (Exception exception) {
+        catch (IOException exception) {
             outputBoundary.presentError("Failed to retrieve daily summary: " + exception.getMessage());
         }
     }

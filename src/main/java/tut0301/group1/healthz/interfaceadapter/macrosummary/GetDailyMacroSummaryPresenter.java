@@ -5,10 +5,8 @@ import tut0301.group1.healthz.usecase.macrosummary.GetDailyMacroSummaryOutputDat
 
 /**
  * Presenter for Get Daily Calorie Summary functionality.
- *
  * Implements GetDailyCalorieSummaryOutputBoundary from the Use Case layer.
  * Updates the GetDailyCalorieSummaryViewModel based on summary results.
- *
  * Clean Architecture compliance:
  * - Presenter (Interface Adapter layer) implements OutputBoundary (Use Case layer interface)
  * - Presenter converts OutputData to ViewModel format
@@ -38,8 +36,6 @@ public class GetDailyMacroSummaryPresenter implements GetDailyMacroSummaryOutput
         viewModel.clear();
         viewModel.setErrorMessage(errorMessage);
         viewModel.setLoading(false);
-
-        System.err.println("❌ Daily calorie summary error: " + errorMessage);
     }
 
     public GetDailyMacroSummaryViewModel getViewModel() {
