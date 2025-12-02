@@ -1,7 +1,7 @@
-package tut0301.group1.healthz.usecase.favoriterecipes;
+package healthz.tut0301.group1.usecase.favoriterecipes;
 
-import tut0301.group1.healthz.entities.nutrition.Recipe;
-import tut0301.group1.healthz.usecase.favoriterecipe.FavoriteRecipeGateway;
+import healthz.tut0301.group1.entities.nutrition.Recipe;
+import healthz.tut0301.group1.usecase.favoriterecipe.FavoriteRecipeGateway;
 
 import java.util.*;
 
@@ -19,7 +19,7 @@ public class InMemoryFavoriteRecipeGateway implements FavoriteRecipeGateway {
                         "1",
                         "Pasta Carbonara",
                         "Creamy pasta dish",
-                        new ArrayList<>(),
+                        Optional.of(new ArrayList<>()),
                         new ArrayList<>(),
                         Optional.of(10),
                         Optional.of(10),
@@ -31,7 +31,7 @@ public class InMemoryFavoriteRecipeGateway implements FavoriteRecipeGateway {
                         "2",
                         "Caesar Salad",
                         "Fresh salad",
-                        new ArrayList<>(),
+                        Optional.of(new ArrayList<>()),
                         new ArrayList<>(),
                         Optional.of(5),
                         Optional.of(5),
@@ -43,7 +43,7 @@ public class InMemoryFavoriteRecipeGateway implements FavoriteRecipeGateway {
                         id,
                         "Recipe " + id,
                         "Description " + id,
-                        new ArrayList<>(),
+                        Optional.of(new ArrayList<>()),
                         new ArrayList<>(),
                         Optional.of(1),
                         Optional.of(1),

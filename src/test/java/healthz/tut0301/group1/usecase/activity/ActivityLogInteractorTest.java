@@ -1,8 +1,9 @@
-package tut0301.group1.healthz.usecase.activity.activitylog;
+package healthz.tut0301.group1.usecase.activity;
 
+import healthz.tut0301.group1.usecase.activity.activitylog.*;
 import org.junit.jupiter.api.Test;
-import tut0301.group1.healthz.entities.Dashboard.*;
-import tut0301.group1.healthz.usecase.activity.exercisefinder.*;
+import healthz.tut0301.group1.entities.Dashboard.*;
+import healthz.tut0301.group1.usecase.activity.exercisefinder.*;
 
 import java.time.LocalDateTime;
 import java.util.*;

@@ -1,10 +1,10 @@
-package tut0301.group1.healthz.usecase.favoriterecipes;
+package healthz.tut0301.group1.usecase.favoriterecipes;
 
 import org.junit.jupiter.api.Test;
-import tut0301.group1.healthz.entities.nutrition.Recipe;
-import tut0301.group1.healthz.usecase.favoriterecipe.AddFavoriteInputBoundary;
-import tut0301.group1.healthz.usecase.favoriterecipe.AddFavoriteInteractor;
-import tut0301.group1.healthz.usecase.favoriterecipe.FavoriteRecipeGateway;
+import healthz.tut0301.group1.entities.nutrition.Recipe;
+import healthz.tut0301.group1.usecase.favoriterecipe.AddFavoriteInputBoundary;
+import healthz.tut0301.group1.usecase.favoriterecipe.AddFavoriteInteractor;
+import healthz.tut0301.group1.usecase.favoriterecipe.FavoriteRecipeGateway;
 
 import java.util.ArrayList;
 import java.util.List;

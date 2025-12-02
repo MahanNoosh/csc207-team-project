@@ -1,8 +1,8 @@
 package healthz.tut0301.group1.usecase.auth;
 
-import tut0301.group1.healthz.dataaccess.*;
-import tut0301.group1.healthz.entities.user.*;
-import tut0301.group1.healthz.usecase.auth.model.*;
+import healthz.tut0301.group1.dataaccess.*;
+import healthz.tut0301.group1.entities.user.*;
+import healthz.tut0301.group1.usecase.auth.model.*;
 import healthz.tut0301.group1.dataaccess.ClockGateway;
 import healthz.tut0301.group1.dataaccess.PasswordHasher;
 import healthz.tut0301.group1.dataaccess.TokenIssuer;

@@ -1,8 +1,8 @@
-package tut0301.group1.healthz.usecase.favoriterecipes;
+package healthz.tut0301.group1.usecase.favoriterecipes;
 
 import org.junit.jupiter.api.Test;
-import tut0301.group1.healthz.entities.nutrition.Recipe;
-import tut0301.group1.healthz.usecase.favoriterecipe.*;
+import healthz.tut0301.group1.entities.nutrition.Recipe;
+import healthz.tut0301.group1.usecase.favoriterecipe.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ class DeleteFavoriteInteractorTest {
                 "2",
                 "Caesar Salad",
                 "Creamy pasta dish",
-                List.of(),
+                Optional.of(List.of()),
                 new ArrayList<>(),
                 Optional.of(500),
                 Optional.of(45),

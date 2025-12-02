@@ -1,11 +1,11 @@
-package tut0301.group1.healthz.usecase.favoriterecipes;
+package healthz.tut0301.group1.usecase.favoriterecipes;
 
 import org.junit.jupiter.api.Test;
-import tut0301.group1.healthz.entities.nutrition.Recipe;
-import tut0301.group1.healthz.usecase.favoriterecipe.FavoriteRecipeGateway;
-import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesInputBoundary;
-import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesInteractor;
-import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesOutputBoundary;
+import healthz.tut0301.group1.entities.nutrition.Recipe;
+import healthz.tut0301.group1.usecase.favoriterecipe.FavoriteRecipeGateway;
+import healthz.tut0301.group1.usecase.favoriterecipe.LoadFavoritesInputBoundary;
+import healthz.tut0301.group1.usecase.favoriterecipe.LoadFavoritesInteractor;
+import healthz.tut0301.group1.usecase.favoriterecipe.LoadFavoritesOutputBoundary;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ class LoadFavoritesInteractorTest {
                 "1",
                 "Pasta Carbonara",
                 "Creamy pasta dish",
-                List.of(),
+                Optional.of(List.of()),
                 new ArrayList<>(),
                 Optional.of(500),
                 Optional.of(45),
@@ -41,7 +41,7 @@ class LoadFavoritesInteractorTest {
                 "2",
                 "Caesar Salad",
                 "Fresh salad",
-                List.of(),
+                Optional.of(List.of()),
                 new ArrayList<>(),
                 Optional.of(300),
                 Optional.of(10),
