@@ -681,7 +681,7 @@ public class Navigator {
      * Navigate to Log In Page
      */
     public void showLogin() {
-        LoginView loginView = new LoginView();
+        final LoginView loginView = new LoginView();
 
         // Sign up link -> go to signup
         loginView.getSignUpButton().setOnAction(e -> {
@@ -693,45 +693,45 @@ public class Navigator {
         loginView.getLoginButton().setOnAction(e -> {
             System.out.println("Logging in with " + loginView.getEmail());
 
-            String url  = System.getenv("SUPABASE_URL");
-            String anon = System.getenv("SUPABASE_ANON_KEY");
+            final String url = System.getenv("SUPABASE_URL");
+            final String anon = System.getenv("SUPABASE_ANON_KEY");
             if (url == null || anon == null) {
                 System.err.println("Set SUPABASE_URL and SUPABASE_ANON_KEY");
                 showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
                 return;
             }
 
-            SupabaseClient client = new SupabaseClient(url, anon);
-            AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
-            LoginViewModel loginVM = new LoginViewModel();
-            LoginPresenter loginPresenter = new LoginPresenter(loginVM);
-            LoginInputBoundary loginUC = new LoginInteractor(authGateway, loginPresenter);
-            LoginController loginController = new LoginController(loginUC, loginPresenter);
+            try {
+                final SupabaseClient client = new SupabaseClient(url, anon);
+                final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
+                final LoginViewModel loginViewModel = new LoginViewModel();
+                final LoginPresenter loginPresenter = new LoginPresenter(loginViewModel);
+                final LoginInputBoundary loginUseCase = new LoginInteractor(authGateway, loginPresenter);
+                final LoginController loginController = new LoginController(loginUseCase, loginPresenter);
 
-            // 1) Try login
-            loginController.login(loginView.getEmail(), loginView.getPassword());
+                // 1) Try login (can throw Exception)
+                loginController.login(loginView.getEmail(), loginView.getPassword());
 
-            if (loginVM.isLoggedIn()) {
-                System.out.println("Login successful, ensuring profile row exists...");
+                if (loginViewModel.isLoggedIn()) {
+                    System.out.println("Login successful, ensuring profile row exists...");
 
-                this.authenticatedClient = client;
+                    authenticatedClient = client;
 
-                try {
-                    // 2) Make sure user_data row exists (create blank if missing)
-                    SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
+                    // 2) Make sure user_data row exists (can throw Exception)
+                    final SupabaseUserDataDataAccessObject userDataGateway =
+                            new SupabaseUserDataDataAccessObject(client);
                     userDataGateway.createBlankForCurrentUserIfMissing();
                     System.out.println("user_data row present/created.");
-                } catch (Exception ex) {
-                    System.err.println("Failed to init user_data row: " + ex.getMessage());
-                    // optional: showError("Logged in, but could not initialize your profile data.");
-                }
 
-                // 3) Continue to main app
-                showMainApp();
-            } else {
-                System.out.println("Login failed.");
-                showError("Login failed. Please check your email and password, or verify your email.");
-                // stay on the same login screen
+                    // 3) Continue to main app
+                    showMainApp();
+                } else {
+                    System.out.println("Login failed.");
+                    showError("Login failed. Please check your email and password, or verify your email.");
+                }
+            } catch (Exception ex) {
+                System.err.println("Login error: " + ex.getMessage());
+                showError("Login error: " + ex.getMessage());
             }
         });
 
@@ -834,7 +834,7 @@ public class Navigator {
         });
     }
 
-    private void tryLoginAndSaveProfileOnce(boolean silent) {
+    private void tryLoginAndSaveProfileOnce(final boolean silent) {
         if (pendingSignupData == null) {
             if (!silent) {
                 showError("No signup in progress. Please sign up again.");
@@ -842,10 +842,10 @@ public class Navigator {
             return;
         }
 
-        SignupView.SignupData signupData = pendingSignupData;
+        final SignupView.SignupData signupData = pendingSignupData;
 
-        String url  = System.getenv("SUPABASE_URL");
-        String anon = System.getenv("SUPABASE_ANON_KEY");
+        final String url = System.getenv("SUPABASE_URL");
+        final String anon = System.getenv("SUPABASE_ANON_KEY");
         if (url == null || anon == null) {
             if (!silent) {
                 showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
@@ -853,52 +853,51 @@ public class Navigator {
             return;
         }
 
-        SupabaseClient client = new SupabaseClient(url, anon);
-
-        AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
-        LoginViewModel loginVM = new LoginViewModel();
-        LoginPresenter loginPresenter = new LoginPresenter(loginVM);
-        LoginInputBoundary loginUC = new LoginInteractor(authGateway, loginPresenter);
-        LoginController loginController = new LoginController(loginUC, loginPresenter);
-
-        System.out.println("Attempting login for " + signupData.getEmail());
-        loginController.login(signupData.getEmail(), signupData.getPassword());
-
-        if (!loginVM.isLoggedIn()) {
-            System.out.println("Still not logged in (email probably not verified yet).");
-            if (!silent) {
-                showError(
-                        "We couldn't log you in yet.\n" +
-                                "Please make sure you clicked the verification link in your email,\n" +
-                                "then try again."
-                );
-            }
-            return;
-        }
-
         try {
-            String userId = loginVM.getUserId();
+            final SupabaseClient client = new SupabaseClient(url, anon);
+            final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
+            final LoginViewModel loginViewModel = new LoginViewModel();
+            final LoginPresenter loginPresenter = new LoginPresenter(loginViewModel);
+            final LoginInputBoundary loginUseCase = new LoginInteractor(authGateway, loginPresenter);
+            final LoginController loginController = new LoginController(loginUseCase, loginPresenter);
+
+            System.out.println("Attempting login for " + signupData.getEmail());
+            // <-- this can throw Exception, we now catch it
+            loginController.login(signupData.getEmail(), signupData.getPassword());
+
+            if (!loginViewModel.isLoggedIn()) {
+                System.out.println("Still not logged in (email probably not verified yet).");
+                if (!silent) {
+                    showError(
+                            "We couldn't log you in yet.\n"
+                                    + "Please make sure you clicked the verification link in your email,\n"
+                                    + "then try again."
+                    );
+                }
+                return;
+            }
+
+            final String userId = loginViewModel.getUserId();
             System.out.println("Login succeeded. userId = " + userId);
 
-            this.authenticatedClient = client;
+            authenticatedClient = client;
 
             // Map signup data -> Profile
-            var profile = SignupProfileMapper.toProfile(userId, signupData);
+            final Profile profile = SignupProfileMapper.toProfile(userId, signupData);
 
-            // Save profile
-            SupabaseUserDataDataAccessObject userDataGateway = new SupabaseUserDataDataAccessObject(client);
+            // Save profile (also can throw Exception)
+            final SupabaseUserDataDataAccessObject userDataGateway =
+                    new SupabaseUserDataDataAccessObject(client);
             userDataGateway.upsertProfile(profile);
 
             System.out.println("Profile saved successfully. Navigating to main app...");
 
-            // Stop if running
             if (emailCheckTimeline != null) {
                 emailCheckTimeline.stop();
                 emailCheckTimeline = null;
             }
 
             showMainApp();
-
         } catch (Exception ex) {
             System.err.println("Login / profile save failed: " + ex.getMessage());
             if (!silent) {
@@ -906,6 +905,7 @@ public class Navigator {
             }
         }
     }
+
 
     private void resendVerificationEmail(SignupView.SignupData signupData, EmailVerificationView view) {
         String url  = System.getenv("SUPABASE_URL");

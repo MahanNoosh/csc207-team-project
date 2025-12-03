@@ -1,7 +1,6 @@
 package tut0301.group1.healthz.usecase.auth.signup;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 
 /**
@@ -15,10 +14,11 @@ public class SignupInteractor implements SignupInputBoundary {
     /**
      * Creates a new signup interactor.
      *
-     * @param authGateway the auth gateway
-     * @param presenter   the presenter
+     * @param authGateway the authentication gateway used to perform signup
+     * @param presenter   the presenter used to prepare the signup views
      */
-    public SignupInteractor(AuthGateway authGateway, SignupOutputBoundary presenter) {
+    public SignupInteractor(final AuthGateway authGateway,
+                            final SignupOutputBoundary presenter) {
         this.authGateway = authGateway;
         this.presenter = presenter;
     }
@@ -27,45 +27,22 @@ public class SignupInteractor implements SignupInputBoundary {
      * Executes the sign-up flow.
      *
      * @param input the sign-up data
+     * @throws Exception if the authentication gateway encounters an error
      */
     @Override
-    public void execute(SignupInputData input) {
+    public void execute(final SignupInputData input) throws Exception {
         if (!input.passwordsMatch()) {
             presenter.prepareFailView("Passwords do not match.");
-            return;
         }
-
-        try {
+        else {
             authGateway.signUpEmail(
                     input.getEmail(),
                     input.getPassword1(),
                     input.getDisplayName()
             );
 
-            presenter.prepareSuccessView(new SignupOutputData(input.getEmail()));
-
-        } catch (Exception ex) {
-            String message = extractMessage(ex.getMessage());
-            presenter.prepareFailView("Sign-up failed: " + message);
+            final SignupOutputData outputData = new SignupOutputData(input.getEmail());
+            presenter.prepareSuccessView(outputData);
         }
-    }
-
-    private String extractMessage(String raw) {
-        if (raw == null || raw.isEmpty()) {
-            return "Unknown error.";
-        }
-        int brace = raw.indexOf('{');
-        if (brace >= 0) {
-            try {
-                JSONObject json = new JSONObject(raw.substring(brace));
-                String msg = json.optString("msg");
-                if (!msg.isEmpty()) {
-                    return msg;
-                }
-            } catch (JSONException ignored) {
-                // keep original
-            }
-        }
-        return raw;
     }
 }

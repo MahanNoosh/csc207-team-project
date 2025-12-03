@@ -1,9 +1,15 @@
 package tut0301.group1.healthz.usecase.auth.login;
 
-import org.junit.jupiter.api.Test;
-import tut0301.group1.healthz.usecase.auth.AuthGateway;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import tut0301.group1.healthz.usecase.auth.AuthGateway;
 
 class LoginInteractorTest {
 
@@ -26,12 +32,14 @@ class LoginInteractorTest {
         RuntimeException exceptionToThrow = new RuntimeException("Network error");
 
         @Override
-        public void signUpEmail(String email, String password, String displayName) {
+        public void signUpEmail(final String email,
+                                final String password,
+                                final String displayName) {
             throw new UnsupportedOperationException("Not used in Login tests");
         }
 
         @Override
-        public void signInEmail(String email, String password) throws Exception {
+        public void signInEmail(final String email, final String password) throws Exception {
             signInCalled = true;
             emailUsed = email;
             passwordUsed = password;
@@ -42,7 +50,7 @@ class LoginInteractorTest {
         }
 
         @Override
-        public void requestPasswordReset(String email, String redirectUrl) {
+        public void requestPasswordReset(final String email, final String redirectUrl) {
             throw new UnsupportedOperationException("Not used in Login tests");
         }
 
@@ -72,61 +80,56 @@ class LoginInteractorTest {
         }
 
         @Override
-        public void resendSignupVerification(String email) {
+        public void resendSignupVerification(final String email) {
             throw new UnsupportedOperationException("Not used in Login tests");
         }
     }
 
     private static class FakePresenter implements LoginOutputBoundary {
 
-        boolean successCalled = false;
-        boolean failCalled = false;
+        boolean successCalled;
+        boolean failCalled;
 
         LoginOutputData successData;
         String errorMessage;
 
         @Override
-        public void prepareSuccessView(LoginOutputData outputData) {
+        public void prepareSuccessView(final LoginOutputData outputData) {
             successCalled = true;
             successData = outputData;
         }
 
         @Override
-        public void prepareFailView(String errorMessage) {
+        public void prepareFailView(final String errorMessage) {
             failCalled = true;
             this.errorMessage = errorMessage;
         }
     }
 
     @Test
-    void execute_successfulLogin_callsSuccessView() {
-        FakeAuthGateway auth = new FakeAuthGateway();
-        FakePresenter presenter = new FakePresenter();
-        LoginInteractor interactor = new LoginInteractor(auth, presenter);
+    void execute_successfulLogin_callsSuccessView() throws Exception {
+        final FakeAuthGateway auth = new FakeAuthGateway();
+        final FakePresenter presenter = new FakePresenter();
+        final LoginInteractor interactor = new LoginInteractor(auth, presenter);
 
-        // Input
-        LoginInputData input = new LoginInputData("user@example.com", "password123");
+        final LoginInputData input = new LoginInputData("user@example.com", "password123");
 
-        // Simulated successful login responses
         auth.accessToken = "access-token-123";
         auth.refreshToken = "refresh-token-456";
         auth.currentUserId = "user-id-789";
         auth.currentUserEmail = "user@example.com";
-        auth.currentUserName = "John Doe"; // not used in interactor but available
+        auth.currentUserName = "John Doe";
 
-        // Act
         interactor.execute(input);
 
-        // Assert auth was called
         assertTrue(auth.signInCalled);
         assertEquals("user@example.com", auth.emailUsed);
         assertEquals("password123", auth.passwordUsed);
 
-        // Assert presenter success
         assertTrue(presenter.successCalled);
         assertFalse(presenter.failCalled);
 
-        LoginOutputData out = presenter.successData;
+        final LoginOutputData out = presenter.successData;
 
         assertEquals("access-token-123", out.getAccessToken());
         assertEquals("refresh-token-456", out.getRefreshToken());
@@ -135,14 +138,13 @@ class LoginInteractorTest {
     }
 
     @Test
-    void execute_missingAccessToken_callsFailView() {
-        FakeAuthGateway auth = new FakeAuthGateway();
-        FakePresenter presenter = new FakePresenter();
-        LoginInteractor interactor = new LoginInteractor(auth, presenter);
+    void execute_missingAccessToken_callsFailView() throws Exception {
+        final FakeAuthGateway auth = new FakeAuthGateway();
+        final FakePresenter presenter = new FakePresenter();
+        final LoginInteractor interactor = new LoginInteractor(auth, presenter);
 
-        LoginInputData input = new LoginInputData("user@example.com", "pwd");
+        final LoginInputData input = new LoginInputData("user@example.com", "pwd");
 
-        // missing token → should fail
         auth.accessToken = null;
         auth.currentUserId = "user-id";
 
@@ -154,15 +156,15 @@ class LoginInteractorTest {
     }
 
     @Test
-    void execute_missingUserId_callsFailView() {
-        FakeAuthGateway auth = new FakeAuthGateway();
-        FakePresenter presenter = new FakePresenter();
-        LoginInteractor interactor = new LoginInteractor(auth, presenter);
+    void execute_missingUserId_callsFailView() throws Exception {
+        final FakeAuthGateway auth = new FakeAuthGateway();
+        final FakePresenter presenter = new FakePresenter();
+        final LoginInteractor interactor = new LoginInteractor(auth, presenter);
 
-        LoginInputData input = new LoginInputData("user@example.com", "pwd");
+        final LoginInputData input = new LoginInputData("user@example.com", "pwd");
 
         auth.accessToken = "token-123";
-        auth.currentUserId = null; // missing user ID
+        auth.currentUserId = null;
 
         interactor.execute(input);
 
@@ -172,33 +174,34 @@ class LoginInteractorTest {
     }
 
     @Test
-    void execute_authThrowsException_callsFailViewWithMessage() {
-        FakeAuthGateway auth = new FakeAuthGateway();
-        FakePresenter presenter = new FakePresenter();
-        LoginInteractor interactor = new LoginInteractor(auth, presenter);
+    void execute_authThrowsException_propagatesException() {
+        final FakeAuthGateway auth = new FakeAuthGateway();
+        final FakePresenter presenter = new FakePresenter();
+        final LoginInteractor interactor = new LoginInteractor(auth, presenter);
 
-        LoginInputData input = new LoginInputData("user@example.com", "pwd");
+        final LoginInputData input = new LoginInputData("user@example.com", "pwd");
 
         auth.throwOnSignIn = true;
         auth.exceptionToThrow = new RuntimeException("Network error");
 
-        interactor.execute(input);
+        final RuntimeException ex = assertThrows(
+                RuntimeException.class,
+                () -> interactor.execute(input)
+        );
 
-        assertTrue(presenter.failCalled);
-        assertFalse(presenter.successCalled);
-        assertEquals("Network error", presenter.errorMessage);
+        assertEquals("Network error", ex.getMessage());
     }
 
     @Test
-    void execute_nullRefreshToken_stillCallsSuccessView() {
-        FakeAuthGateway auth = new FakeAuthGateway();
-        FakePresenter presenter = new FakePresenter();
-        LoginInteractor interactor = new LoginInteractor(auth, presenter);
+    void execute_nullRefreshToken_stillCallsSuccessView() throws Exception {
+        final FakeAuthGateway auth = new FakeAuthGateway();
+        final FakePresenter presenter = new FakePresenter();
+        final LoginInteractor interactor = new LoginInteractor(auth, presenter);
 
-        LoginInputData input = new LoginInputData("user@example.com", "pwd");
+        final LoginInputData input = new LoginInputData("user@example.com", "pwd");
 
         auth.accessToken = "access-token-123";
-        auth.refreshToken = null; // null on purpose
+        auth.refreshToken = null;
         auth.currentUserId = "user-id-789";
         auth.currentUserEmail = "user@example.com";
 
@@ -211,17 +214,17 @@ class LoginInteractorTest {
     }
 
     @Test
-    void execute_nullDisplayName_stillCallsSuccessView() {
-        FakeAuthGateway auth = new FakeAuthGateway();
-        FakePresenter presenter = new FakePresenter();
-        LoginInteractor interactor = new LoginInteractor(auth, presenter);
+    void execute_nullDisplayName_stillCallsSuccessView() throws Exception {
+        final FakeAuthGateway auth = new FakeAuthGateway();
+        final FakePresenter presenter = new FakePresenter();
+        final LoginInteractor interactor = new LoginInteractor(auth, presenter);
 
-        LoginInputData input = new LoginInputData("user@example.com", "pwd");
+        final LoginInputData input = new LoginInputData("user@example.com", "pwd");
 
         auth.accessToken = "access-token-123";
         auth.refreshToken = "refresh-token-456";
         auth.currentUserId = "user-id-789";
-        auth.currentUserEmail = null; // displayName becomes null
+        auth.currentUserEmail = null;
 
         interactor.execute(input);
 
@@ -229,5 +232,4 @@ class LoginInteractorTest {
         assertFalse(presenter.failCalled);
         assertNull(presenter.successData.getDisplayName());
     }
-
 }
