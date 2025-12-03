@@ -1,20 +1,16 @@
 package tut0301.group1.healthz.interfaceadapter.activity;
 
-public class ActivityItem {
-    private final String name;
-    private final String duration;
-    private final String date;
-    private final double calories;
-
-    public ActivityItem(String name, String duration, String date, double calories) {
-        this.name = name;
-        this.duration = duration;
-        this.date = date;
-        this.calories = calories;
-    }
-
-    public String getName() { return name; }
-    public String getDuration() { return duration; }
-    public String getDate() { return date; }
-    public double getCalories() { return calories; }
+/**
+ * Represents an activity item shown in the user's activity history or dashboard.
+ * <p>
+ * This record is a lightweight, immutable data holder that encapsulates
+ * the basic display information for an activity entry.
+ * </p>
+ *
+ * @param name the name of the exercise (e.g., "Cycling")
+ * @param duration the duration of the activity (formatted, e.g., "30 min")
+ * @param date the date of the activity (formatted string, e.g., "30 Nov 2025")
+ * @param calories the number of calories burned during the activity
+ */
+public record ActivityItem(String name, String duration, String date, double calories) {
 }
