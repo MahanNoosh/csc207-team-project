@@ -269,4 +269,46 @@ class SignupInteractorTest {
         assertFalse(presenter.successCalled);
         assertEquals("Sign-up failed: " + raw, presenter.failMessage);
     }
+
+    @Test
+    void execute_gatewayThrowsWithPlainNonJsonMessage_usesPlainMessage() throws Exception {
+        // This covers the branch where message is non-null, non-empty,
+        // and does NOT contain JSON – SignupInteractor should just use the raw message.
+        FakeAuthGateway auth = new FakeAuthGateway();
+        FakePresenter presenter = new FakePresenter();
+        SignupInteractor interactor = new SignupInteractor(auth, presenter);
+
+        SignupInputData input = new SignupInputData(
+                "user@example.com",
+                "password123",
+                "password123",
+                "User Name"
+        );
+
+        String raw = "Network failure while contacting auth server";
+        auth.throwOnSignUp = true;
+        auth.signupException = new Exception(raw);
+
+        interactor.execute(input);
+
+        assertTrue(presenter.failCalled);
+        assertFalse(presenter.successCalled);
+        assertEquals("Sign-up failed: " + raw, presenter.failMessage);
+    }
+
+    @Test
+    void signupInputData_gettersAndPasswordsMatch() {
+        SignupInputData inputData = new SignupInputData(
+                "other@example.com",
+                "firstPass",
+                "secondPass",
+                "Other User"
+        );
+
+        assertEquals("other@example.com", inputData.getEmail());
+        assertEquals("firstPass", inputData.getPassword1());
+        assertEquals("secondPass", inputData.getPassword2());
+        assertEquals("Other User", inputData.getDisplayName());
+        assertFalse(inputData.passwordsMatch());
+    }
 }

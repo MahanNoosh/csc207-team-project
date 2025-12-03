@@ -1,5 +1,7 @@
 package tut0301.group1.healthz.usecase.auth.signup;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 
@@ -27,22 +29,67 @@ public class SignupInteractor implements SignupInputBoundary {
      * Executes the sign-up flow.
      *
      * @param input the sign-up data
-     * @throws Exception if the authentication gateway encounters an error
      */
+    // -@cs[IllegalCatch] Need to catch generic exceptions from auth gateway to show user-friendly errors.
     @Override
-    public void execute(final SignupInputData input) throws Exception {
-        if (!input.passwordsMatch()) {
-            presenter.prepareFailView("Passwords do not match.");
+    public void execute(final SignupInputData input) {
+        if (input.passwordsMatch()) {
+            try {
+                authGateway.signUpEmail(
+                        input.getEmail(),
+                        input.getPassword1(),
+                        input.getDisplayName()
+                );
+
+                final SignupOutputData outputData = new SignupOutputData(input.getEmail());
+                presenter.prepareSuccessView(outputData);
+            }
+            catch (Exception ex) {
+                final String raw = ex.getMessage();
+                String message = "Unknown error.";
+
+                if (raw != null && !raw.trim().isEmpty()) {
+                    final String extracted = extractMsg(raw);
+                    if (extracted != null) {
+                        message = extracted;
+                    }
+                    else {
+                        message = raw;
+                    }
+                }
+
+                presenter.prepareFailView("Sign-up failed: " + message);
+            }
         }
         else {
-            authGateway.signUpEmail(
-                    input.getEmail(),
-                    input.getPassword1(),
-                    input.getDisplayName()
-            );
-
-            final SignupOutputData outputData = new SignupOutputData(input.getEmail());
-            presenter.prepareSuccessView(outputData);
+            presenter.prepareFailView("Passwords do not match.");
         }
+    }
+
+    /**
+     * Attempts to extract a {@code msg} field from a JSON object embedded in the raw message.
+     *
+     * @param raw the raw exception message
+     * @return the extracted message, or {@code null} if none was found
+     */
+    private String extractMsg(final String raw) {
+        String result = null;
+        final int braceIndex = raw.indexOf('{');
+
+        if (braceIndex >= 0) {
+            final String jsonPart = raw.substring(braceIndex);
+            try {
+                final JSONObject jsonObject = new JSONObject(jsonPart);
+                final String msg = jsonObject.optString("msg", "");
+                if (!msg.isEmpty()) {
+                    result = msg;
+                }
+            }
+            catch (JSONException ex) {
+                // Ignore and fall back to null.
+            }
+        }
+
+        return result;
     }
 }
