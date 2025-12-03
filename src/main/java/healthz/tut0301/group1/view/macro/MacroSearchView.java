@@ -15,8 +15,8 @@ import healthz.tut0301.group1.entities.nutrition.Macro;
 import healthz.tut0301.group1.interfaceadapter.macro.MacroSearchController;
 import healthz.tut0301.group1.interfaceadapter.macro.MacroSearchViewModel;
 import healthz.tut0301.group1.navigation.Navigator;
-// import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputBoundary;
-// import tut0301.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputData;
+// import heathz.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputBoundary;
+// import heathz.group1.healthz.usecase.macrosearch.metadata.MacroSearchInputData;
 
 /**
  * Macro Search page that allows user to search macro of food by name.

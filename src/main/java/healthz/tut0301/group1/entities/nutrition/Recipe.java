@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Represents a tut0301.group1.healthz.entities.recipe with ingredients,
+ * Represents a heathz.group1.healthz.entities.recipe with ingredients,
  * instructions, and nutritional information.
  */
 public final class Recipe {

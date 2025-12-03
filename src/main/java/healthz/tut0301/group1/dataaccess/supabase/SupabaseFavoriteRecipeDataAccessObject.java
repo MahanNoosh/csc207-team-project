@@ -2,7 +2,7 @@ package healthz.tut0301.group1.dataaccess.supabase;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import healthz.tut0301.group1.dataaccess.api.RecipeAPI;
+import healthz.tut0301.group1.dataaccess.api.RecipeApi;
 import healthz.tut0301.group1.dataaccess.api.SearchRecipe;
 import healthz.tut0301.group1.entities.nutrition.Recipe;
 import healthz.tut0301.group1.usecase.favoriterecipe.FavoriteRecipeGateway;
@@ -25,7 +25,7 @@ public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGat
     private static final int HTTP_ERROR_THRESHOLD = 400;
 
     private final SupabaseClient client;
-    private final RecipeAPI recipeApi;
+    private final RecipeApi recipeApi;
 
     /**
      * Constructs a SupabaseFavoriteRecipeDataAccessObject.
@@ -35,7 +35,7 @@ public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGat
      */
     public SupabaseFavoriteRecipeDataAccessObject(SupabaseClient client, String oauthToken) {
         this.client = client;
-        this.recipeApi = new RecipeAPI(oauthToken);
+        this.recipeApi = new RecipeApi(oauthToken);
     }
 
     @Override

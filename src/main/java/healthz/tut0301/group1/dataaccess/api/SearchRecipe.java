@@ -1,7 +1,8 @@
 package healthz.tut0301.group1.dataaccess.api;
-import healthz.tut0301.group1.entities.nutrition.Recipe;
 
 import java.util.List;
+
+import healthz.tut0301.group1.entities.nutrition.Recipe;
 
 /**
  * Interface for searching for a recipe.

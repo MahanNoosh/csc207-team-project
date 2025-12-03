@@ -1,9 +1,9 @@
 package healthz.tut0301.group1.interfaceadapter.recipe;
 
+import java.util.List;
+
 import healthz.tut0301.group1.entities.nutrition.RecipeSearchResult;
 import healthz.tut0301.group1.usecase.recipesearch.metadata.RecipeSearchOutputBoundary;
-
-import java.util.List;
 
 /**
  * The recipe search presenter.

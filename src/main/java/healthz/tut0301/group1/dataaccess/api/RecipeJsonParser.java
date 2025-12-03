@@ -1,16 +1,17 @@
 package healthz.tut0301.group1.dataaccess.api;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import healthz.tut0301.group1.entities.nutrition.Recipe;
-import healthz.tut0301.group1.entities.nutrition.RecipeDetails;
-import healthz.tut0301.group1.entities.nutrition.RecipeSearchResult;
-import healthz.tut0301.group1.entities.nutrition.RecipeIngredient;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import healthz.tut0301.group1.entities.nutrition.Recipe;
+import healthz.tut0301.group1.entities.nutrition.RecipeDetails;
+import healthz.tut0301.group1.entities.nutrition.RecipeIngredient;
+import healthz.tut0301.group1.entities.nutrition.RecipeSearchResult;
 
 public final class RecipeJsonParser {
 

@@ -1,31 +1,32 @@
 package healthz.tut0301.group1.dataaccess.api;
-import healthz.tut0301.group1.entities.nutrition.Recipe;
-
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import healthz.tut0301.group1.entities.nutrition.Recipe;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 /**
  * Fetch recipe data from the FatSecret API.
  */
-public class RecipeAPI implements SearchRecipe {
+public class RecipeApi implements SearchRecipe {
     /**
      * The OkHTTP client for making a FatSecret API call.
      */
     private final OkHttpClient client = new OkHttpClient();
 
-    /**
+     /**
      * The URL to search for a recipe by a search term.
      */
-     private static final String url =
-            "https://platform.fatsecret.com/rest/recipes/search/v3";
+     private static final String URL =
+             "https://platform.fatsecret.com/rest/recipes/search/v3";
 
     /**
      * The URL to search for a recipe by ID.
@@ -39,10 +40,10 @@ public class RecipeAPI implements SearchRecipe {
     private final String token;
 
     /**
-     * The constructor for the RecipeAPI class.
+     * The constructor for the RecipeApi class.
      * @param ptoken the OAuth token for the API call.
      */
-    public RecipeAPI(final String ptoken) {
+    public RecipeApi(final String ptoken) {
         this.token = ptoken;
     }
 
@@ -63,7 +64,7 @@ public class RecipeAPI implements SearchRecipe {
                                      final Integer pageNumber,
                                      final String recipeType)
             throws SearchRecipe.RecipeNotFoundException {
-        final HttpUrl httpUrl = Objects.requireNonNull(HttpUrl.parse(url))
+        final HttpUrl httpUrl = Objects.requireNonNull(HttpUrl.parse(URL))
                 .newBuilder()
                 .addQueryParameter("search_expression", searchExpression)
                 .addQueryParameter("max_results", String.valueOf(maxResults))

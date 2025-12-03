@@ -2,7 +2,7 @@ package healthz.tut0301.group1.usecase.favoriterecipe;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tut0301.group1.healthz.entities.nutrition.Recipe;
+import heathz.group1.healthz.entities.nutrition.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;

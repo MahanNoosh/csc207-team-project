@@ -1,8 +1,8 @@
-//package tut0301.group1.healthz.usecase.dashboard;
+//package heathz.group1.healthz.usecase.dashboard;
 //
-//import nutrition.entities.healthz.tut0301.group1.FoodDetails;
-//import nutrition.entities.healthz.tut0301.group1.FoodLog;
-//import nutrition.entities.healthz.tut0301.group1.ServingInfo;
+//import nutrition.entities.healthz.heathz.group1.FoodDetails;
+//import nutrition.entities.healthz.heathz.group1.FoodLog;
+//import nutrition.entities.healthz.heathz.group1.ServingInfo;
 //
 //import java.time.LocalDateTime;
 //

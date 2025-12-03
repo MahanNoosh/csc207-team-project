@@ -1,12 +1,12 @@
 package healthz.tut0301.group1.interfaceadapter.recipe;
 
+import healthz.tut0301.group1.entities.nutrition.RecipeDetails;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import healthz.tut0301.group1.entities.nutrition.RecipeDetails;
 
 /**
  * The recipe detail view model.

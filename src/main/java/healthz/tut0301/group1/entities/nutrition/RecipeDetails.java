@@ -1,5 +1,6 @@
 package healthz.tut0301.group1.entities.nutrition;
-import  java.util.List;
+
+import java.util.List;
 
 public record RecipeDetails(String recipeName, String imageUrl,
                              Double calories, Double protein, Double carbs,

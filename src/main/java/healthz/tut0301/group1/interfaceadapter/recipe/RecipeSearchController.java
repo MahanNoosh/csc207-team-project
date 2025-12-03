@@ -1,7 +1,7 @@
 package healthz.tut0301.group1.interfaceadapter.recipe;
 
-import healthz.tut0301.group1.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 import healthz.tut0301.group1.entities.nutrition.RecipeFilter;
+import healthz.tut0301.group1.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
 import healthz.tut0301.group1.usecase.recipesearch.metadata.RecipeSearchInputData;
 
 /**

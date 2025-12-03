@@ -1,9 +1,9 @@
 package healthz.tut0301.group1.interfaceadapter.recipe;
 
-import healthz.tut0301.group1.entities.nutrition.RecipeSearchResult;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import healthz.tut0301.group1.entities.nutrition.RecipeSearchResult;
 
 /**
  * The recipe search view model.
