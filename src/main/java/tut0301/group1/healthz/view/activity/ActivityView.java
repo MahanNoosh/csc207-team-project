@@ -17,6 +17,7 @@ import tut0301.group1.healthz.interfaceadapter.activity.ExerciseListViewModel;
 import tut0301.group1.healthz.navigation.Navigator;
 import tut0301.group1.healthz.view.components.Sidebar;
 
+import java.beans.PropertyChangeEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -47,6 +48,9 @@ public class ActivityView {
     private final Navigator navigator;
     private LocalDate currentDate = LocalDate.now();
 
+    // user info for sidebar
+    private final String displayName;
+    private final String email;
 
     // History
     private ListView<ActivityItem> historyListView;
@@ -54,15 +58,19 @@ public class ActivityView {
     public ActivityView(ActivityPageController controller,
                         ExerciseListViewModel exerciseListViewModel,
                         ActivityHistoryViewModel historyViewModel,
-                        Profile currentProfile, Navigator navigator) {
+                        Profile currentProfile, Navigator navigator, String displayName, String email) {
         this.controller = controller;
         this.exerciseListViewModel = exerciseListViewModel;
         this.historyViewModel = historyViewModel;
         this.currentProfile = currentProfile;
         this.navigator = navigator;
+        this.displayName = displayName;
+        this.email = email;
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
+        historyViewModel.addPropertyChangeListener(this::onHistoryChanged);
+        controller.loadActivityHistory();
     }
 
     public Scene getScene() {
@@ -77,7 +85,7 @@ public class ActivityView {
         root.setStyle("-fx-background-color: #F5F5F5;");
 
         // Sidebar
-        Sidebar sidebar = new Sidebar(navigator, "Activity Tracker", "Bob Dylan", "bob.dylan@gmail.com");
+        Sidebar sidebar = new Sidebar(navigator, "Activity Tracker", displayName, email);
         root.setLeft(sidebar);
 
         // Main content
@@ -214,6 +222,8 @@ public class ActivityView {
         exerciseListView.setManaged(false); // ⬅️ prevents empty space when hidden
         exerciseListView.setItems(exerciseListViewModel.getExerciseList());
         exerciseListView.setStyle("-fx-border-color: #E5E7EB; -fx-background-radius: 8;");
+//      keyboard navigation
+
 
         // Load all exercises from Supabase
         controller.loadAllExercises();
@@ -352,12 +362,18 @@ public class ActivityView {
     }
 
     private void handleAddActivity() {
+        int duration = Integer.parseInt(durationField.getText());
+
         if (selectedActivity == null || selectedActivity.isBlank()) {
             info("Missing Information", "Please select an activity first!");
             return;
         }
         if (durationField.getText().isBlank()) {
             info("Missing Information", "Please enter a duration.");
+            return;
+        }
+        if (duration<0) {
+            info("invalid Information", "Please enter a duration greater than 0.");
             return;
         }
 
@@ -373,6 +389,15 @@ public class ActivityView {
             info("Activity Logged", selectedActivity + " has been logged successfully!");
         } catch (Exception e) {
             error("Failed to save activity: " + e.getMessage());
+        }
+    }
+
+    private void onHistoryChanged(PropertyChangeEvent evt) {
+        if ("history".equals(evt.getPropertyName())) {
+            historyListView.setItems(historyViewModel.getHistory());
+        } else if ("error".equals(evt.getPropertyName())) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, evt.getNewValue().toString());
+            alert.showAndWait();
         }
     }
 
@@ -455,15 +480,15 @@ public class ActivityView {
             }
 
             // Left: name + duration
-            Label name = new Label(item.getName());
+            Label name = new Label(item.name());
             name.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 18));
             name.setTextFill(Color.web("#111827"));
 
-            Label duration = new Label(item.getDuration());
+            Label duration = new Label(item.duration());
             duration.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
             duration.setTextFill(Color.web("#27692A"));
 
-            Label calories = new Label(item.getCalories() + " cal");
+            Label calories = new Label(item.calories() + " cal");
             calories.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
             calories.setTextFill(Color.web("#27692A")); // soft green tone
 
@@ -472,7 +497,7 @@ public class ActivityView {
 
 
             // Right: date
-            Label date = new Label(item.getDate());
+            Label date = new Label(item.date());
             date.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
             date.setTextFill(Color.web("#6B7280"));
 

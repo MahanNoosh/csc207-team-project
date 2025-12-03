@@ -13,14 +13,21 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import tut0301.group1.healthz.interfaceadapter.activity.ActivityItem;
+import tut0301.group1.healthz.interfaceadapter.dashboard.RecentActivityController;
+import tut0301.group1.healthz.interfaceadapter.dashboard.RecentActivityViewModel;
+import tut0301.group1.healthz.interfaceadapter.dashboard.WeeklySummaryController;
+import tut0301.group1.healthz.interfaceadapter.dashboard.WeeklySummaryViewModel;
 import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryController;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
 import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
-import tut0301.group1.healthz.interfaceadapter.activity.ActivityHistoryViewModel;
-import tut0301.group1.healthz.interfaceadapter.activity.ActivityItem;
 import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryViewModel;
 
+import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -29,13 +36,15 @@ import java.util.stream.Collectors;
 public class DashboardView {
 
     private Scene scene;
-    private String userName;
+    private String userName; // TODO: Get from user profile
+    private final RecentActivityController recentActivityController;
+    private final RecentActivityViewModel recentActivityViewModel;
+    private final WeeklySummaryViewModel weeklySummaryViewModel;
     private String userId;
 
     // Clean Architecture components
-    private final DashboardViewModel viewModel;
-    private final DashboardController controller;
-    private final ActivityHistoryViewModel activityHistoryViewModel;
+    private final DashboardViewModel dashboardViewModel;
+    private final DashboardController dashboardController;
 
     // GetDailyCalorieSummary components
     private final GetDailyMacroSummaryController summaryController;
@@ -44,7 +53,6 @@ public class DashboardView {
     // Store references for updating
     private Label caloriesValueLabel;
     private Canvas caloriesCanvas;
-    private ListView<ActivityItem> activityHistoryListView;
 
     // Macro labels for dynamic updates
     private Label carbsPercentLabel;
@@ -62,28 +70,34 @@ public class DashboardView {
     private Button foodLogButton;
     private Button activityLogButton;
     private Button logOutButton;
+    private HBox chartBox;
+
+    private VBox recentEntriesContainer;
+
 
     /**
      * Constructor with Clean Architecture
      */
-    public DashboardView(DashboardController controller,
-                         DashboardViewModel viewModel,
-                         ActivityHistoryViewModel activityHistoryViewModel,
+    public DashboardView(String userName, WeeklySummaryViewModel weeklySummaryViewModel, WeeklySummaryController weeklySummaryController, RecentActivityController recentActivityController, RecentActivityViewModel recentActivityViewModel,
+                         DashboardController dashboardController,
+                         DashboardViewModel dashboardViewModel,
                          GetDailyMacroSummaryController summaryController,
                          GetDailyMacroSummaryViewModel summaryViewModel,
-                         String userId,
-                         String userName) {
-        this.controller = controller;
-        this.viewModel = viewModel;
-        this.activityHistoryViewModel = activityHistoryViewModel;
+                         String userId) {
+        this.userName = userName != null ? userName : "User";
+        this.weeklySummaryViewModel = weeklySummaryViewModel;
+        this.recentActivityController = recentActivityController;
+        this.recentActivityViewModel = recentActivityViewModel;
+        this.dashboardController = dashboardController;
+        this.dashboardViewModel = dashboardViewModel;
         this.summaryController = summaryController;
         this.summaryViewModel = summaryViewModel;
         this.userId = userId;
-        this.userName = userName != null ? userName : "User";
+
 
         // Load dashboard profile data
         System.out.println("DashboardView: Loading profile data...");
-        controller.loadDashboard(userId);
+        dashboardController.loadDashboard(userId);
 
         // Wait for profile data to load
         try {
@@ -93,11 +107,18 @@ public class DashboardView {
         }
 
         System.out.println("   DashboardView: Profile data loaded");
-        System.out.println("   Daily Goal: " + viewModel.getDailyCalorieGoal());
-        System.out.println("   Remaining: " + viewModel.getCaloriesRemaining());
+        System.out.println("   Daily Goal: " + dashboardViewModel.getDailyCalorieGoal());
+        System.out.println("   Remaining: " + dashboardViewModel.getCaloriesRemaining());
 
         BorderPane root = createMainLayout();
+        weeklySummaryViewModel.addPropertyChangeListener(this::onSummaryChanged);
+        weeklySummaryController.loadSummary();
+
+        recentActivityViewModel.addPropertyChangeListener(this::onRecentActivitiesChanged);
+        recentActivityController.loadRecentActivities();
+
         scene = new Scene(root, 1280, 1200);
+
 
         // Set up property listeners for reactive UI updates
         setupPropertyListeners();
@@ -252,7 +273,7 @@ public class DashboardView {
         Label bellIcon = new Label("🔔");
         bellIcon.setFont(Font.font(20));
 
-        Label stepGoalText = new Label("30 more minutes until\nyour daily step goal!");
+        Label stepGoalText = new Label("Remember to log your meals!");
         stepGoalText.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
         stepGoalText.setTextFill(Color.WHITE);
         stepGoalText.setTextAlignment(TextAlignment.CENTER);
@@ -360,15 +381,25 @@ public class DashboardView {
         HBox row2 = new HBox(30);
         row2.setAlignment(Pos.TOP_LEFT);
 
-        VBox activityHistoryWidget = createActivityHistoryWidget();
+        VBox activityWidget = createActivityTrackerWidget();
+
+        HBox.setHgrow(activityWidget, Priority.ALWAYS);
+
+        row2.getChildren().addAll(activityWidget);
+
+        // Third row: Recent Entries, Quick Add
+        HBox row3 = new HBox(30);
+        row3.setAlignment(Pos.TOP_LEFT);
+
+        VBox recentWidget = createRecentActivityWidget();
         VBox quickAddWidget = createQuickAddWidget();
 
-        HBox.setHgrow(activityHistoryWidget, Priority.ALWAYS);
+        HBox.setHgrow(recentWidget, Priority.ALWAYS);
         HBox.setHgrow(quickAddWidget, Priority.NEVER);
 
-        row2.getChildren().addAll(activityHistoryWidget, quickAddWidget);
+        row3.getChildren().addAll(recentWidget, quickAddWidget);
 
-        content.getChildren().addAll(row1, row2);
+        content.getChildren().addAll(row1, row2, row3);
         return content;
     }
 
@@ -407,7 +438,7 @@ public class DashboardView {
         centerText.setAlignment(Pos.CENTER);
 
         // Use ViewModel data
-        caloriesValueLabel = new Label(String.valueOf(viewModel.getCaloriesRemaining()));
+        caloriesValueLabel = new Label(String.valueOf(dashboardViewModel.getCaloriesRemaining()));
         caloriesValueLabel.setFont(Font.font("Inter", FontWeight.BOLD, 48));
         caloriesValueLabel.setTextFill(Color.web("#111827"));
 
@@ -437,8 +468,8 @@ public class DashboardView {
         gc.clearRect(0, 0, 200, 200);
 
         // Get values from viewModel (uses Profile settings)
-        double remaining = viewModel.getCaloriesRemaining();
-        double total = viewModel.getDailyCalorieGoal();
+        double remaining = dashboardViewModel.getCaloriesRemaining();
+        double total = dashboardViewModel.getDailyCalorieGoal();
 
         if (total == 0) {
             total = 2000.0; // Fallback
@@ -548,271 +579,183 @@ public class DashboardView {
         return widget;
     }
 
-    /**
-     * Create activity history widget with real data from ViewModel
-     */
-    private VBox createActivityHistoryWidget() {
-        VBox widget = createWidgetBox();
-        widget.setPrefHeight(400);
+//    ----------------------------
+public VBox createActivityTrackerWidget() {
+    VBox widget = new VBox(10);
+    widget.setPadding(new Insets(20));
+    widget.setStyle("""
+            -fx-background-color: white;
+            -fx-background-radius: 12px;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+        """);
+    chartBox = new HBox(20);
 
-        // Header
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(0, 0, 15, 0));
+    Label title = new Label("Activity Tracker");
+    title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
+    title.setTextFill(Color.web("#111827"));
 
-        Label title = new Label("Activity History");
-        title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
+    chartBox.setAlignment(Pos.BOTTOM_CENTER);
+    chartBox.setPadding(new Insets(20, 40, 20, 40));
+    chartBox.setPrefHeight(150);
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+    widget.getChildren().addAll(title, chartBox);
 
-        Label arrow = new Label("▶");
-        arrow.setFont(Font.font(16));
-        arrow.setTextFill(Color.web("#6B7280"));
-        arrow.setStyle("-fx-cursor: hand;");
+    // Initialize empty chart
+    updateActivityChart(weeklySummaryViewModel.getSummary());
 
-        // Make arrow clickable to navigate to full activity tracker
-        arrow.setOnMouseClicked(e -> {
-            if (activityLogButton != null) {
-                activityLogButton.fire();
-            }
-        });
-
-        header.getChildren().addAll(title, spacer, arrow);
-
-        // ✅ Activity history ListView bound to ViewModel
-        activityHistoryListView = new ListView<>(activityHistoryViewModel.getHistory());
-        activityHistoryListView.setPrefHeight(300);
-        activityHistoryListView.setStyle(
-                "-fx-background-color: transparent; " +
-                        "-fx-border-color: transparent;"
-        );
-
-        // ✅ Custom cell renderer matching ActivityView style
-        activityHistoryListView.setCellFactory(list -> new ActivityHistoryCell());
-
-        widget.getChildren().addAll(header, activityHistoryListView);
-        return widget;
-    }
+    return widget;
+}
 
     /**
-     * Custom cell for activity history items
+     * Called automatically when WeeklySummaryViewModel updates.
      */
-    private static class ActivityHistoryCell extends ListCell<ActivityItem> {
-        @Override
-        protected void updateItem(ActivityItem item, boolean empty) {
-            super.updateItem(item, empty);
-
-            if (empty || item == null) {
-                setGraphic(null);
-                return;
-            }
-
-            // Left side: name + duration + calories
-            Label nameLabel = new Label(item.getName());
-            nameLabel.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 18));
-            nameLabel.setTextFill(Color.web("#111827"));
-
-            Label durationLabel = new Label(item.getDuration());
-            durationLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
-            durationLabel.setTextFill(Color.web("#27692A"));
-
-            Label caloriesLabel = new Label(item.getCalories() + " cal");
-            caloriesLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
-            caloriesLabel.setTextFill(Color.web("#27692A"));
-
-            HBox details = new HBox(10, durationLabel, caloriesLabel);
-            VBox left = new VBox(4, nameLabel, details);
-            HBox.setHgrow(left, Priority.ALWAYS);
-
-            // Right side: date
-            Label dateLabel = new Label(item.getDate());
-            dateLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
-            dateLabel.setTextFill(Color.web("#6B7280"));
-
-            Region spacer = new Region();
-            HBox.setHgrow(spacer, Priority.ALWAYS);
-
-            // Complete row
-            HBox row = new HBox(20, left, spacer, dateLabel);
-            row.setAlignment(Pos.CENTER_LEFT);
-            row.setPadding(new Insets(18, 10, 18, 10));
-            row.setStyle(
-                    "-fx-border-color: #E5E7EB; " +
-                            "-fx-border-width: 0 0 1 0;"
-            );
-
-            // Hover effect
-            row.setOnMouseEntered(e -> row.setStyle(
-                    "-fx-border-color: #E5E7EB; " +
-                            "-fx-border-width: 0 0 1 0; " +
-                            "-fx-background-color: #F9FAFB; " +
-                            "-fx-cursor: hand;"
-            ));
-            row.setOnMouseExited(e -> row.setStyle(
-                    "-fx-border-color: #E5E7EB; " +
-                            "-fx-border-width: 0 0 1 0;"
-            ));
-
-            setGraphic(row);
+    private void onSummaryChanged(PropertyChangeEvent evt) {
+        if (WeeklySummaryViewModel.SUMMARY_PROPERTY.equals(evt.getPropertyName())) {
+            @SuppressWarnings("unchecked")
+            Map<String, Double> newSummary = (Map<String, Double>) evt.getNewValue();
+            updateActivityChart(newSummary);
         }
     }
 
     /**
-     * Create activity tracker widget with bar chart
+     * Updates the bar chart UI.
      */
-    private VBox createActivityTrackerWidget() {
-        VBox widget = createWidgetBox();
-        widget.setPrefHeight(250);
+    private void updateActivityChart(Map<String, Double> summary) {
+        chartBox.getChildren().clear();
 
-        Label title = new Label("Activity Tracker");
-        title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
-        title.setPadding(new Insets(0, 0, 20, 0));
+        if (summary == null || summary.isEmpty()) {
+            Label placeholder = new Label("No activity logged this week");
+            placeholder.setFont(Font.font("Inter", FontWeight.NORMAL, 17));
+            placeholder.setTextFill(Color.web("#9CA3AF"));
+            chartBox.getChildren().add(placeholder);
+            return;
+        }
 
-        // Bar chart
-        HBox chartBox = new HBox(20);
-        chartBox.setAlignment(Pos.BOTTOM_CENTER);
-        chartBox.setPadding(new Insets(20, 40, 20, 40));
-        chartBox.setPrefHeight(150);
+        // Compute max for scaling bars
+        double max = summary.values().stream().mapToDouble(v -> v).max().orElse(1);
+        double scale = 140 / max;
 
-        // TODO: use actual activity data
-        String[] days = {"Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"};
-        double[] heights = {0.7, 0.65, 0.45, 0.5, 0.35, 0.75, 0.85};
+        String[] orderedDays = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        Map<String, Double> ordered = new LinkedHashMap<>();
+        for (String d : orderedDays) {
+            // Try case-insensitive match
+            double value = summary.entrySet().stream()
+                    .filter(e -> e.getKey().equalsIgnoreCase(d))
+                    .map(Map.Entry::getValue)
+                    .findFirst()
+                    .orElse(0.0);
+            ordered.put(d, value);
+        }
 
-        for (int i = 0; i < days.length; i++) {
-            VBox barContainer = new VBox(5);
-            barContainer.setAlignment(Pos.BOTTOM_CENTER);
+
+        for (Map.Entry<String, Double> entry : ordered.entrySet()) {
+            VBox barContainer = new VBox(8);
             HBox.setHgrow(barContainer, Priority.ALWAYS);
 
-            // Bar
+            barContainer.setAlignment(Pos.BOTTOM_CENTER);
+
             Region bar = new Region();
             bar.setPrefWidth(40);
-            bar.setPrefHeight(120 * heights[i]);
+            bar.setPrefHeight(entry.getValue() * scale);
             bar.setStyle("-fx-background-color: #27692A; -fx-background-radius: 4px 4px 0 0;");
+            Tooltip tooltip = new Tooltip(String.format("%.0f minutes", entry.getValue()));
+            tooltip.setStyle("""
+            -fx-font-size: 14px;
+            -fx-font-family: 'Inter';
+            -fx-background-color: white;
+            -fx-text-fill: #27692A;
+            -fx-border-color: #A5D6A7;
+            -fx-border-radius: 6px;
+            -fx-background-radius: 6px;
+            -fx-padding: 6px;
+        """);
+            tooltip.setShowDelay(javafx.util.Duration.millis(100));
 
-            // Day label
-            Label dayLabel = new Label(days[i]);
-            dayLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 14));
+            Tooltip.install(bar, tooltip);
+
+            bar.setOnMouseEntered(e -> bar.setStyle("""
+            -fx-background-color: linear-gradient(to top, #2e7d32, #66bb6a);
+            -fx-background-radius: 6px 6px 0 0;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 3);
+        """));
+            bar.setOnMouseExited(e -> bar.setStyle("""
+            -fx-background-color: linear-gradient(to top, #1b5e20, #388e3c);
+            -fx-background-radius: 6px 6px 0 0;
+            -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+        """));
+
+            Label dayLabel = new Label(entry.getKey());
+            dayLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
             dayLabel.setTextFill(Color.web("#6B7280"));
 
             barContainer.getChildren().addAll(bar, dayLabel);
             chartBox.getChildren().add(barContainer);
         }
-
-        widget.getChildren().addAll(title, chartBox);
-        return widget;
     }
 
     /**
-     * Create start a habit widget
+     * Create Recent Activities
      */
-    private VBox createStartHabitWidget() {
+    private VBox createRecentActivityWidget() {
         VBox widget = createWidgetBox();
-        widget.setPrefWidth(280);
-        widget.setMinWidth(280);
-        widget.setPrefHeight(250);
-        widget.setAlignment(Pos.TOP_LEFT);
+        widget.setPrefHeight(300);
 
-        Label title = new Label("Start a habit");
+        Label title = new Label("Recent Activities");
         title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
 
-        Label description = new Label("Big goals start\nwith small\nhabits.");
-        description.setFont(Font.font("Inter", FontWeight.NORMAL, 18));
-        description.setTextFill(Color.web("#6B7280"));
-        description.setWrapText(true);
-        description.setPadding(new Insets(15, 0, 0, 0));
+        recentEntriesContainer = new VBox(10);
+        recentEntriesContainer.setPadding(new Insets(10, 0, 0, 0));
 
-        // Spacer
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
+        ScrollPane scrollPane = new ScrollPane(recentEntriesContainer);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background-color: transparent;");
+        scrollPane.setPrefHeight(220);
 
-        // Plus button
-        Button plusButton = new Button("+");
-        plusButton.setFont(Font.font("Inter", FontWeight.BOLD, 32));
-        plusButton.setTextFill(Color.WHITE);
-        plusButton.setPrefSize(60, 60);
-        plusButton.setStyle(
-                "-fx-background-color: #27692A; " +
-                        "-fx-background-radius: 30px; " +
-                        "-fx-cursor: hand;"
-        );
-
-        HBox buttonBox = new HBox(plusButton);
-        buttonBox.setAlignment(Pos.CENTER_RIGHT);
-
-        widget.getChildren().addAll(title, description, spacer, buttonBox);
+        widget.getChildren().addAll(title, scrollPane);
         return widget;
     }
+    private void onRecentActivitiesChanged(PropertyChangeEvent evt) {
+        if (RecentActivityViewModel.RECENT_PROPERTY.equals(evt.getPropertyName())) {
+            @SuppressWarnings("unchecked")
+            List<ActivityItem> activities = (List<ActivityItem>) evt.getNewValue();
+            updateRecentActivityList(activities);
+        }
+    }
+    private void updateRecentActivityList(List<ActivityItem> logs) {
+        recentEntriesContainer.getChildren().clear();
 
-    /**
-     * Create recent entries widget
-     */
-    private VBox createRecentEntriesWidget() {
-        VBox widget = createWidgetBox();
+        if (logs == null || logs.isEmpty()) {
+            Label placeholder = new Label("No recent activity logged.");
+            placeholder.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            placeholder.setTextFill(Color.web("#9CA3AF"));
+            recentEntriesContainer.getChildren().add(placeholder);
+            return;
+        }
 
-        // Header
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
+        for (ActivityItem log : logs) {
+            VBox entryBox = new VBox(5);
+            Label title = new Label("Activity: " + log.name());
+            title.setFont(Font.font("Inter", FontWeight.BOLD, 18));
 
-        Label title = new Label("Recent Entries");
-        title.setFont(Font.font("Inter", FontWeight.BOLD, 24));
+            Label details = new Label(String.format(log.duration() + " min · " + log.calories() + " cal"));
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+            details.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
+            details.setTextFill(Color.web("#27692A"));
 
-        Label arrow = new Label("▶");
-        arrow.setFont(Font.font(16));
-        arrow.setTextFill(Color.web("#6B7280"));
+            Label date = new Label(log.date());
+            date.setTextFill(Color.web("#6B7280"));
 
-        header.getChildren().addAll(title, spacer, arrow);
+            entryBox.getChildren().addAll(title, details, date);
+            recentEntriesContainer.getChildren().add(entryBox);
 
-        // Entry 1
-        VBox entry1 = createEntryRow("Bicycling, 20 kph", "15 minutes", "2 hr");
-
-        // Separator
-        Region separator1 = new Region();
-        separator1.setPrefHeight(1);
-        separator1.setStyle("-fx-background-color: #E5E7EB;");
-        separator1.setPadding(new Insets(5, 0, 5, 0));
-
-        // Entry 2
-        VBox entry2 = createEntryRow("Turkey Sandwich", "Breakfast", "4 hr");
-
-        widget.getChildren().addAll(header, entry1, separator1, entry2);
-        return widget;
+            Region divider = new Region();
+            divider.setPrefHeight(1);
+            divider.setStyle("-fx-background-color: #E5E7EB;");
+            recentEntriesContainer.getChildren().add(divider);
+        }
     }
 
-    /**
-     * Create a single entry row
-     */
-    private VBox createEntryRow(String title, String subtitle, String time) {
-        VBox row = new VBox(5);
-        row.setPadding(new Insets(10, 0, 10, 0));
-
-        HBox mainRow = new HBox();
-        mainRow.setAlignment(Pos.CENTER_LEFT);
-
-        Label titleLabel = new Label(title);
-        titleLabel.setFont(Font.font("Inter", FontWeight.BOLD, 18));
-        titleLabel.setTextFill(Color.web("#111827"));
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        Label timeLabel = new Label(time);
-        timeLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
-        timeLabel.setTextFill(Color.web("#27692A"));
-
-        mainRow.getChildren().addAll(titleLabel, spacer, timeLabel);
-
-        Label subtitleLabel = new Label(subtitle);
-        subtitleLabel.setFont(Font.font("Inter", FontWeight.NORMAL, 16));
-        subtitleLabel.setTextFill(Color.web("#27692A"));
-
-        row.getChildren().addAll(mainRow, subtitleLabel);
-        return row;
-    }
-
+//    ==================================
     /**
      * Create quick add widget
      */
@@ -921,7 +864,7 @@ public class DashboardView {
     public Button getActivityLogButton() { return activityLogButton; }
 
     /**
-     * Get the Log Out button (for navigation logic)
+     * Get the Log-Out button (for navigation logic)
      */
     public Button getLogOutButton() { return logOutButton; }
 
