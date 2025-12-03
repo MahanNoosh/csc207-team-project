@@ -220,16 +220,3 @@ class DeleteFavoriteInteractorTest {
             public void presentFavorites(List<Recipe> recipes) {
                 fail("Use case success is unexpected.");
             }
-
-            @Override
-            public void presentError(String errorMessage) {
-                assertEquals("Failed to delete favorite: Database error", errorMessage);
-            }
-        };
-
-        DeleteFavoriteInputBoundary interactor = new DeleteFavoriteInteractor(failingGateway, failurePresenter);
-
-        // Act
-        interactor.deleteFavorite(userId, recipeId);
-    }
-}

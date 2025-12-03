@@ -16,6 +16,7 @@ public final class RecipeJsonParser {
 
     /**
      * Private constructor for the recipe JSON parser class.
+     * @throws AssertionError since the class can't be instantiated.
      */
     private RecipeJsonParser() {
         throw new AssertionError("Cannot be instantiated.");
@@ -30,24 +31,24 @@ public final class RecipeJsonParser {
      * @return a list of Recipe entities that are found.
      */
     public static List<Recipe> getRecipesByName(final String jsonResponse) {
-        JSONObject recipeObject = new JSONObject(jsonResponse);
-        JSONObject recipes = recipeObject.getJSONObject("recipes");
-        JSONArray recipeArray = recipes.getJSONArray("recipe");
-        List<Recipe> recipesList = new ArrayList<>();
+        final JSONObject recipeObject = new JSONObject(jsonResponse);
+        final JSONObject recipes = recipeObject.getJSONObject("recipes");
+        final JSONArray recipeArray = recipes.getJSONArray("recipe");
+        final List<Recipe> recipesList = new ArrayList<>();
 
         for (int i = 0; i < recipeArray.length(); i++) {
-            JSONObject recipe = recipeArray.getJSONObject(i);
-            JSONObject ingredients = recipe.getJSONObject(
+            final JSONObject recipe = recipeArray.getJSONObject(i);
+            final JSONObject ingredients = recipe.getJSONObject(
                     "recipe_ingredients");
-            JSONArray ingredientsArray = ingredients.getJSONArray(
+            final JSONArray ingredientsArray = ingredients.getJSONArray(
                     "ingredient");
-            List<String> ingredientNames = new ArrayList<>();
+            final List<String> ingredientNames = new ArrayList<>();
 
             for (int j = 0; j < ingredientsArray.length(); j++) {
                 ingredientNames.add(ingredientsArray.getString(j));
             }
 
-            Recipe recipeEntity = new Recipe(
+            final Recipe recipeEntity = new Recipe(
                     recipe.getString("recipe_id"),
                     recipe.getString("recipe_name"),
                     recipe.getString("recipe_description"),
@@ -70,29 +71,29 @@ public final class RecipeJsonParser {
      */
     public static Recipe getRecipeById(final String jsonResponse,
                                        final String recipeId) {
-        JSONObject recipeObject = new JSONObject(jsonResponse);
-        JSONObject recipe = recipeObject.getJSONObject("recipe");
+        final JSONObject recipeObject = new JSONObject(jsonResponse);
+        final JSONObject recipe = recipeObject.getJSONObject("recipe");
 
-        String name = recipe.getString("recipe_name");
-        String description = recipe.getString("recipe_description");
-        List<String> instructions = new ArrayList<>();
+        final String name = recipe.getString("recipe_name");
+        final String description = recipe.getString("recipe_description");
+        final List<String> instructions = new ArrayList<>();
 
-        JSONObject directions = recipe.getJSONObject("directions");
-        JSONArray direction = directions.getJSONArray("direction");
+        final JSONObject directions = recipe.getJSONObject("directions");
+        final JSONArray direction = directions.getJSONArray("direction");
 
         for (int i = 0; i < direction.length(); i++) {
-            JSONObject step = direction.getJSONObject(i);
+            final JSONObject step = direction.getJSONObject(i);
             instructions.add(step.getString("direction_description"));
         }
 
-        JSONObject ingredients = recipe.getJSONObject("ingredients");
-        JSONArray ingredientArray = ingredients.getJSONArray("ingredient");
-        List<RecipeIngredient> recipeIngredients = new ArrayList<>();
+        final JSONObject ingredients = recipe.getJSONObject("ingredients");
+        final JSONArray ingredientArray = ingredients.getJSONArray("ingredient");
+        final List<RecipeIngredient> recipeIngredients = new ArrayList<>();
 
         for (int i = 0; i < ingredientArray.length(); i++) {
-            JSONObject ingredient = ingredientArray.getJSONObject(i);
+            final JSONObject ingredient = ingredientArray.getJSONObject(i);
 
-            RecipeIngredient recipeIngredient = new RecipeIngredient(
+            final RecipeIngredient recipeIngredient = new RecipeIngredient(
                     Integer.parseInt(ingredient.getString("food_id")),
                     ingredient.getString("food_name"),
                     ingredient.getString("ingredient_description"),
@@ -104,24 +105,24 @@ public final class RecipeJsonParser {
             recipeIngredients.add(recipeIngredient);
         }
 
-        Optional<Integer> prepTime =
+        final Optional<Integer> prepTime =
                 recipe.has("preparation_time_min")
                         ? Optional.of(recipe.getInt("preparation_time_min"))
                         : Optional.empty();
 
-        Optional<Integer> cookTime =
+        final Optional<Integer> cookTime =
                 recipe.has("cooking_time_min")
                         ? Optional.of(recipe.getInt("cooking_time_min"))
                         : Optional.empty();
 
-        Optional<Integer> servings =
+        final Optional<Integer> servings =
                 recipe.has("number_of_servings")
                         ? Optional.of(recipe.getInt("number_of_servings"))
                         : Optional.empty();
 
-        JSONObject recipeImages = recipe.getJSONObject("recipe_images");
-        JSONArray recipeImage = recipeImages.getJSONArray("recipe_image");
-        String imageUrl = recipeImage.get(0).toString();
+        final JSONObject recipeImages = recipe.getJSONObject("recipe_images");
+        final JSONArray recipeImage = recipeImages.getJSONArray("recipe_image");
+        final String imageUrl = recipeImage.get(0).toString();
 
         return new Recipe(recipeId, name, description,
                 Optional.of(instructions), recipeIngredients, prepTime,
@@ -136,46 +137,47 @@ public final class RecipeJsonParser {
      */
     public static List<RecipeSearchResult> parseRecipeResults(
             final String jsonResponse) {
-        List<RecipeSearchResult> results = new ArrayList<>();
+        final List<RecipeSearchResult> results = new ArrayList<>();
 
         try {
-            JSONObject root = new JSONObject(jsonResponse);
+            final JSONObject root = new JSONObject(jsonResponse);
             if (!root.has("recipes")) {
                 return results;
             }
 
-            JSONObject recipeObj = root.getJSONObject("recipes");
-            JSONArray recipeArray = recipeObj.optJSONArray("recipe");
+            final JSONObject recipeObj = root.getJSONObject("recipes");
+            final JSONArray recipeArray = recipeObj.optJSONArray("recipe");
             if (recipeArray == null) {
                 return results;
             }
 
             for (int i = 0; i < recipeArray.length(); i++) {
-                JSONObject recipe = recipeArray.getJSONObject(i);
+                final JSONObject recipe = recipeArray.getJSONObject(i);
 
-                String recipeId = recipe.optString("recipe_id", "");
-                String recipeName = recipe.optString("recipe_name", "");
-                String description = recipe.optString(
+                final String recipeId = recipe.optString("recipe_id", "");
+                final String recipeName = recipe.optString("recipe_name", "");
+                final String description = recipe.optString(
                         "recipe_description", "");
 
-                JSONObject ingredients = recipe.getJSONObject(
+                final JSONObject ingredients = recipe.getJSONObject(
                         "recipe_ingredients");
-                JSONArray ingredientsArray = ingredients.getJSONArray(
+                final JSONArray ingredientsArray = ingredients.getJSONArray(
                         "ingredient");
-                List<String> ingredientNames = new ArrayList<>();
+                final List<String> ingredientNames = new ArrayList<>();
 
                 for (int j = 0; j < ingredientsArray.length(); j++) {
                     ingredientNames.add(ingredientsArray.getString(j));
                 }
 
-                String imageUrl = recipe.optString("recipe_image", "");
+                final String imageUrl = recipe.optString("recipe_image", "");
 
                 results.add(new RecipeSearchResult(recipeId, recipeName,
                         description, ingredientNames, imageUrl));
             }
-        } catch (Exception e) {
+        }
+        catch (Exception exception) {
             System.err.println("❌ Failed to parse recipe results: "
-                    + e.getMessage());
+                    + exception.getMessage());
         }
         return results;
     }
@@ -189,61 +191,61 @@ public final class RecipeJsonParser {
     public static RecipeDetails parseRecipeDetails(final String jsonResponse) {
         RecipeDetails recipeDetails = null;
         try {
-            JSONObject root = new JSONObject(jsonResponse);
-            JSONObject recipe = root.getJSONObject("recipe");
+            final JSONObject root = new JSONObject(jsonResponse);
+            final JSONObject recipe = root.getJSONObject("recipe");
 
             if (!root.has("recipe")) {
                 throw new JSONException("Missing 'recipe' object");
             }
 
-            String name =  recipe.optString("recipe_name", "");
+            final String name = recipe.optString("recipe_name", "");
 
-            JSONObject recipeImages = recipe.getJSONObject("recipe_images");
-            JSONArray recipeImage = recipeImages.getJSONArray("recipe_image");
-            String imageUrl = recipeImage.get(0).toString();
+            final JSONObject recipeImages = recipe.getJSONObject("recipe_images");
+            final JSONArray recipeImage = recipeImages.getJSONArray("recipe_image");
+            final String imageUrl = recipeImage.get(0).toString();
 
             // Nutrition
-            JSONObject serving = recipe.getJSONObject("serving_sizes").
-                    getJSONObject("serving");
-            String servingSize = serving.optString("serving_size", "");
-            double calories = serving.getDouble("calories");
-            double protein = serving.getDouble("protein");
-            double carbs = serving.getDouble("carbohydrate");
-            double fats = serving.getDouble("fat");
+            final JSONObject serving = recipe.getJSONObject("serving_sizes")
+                    .getJSONObject("serving");
+            final String servingSize = serving.optString("serving_size", "");
+            final double calories = serving.getDouble("calories");
+            final double protein = serving.getDouble("protein");
+            final double carbs = serving.getDouble("carbohydrate");
+            final double fats = serving.getDouble("fat");
 
             // Dietary Tags
-            List<String> tags = new ArrayList<>();
+            final List<String> tags = new ArrayList<>();
             if (recipe.has("recipe_types")) {
-                JSONObject recipeTypes = recipe.getJSONObject("recipe_types");
-                JSONArray arr = recipeTypes.getJSONArray("recipe_type");
+                final JSONObject recipeTypes = recipe.getJSONObject("recipe_types");
+                final JSONArray arr = recipeTypes.getJSONArray("recipe_type");
                 for (int i = 0; i < arr.length(); i++) {
                     tags.add(arr.get(i).toString());
                 }
             }
 
             // Ingredients
-            List<String> ingredients = new ArrayList<>();
+            final List<String> ingredients = new ArrayList<>();
             if (recipe.has("ingredients")) {
-                JSONObject recipeIngredients = recipe.getJSONObject(
+                final JSONObject recipeIngredients = recipe.getJSONObject(
                         "ingredients");
-                JSONArray arr = recipeIngredients.getJSONArray("ingredient");
+                final JSONArray arr = recipeIngredients.getJSONArray("ingredient");
                 for (int i = 0; i < arr.length(); i++) {
-                    JSONObject ingredient = arr.getJSONObject(i);
-                    String food = ingredient.get("food_name").toString();
+                    final JSONObject ingredient = arr.getJSONObject(i);
+                    final String food = ingredient.get("food_name").toString();
                     ingredients.add(food);
                 }
             }
 
             // Instructions
-            List<String> instructions = new ArrayList<>();
+            final List<String> instructions = new ArrayList<>();
             if (recipe.has("directions")) {
-                JSONObject recipeDirections = recipe.getJSONObject(
+                final JSONObject recipeDirections = recipe.getJSONObject(
                         "directions");
-                JSONArray arr = recipeDirections.getJSONArray("direction");
+                final JSONArray arr = recipeDirections.getJSONArray("direction");
                 for (int i = 0; i < arr.length(); i++) {
-                    JSONObject step = arr.getJSONObject(i);
-                    instructions.add(step.get("direction_description").
-                            toString());
+                    final JSONObject step = arr.getJSONObject(i);
+                    instructions.add(step.get("direction_description")
+                            .toString());
                 }
             }
 
@@ -259,9 +261,10 @@ public final class RecipeJsonParser {
                     ingredients,
                     instructions);
 
-        } catch (Exception e) {
+        }
+        catch (Exception exception) {
             System.err.println("❌ Failed to parse recipe details: "
-                    + e.getMessage());
+                    + exception.getMessage());
         }
         return recipeDetails;
     }

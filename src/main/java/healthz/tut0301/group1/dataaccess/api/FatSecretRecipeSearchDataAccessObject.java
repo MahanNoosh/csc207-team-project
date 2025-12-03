@@ -5,16 +5,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import healthz.tut0301.group1.dataaccess.api.OAuth.OAuth;
 import healthz.tut0301.group1.dataaccess.api.OAuth.OAuthDataAccessObject;
 import healthz.tut0301.group1.dataaccess.config.EnvConfig;
 import healthz.tut0301.group1.entities.nutrition.RecipeSearchResult;
-import healthz.tut0301.group1.usecase.recipesearch.metadata.RecipeSearchDataAccessInterface;
 import healthz.tut0301.group1.entities.nutrition.RecipeFilter;
+import healthz.tut0301.group1.usecase.recipesearch.metadata.RecipeSearchDataAccessInterface;
+
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public final class FatSecretRecipeSearchDataAccessObject implements
         RecipeSearchDataAccessInterface {
@@ -39,16 +40,16 @@ public final class FatSecretRecipeSearchDataAccessObject implements
     public List<RecipeSearchResult> search(final String query,
                                            final RecipeFilter filter)
             throws Exception {
-        String token = fetchToken();
+        final String token = fetchToken();
 
-        HttpUrl.Builder url = Objects.requireNonNull(
+        final HttpUrl.Builder url = Objects.requireNonNull(
                 HttpUrl.parse(SEARCH_URL)).newBuilder()
                 // Only add the required parameters
                 .addQueryParameter("search_expression", query)
                 .addQueryParameter("format", "json");
 
         // Helper function to add only non-null parameters
-        BiConsumer<String, Long> add = (k, v) -> {
+        final BiConsumer<String, Long> add = (k, v) -> {
             if (v != null) {
                 url.addQueryParameter(k, v.toString());
             }
@@ -65,7 +66,7 @@ public final class FatSecretRecipeSearchDataAccessObject implements
 
         System.out.println("Full URL: " + SEARCH_URL);
 
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .url(url.build())
                 .addHeader("Authorization", "Bearer " + token)
                 .get()
@@ -77,7 +78,7 @@ public final class FatSecretRecipeSearchDataAccessObject implements
                         + response.code());
             }
 
-            String responseJson = response.body().string();
+            final String responseJson = response.body().string();
             return RecipeJsonParser.parseRecipeResults(responseJson);
         }
     }
@@ -87,17 +88,17 @@ public final class FatSecretRecipeSearchDataAccessObject implements
      * @param accessToken the access token for the FatSecret API.
      * @param recipeId the ID of the recipe to search for.
      * @return the JSON response of the API call.
-     * @throws Exception if there is an error with calling the API.
+     * @throws IOException if there is an error with calling the API.
      */
     public String getRecipebyId(final String accessToken, final long recipeId)
-            throws Exception {
-        HttpUrl url = Objects.requireNonNull(HttpUrl.parse(ID_URL))
+            throws IOException {
+        final HttpUrl url = Objects.requireNonNull(HttpUrl.parse(ID_URL))
                 .newBuilder()
                 .addQueryParameter("recipe_id", String.valueOf(recipeId))
                 .addQueryParameter("format", "json")
                 .build();
 
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .get()

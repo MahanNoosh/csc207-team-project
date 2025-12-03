@@ -15,39 +15,52 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Supabase implementation of the FavoriteRecipeGateway.
+ * Manages favorite recipes in the Supabase database.
+ */
 public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGateway {
+    private static final String AUTHORIZATION = "Authorization";
+    private static final String BEARER_PREFIX = "Bearer ";
+    private static final int HTTP_ERROR_THRESHOLD = 400;
 
     private final SupabaseClient client;
-    private final RecipeAPI recipeAPI;
+    private final RecipeAPI recipeApi;
 
+    /**
+     * Constructs a SupabaseFavoriteRecipeDataAccessObject.
+     *
+     * @param client the Supabase client for database access
+     * @param oauthToken the OAuth token for API authentication
+     */
     public SupabaseFavoriteRecipeDataAccessObject(SupabaseClient client, String oauthToken) {
         this.client = client;
-        this.recipeAPI = new RecipeAPI(oauthToken);
+        this.recipeApi = new RecipeAPI(oauthToken);
     }
 
     @Override
     public List<Recipe> getFavoriteRecipes(String userId) throws Exception {
         System.out.println("Fetching favorites for user: " + userId);
 
-        String endpoint = "favorite_recipes?select=" + FavoriteRecipeFields.projection() +
-                "&user_id=eq." + URLEncoder.encode(userId, StandardCharsets.UTF_8) +
-                "&order=created_at.desc";
+        final String endpoint = "favorite_recipes?select=" + FavoriteRecipeFields.projection()
+                + "&user_id=eq." + URLEncoder.encode(userId, StandardCharsets.UTF_8)
+                + "&order=created_at.desc";
 
-        HttpRequest req = client.rest(endpoint)
-                .header("Authorization", "Bearer " + client.getAccessToken())
+        final HttpRequest req = client.rest(endpoint)
+                .header(AUTHORIZATION, BEARER_PREFIX + client.getAccessToken())
                 .GET()
                 .build();
 
-        HttpResponse<String> res = client.send(req);
-        if (res.statusCode() >= 400) {
+        final HttpResponse<String> res = client.send(req);
+        if (res.statusCode() >= HTTP_ERROR_THRESHOLD) {
             throw new RuntimeException("Fetch favorites failed: " + res.body());
         }
 
-        JSONArray arr = new JSONArray(res.body());
-        List<Recipe> favorites = new ArrayList<>();
+        final JSONArray arr = new JSONArray(res.body());
+        final List<Recipe> favorites = new ArrayList<>();
 
         for (int i = 0; i < arr.length(); i++) {
-            JSONObject row = arr.getJSONObject(i);
+            final JSONObject row = arr.getJSONObject(i);
             favorites.add(jsonToRecipe(row));
         }
 
@@ -61,46 +74,56 @@ public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGat
 
         if (isFavorite(userId, recipeId)) {
             System.out.println("Recipe already in favorites");
-            return;
         }
+        else {
+            this.performAddFavorite(userId, recipeId);
+        }
+    }
 
-        // Fetch recipe details from FatSecret api
-        Recipe recipe = null;
-        String recipeName = "Recipe " + recipeId;  // Default fallback
+    private void performAddFavorite(String userId, String recipeId) throws Exception {
+        String recipeName = "Recipe " + recipeId;
         String recipeDescription = "";
         String imageUrl = null;
 
         try {
-            System.out.println("Fetching recipe details from api...");
-            recipe = recipeAPI.searchById(recipeId);
+            System.out.println("Fetching recipe details from API...");
+            final Recipe recipe = recipeApi.searchById(recipeId);
 
             recipeName = recipe.getName();
             recipeDescription = recipe.getDescription();
             imageUrl = recipe.getImageUrl();
 
             System.out.println("Fetched recipe: " + recipeName);
-        } catch (SearchRecipe.RecipeNotFoundException e) {
+        }
+        catch (SearchRecipe.RecipeNotFoundException ex) {
             System.err.println("Could not fetch recipe details, using defaults");
         }
 
-        // Store in Supabase with actual details
-        JSONObject body = new JSONObject();
+        final JSONObject body = new JSONObject();
         body.put(FavoriteRecipeFields.USER_ID, userId);
         body.put(FavoriteRecipeFields.RECIPE_ID, recipeId);
         body.put(FavoriteRecipeFields.RECIPE_NAME, recipeName);
         body.put(FavoriteRecipeFields.RECIPE_DESCRIPTION, recipeDescription);
-        body.put(FavoriteRecipeFields.IMAGE_URL, imageUrl != null ? imageUrl : JSONObject.NULL);
+        final Object imageValue;
+        if (imageUrl != null) {
+            imageValue = imageUrl;
+        }
+        else {
+            imageValue = JSONObject.NULL;
+        }
+        body.put(FavoriteRecipeFields.IMAGE_URL, imageValue);
+        body.put(FavoriteRecipeFields.IMAGE_URL, imageValue);
 
-        String endpoint = "favorite_recipes";
-        HttpRequest req = client.rest(endpoint)
-                .header("Authorization", "Bearer " + client.getAccessToken())
+        final String endpoint = "favorite_recipes";
+        final HttpRequest req = client.rest(endpoint)
+                .header(AUTHORIZATION, BEARER_PREFIX + client.getAccessToken())
                 .header("Content-Type", "application/json")
                 .header("Prefer", "return=minimal")
                 .POST(HttpRequest.BodyPublishers.ofString(body.toString(), StandardCharsets.UTF_8))
                 .build();
 
-        HttpResponse<String> res = client.send(req);
-        if (res.statusCode() >= 400) {
+        final HttpResponse<String> res = client.send(req);
+        if (res.statusCode() >= HTTP_ERROR_THRESHOLD) {
             throw new RuntimeException("Add favorite failed: " + res.body());
         }
 
@@ -109,19 +132,20 @@ public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGat
 
     @Override
     public void removeFavorite(String userId, String recipeId) throws Exception {
-        System.out.println("🗑️ Removing favorite - Recipe: " + recipeId);
+        System.out.println("Removing favorite - Recipe: " + recipeId);
 
-        String endpoint = "favorite_recipes?user_id=eq." + URLEncoder.encode(userId, StandardCharsets.UTF_8) +
-                "&recipe_id=eq." + URLEncoder.encode(recipeId, StandardCharsets.UTF_8);
+        final String endpoint = "favorite_recipes?user_id=eq."
+                + URLEncoder.encode(userId, StandardCharsets.UTF_8)
+                + "&recipe_id=eq." + URLEncoder.encode(recipeId, StandardCharsets.UTF_8);
 
-        HttpRequest req = client.rest(endpoint)
-                .header("Authorization", "Bearer " + client.getAccessToken())
+        final HttpRequest req = client.rest(endpoint)
+                .header(AUTHORIZATION, BEARER_PREFIX + client.getAccessToken())
                 .header("Prefer", "return=minimal")
                 .DELETE()
                 .build();
 
-        HttpResponse<String> res = client.send(req);
-        if (res.statusCode() >= 400) {
+        final HttpResponse<String> res = client.send(req);
+        if (res.statusCode() >= HTTP_ERROR_THRESHOLD) {
             throw new RuntimeException("Remove favorite failed: " + res.body());
         }
 
@@ -130,32 +154,41 @@ public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGat
 
     @Override
     public boolean isFavorite(String userId, String recipeId) throws Exception {
-        String endpoint = "favorite_recipes?select=id&user_id=eq." +
-                URLEncoder.encode(userId, StandardCharsets.UTF_8) +
-                "&recipe_id=eq." + URLEncoder.encode(recipeId, StandardCharsets.UTF_8) +
-                "&limit=1";
+        final String endpoint = "favorite_recipes?select=id&user_id=eq."
+                + URLEncoder.encode(userId, StandardCharsets.UTF_8)
+                + "&recipe_id=eq." + URLEncoder.encode(recipeId, StandardCharsets.UTF_8)
+                + "&limit=1";
 
-        HttpRequest req = client.rest(endpoint)
-                .header("Authorization", "Bearer " + client.getAccessToken())
+        final HttpRequest req = client.rest(endpoint)
+                .header(AUTHORIZATION, BEARER_PREFIX + client.getAccessToken())
                 .GET()
                 .build();
 
-        HttpResponse<String> res = client.send(req);
-        if (res.statusCode() >= 400) {
-            return false;
+        final HttpResponse<String> res = client.send(req);
+
+        final boolean result;
+        if (res.statusCode() >= HTTP_ERROR_THRESHOLD) {
+            result = false;
+        }
+        else {
+            final JSONArray arr = new JSONArray(res.body());
+            result = arr.length() > 0;
         }
 
-        JSONArray arr = new JSONArray(res.body());
-        return arr.length() > 0;
+        return result;
     }
 
     private Recipe jsonToRecipe(JSONObject row) {
-        String recipeId = row.getString(FavoriteRecipeFields.RECIPE_ID);
-        String name = row.getString(FavoriteRecipeFields.RECIPE_NAME);
-        String description = row.optString(FavoriteRecipeFields.RECIPE_DESCRIPTION, "");
-        String imageUrl = row.isNull(FavoriteRecipeFields.IMAGE_URL)
-                ? null
-                : row.getString(FavoriteRecipeFields.IMAGE_URL);
+        final String recipeId = row.getString(FavoriteRecipeFields.RECIPE_ID);
+        final String name = row.getString(FavoriteRecipeFields.RECIPE_NAME);
+        final String description = row.optString(FavoriteRecipeFields.RECIPE_DESCRIPTION, "");
+        final String imageUrl;
+        if (row.isNull(FavoriteRecipeFields.IMAGE_URL)) {
+            imageUrl = null;
+        }
+        else {
+            imageUrl = row.getString(FavoriteRecipeFields.IMAGE_URL);
+        }
 
         return new Recipe(
                 recipeId,

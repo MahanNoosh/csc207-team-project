@@ -24,7 +24,7 @@ public class RecipeAPI implements SearchRecipe {
     /**
      * The URL to search for a recipe by a search term.
      */
-    private final String url =
+     private static final String url =
             "https://platform.fatsecret.com/rest/recipes/search/v3";
 
     /**
@@ -63,8 +63,8 @@ public class RecipeAPI implements SearchRecipe {
                                      final Integer pageNumber,
                                      final String recipeType)
             throws SearchRecipe.RecipeNotFoundException {
-        HttpUrl httpUrl = Objects.requireNonNull(HttpUrl.parse(url)).
-                newBuilder()
+        final HttpUrl httpUrl = Objects.requireNonNull(HttpUrl.parse(url))
+                .newBuilder()
                 .addQueryParameter("search_expression", searchExpression)
                 .addQueryParameter("max_results", String.valueOf(maxResults))
                 .addQueryParameter("page_number", String.valueOf(pageNumber))
@@ -72,7 +72,7 @@ public class RecipeAPI implements SearchRecipe {
                 .addQueryParameter("format", "json")
                 .build();
 
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .url(httpUrl)
                 .addHeader("Authorization", "Bearer " + token)
                 .get()
@@ -83,10 +83,10 @@ public class RecipeAPI implements SearchRecipe {
                 throw new SearchRecipe.RecipeNotFoundException();
             }
 
-            String responseBody = response.body().string();
-            JSONObject recipeObject = new JSONObject(responseBody);
-            JSONArray recipes = recipeObject.getJSONObject("recipes").
-                    getJSONArray("recipe");
+            final String responseBody = response.body().string();
+            final JSONObject recipeObject = new JSONObject(responseBody);
+            final JSONArray recipes = recipeObject.getJSONObject("recipes")
+                .getJSONArray("recipe");
 
             if (recipes.isEmpty()) {
                 throw new SearchRecipe.RecipeNotFoundException();
@@ -94,7 +94,8 @@ public class RecipeAPI implements SearchRecipe {
 
             return RecipeJsonParser.getRecipesByName(responseBody);
 
-        } catch (IOException e) {
+        }
+        catch (IOException exception) {
             throw new SearchRecipe.RecipeNotFoundException();
         }
     }
@@ -110,13 +111,13 @@ public class RecipeAPI implements SearchRecipe {
     @Override
     public Recipe searchById(final String id) throws
             SearchRecipe.RecipeNotFoundException {
-        HttpUrl httpUrl = Objects.requireNonNull(
+        final HttpUrl httpUrl = Objects.requireNonNull(
                 HttpUrl.parse(searchByIdUrl)).newBuilder()
                 .addQueryParameter("recipe_id", id)
                 .addQueryParameter("format", "json")
                 .build();
 
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .url(httpUrl)
                 .addHeader("Authorization", "Bearer " + token)
                 .get()
@@ -127,11 +128,12 @@ public class RecipeAPI implements SearchRecipe {
                 throw new SearchRecipe.RecipeNotFoundException();
             }
 
-            String responseBody = response.body().string();
+            final String responseBody = response.body().string();
 
             return RecipeJsonParser.getRecipeById(responseBody, id);
 
-        } catch (IOException e) {
+        }
+        catch (IOException exception) {
             throw new SearchRecipe.RecipeNotFoundException();
         }
     }
