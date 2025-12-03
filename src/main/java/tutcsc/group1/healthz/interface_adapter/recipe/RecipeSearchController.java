@@ -4,31 +4,47 @@ import tutcsc.group1.healthz.entities.nutrition.RecipeFilter;
 import tutcsc.group1.healthz.use_case.recipe_search.meta_data.RecipeSearchInputBoundary;
 import tutcsc.group1.healthz.use_case.recipe_search.meta_data.RecipeSearchInputData;
 
-public class RecipeSearchController {
+/**
+ * Controller for recipe search.
+ */
+public final class RecipeSearchController {
+    /**
+     * Recipe search input boundary.
+     */
     private final RecipeSearchInputBoundary interactor;
+
+    /**
+     * Recipe search presenter.
+     */
     private final RecipeSearchPresenter presenter;
 
-    public RecipeSearchController(RecipeSearchInputBoundary interactor, RecipeSearchPresenter presenter) {
-        this.interactor = interactor;
-        this.presenter = presenter;
+    /**
+     * Constructor for recipe search controller.
+     * @param pinteractor the recipe search input boundary.
+     * @param ppresenter the recipe search presenter.
+     */
+    public RecipeSearchController(final RecipeSearchInputBoundary pinteractor,
+                                  final RecipeSearchPresenter ppresenter) {
+        this.interactor = pinteractor;
+        this.presenter = ppresenter;
     }
 
-    // Method without filter (backward compatibility)
-    public void search(String query) {
-        search(query, new RecipeFilter()); // Call overloaded method with empty filter
-    }
-
-    // Method with filter
-    public void search(String query, RecipeFilter filter) {
-        System.out.println("Controller: Searching for: " + query);
-
+    /**
+     * Get the input data and pass it to the interactor.
+     * @param query the search term (name or ingredient in recipe).
+     * @param filter the recipe filter entity with filter parameters.
+     */
+    public void search(final String query, final RecipeFilter filter) {
         presenter.getViewModel().setMessage(null);
         presenter.getViewModel().setResults(java.util.List.of());
         presenter.getViewModel().setLoading(true);
-
-        interactor.search(new RecipeSearchInputData(query, filter));
+        interactor.execute(new RecipeSearchInputData(query, filter));
     }
 
+    /**
+     * Get the recipe search view model.
+     * @return the recipe search view model.
+     */
     public RecipeSearchViewModel getViewModel() {
         return presenter.getViewModel();
     }

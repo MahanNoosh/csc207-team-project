@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import tutcsc.group1.healthz.data_access.api.RecipeAPI;
+import tutcsc.group1.healthz.data_access.api.RecipeApi;
 import tutcsc.group1.healthz.data_access.api.SearchRecipe;
 import tutcsc.group1.healthz.entities.nutrition.Recipe;
 import tutcsc.group1.healthz.use_case.favorite_recipe.FavoriteRecipeGateway;
@@ -26,7 +26,7 @@ public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGat
     private static final int HTTP_ERROR_THRESHOLD = 400;
 
     private final SupabaseClient client;
-    private final RecipeAPI recipeApi;
+    private final RecipeApi recipeApi;
 
     /**
      * Constructs a SupabaseFavoriteRecipeDataAccessObject.
@@ -36,7 +36,7 @@ public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGat
      */
     public SupabaseFavoriteRecipeDataAccessObject(SupabaseClient client, String oauthToken) {
         this.client = client;
-        this.recipeApi = new RecipeAPI(oauthToken);
+        this.recipeApi = new RecipeApi(oauthToken);
     }
 
     @Override
@@ -195,7 +195,7 @@ public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGat
                 recipeId,
                 name,
                 description,
-                new ArrayList<>(),
+                Optional.of(new ArrayList<>()),
                 new ArrayList<>(),
                 Optional.empty(),
                 Optional.empty(),

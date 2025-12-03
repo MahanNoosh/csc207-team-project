@@ -552,20 +552,20 @@ public class RecipeSearchView {
         if (selectedCalorieRange != null) {
             switch (selectedCalorieRange) {
                 case "Under 100":
-                    filter.caloriesFrom = 0L;
-                    filter.caloriesTo = 100L;
+                    filter.setCaloriesFrom(0L);
+                    filter.setCaloriesTo(100L);
                     break;
                 case "100 to 250":
-                    filter.caloriesFrom = 100L;
-                    filter.caloriesTo = 250L;
+                    filter.setCaloriesFrom(100L);
+                    filter.setCaloriesTo(250L);
                     break;
                 case "250 to 500":
-                    filter.caloriesFrom = 250L;
-                    filter.caloriesTo = 500L;
+                    filter.setCaloriesFrom(250L);
+                    filter.setCaloriesTo(500L);
                     break;
                 case "Over 500":
-                    filter.caloriesFrom = 500L;
-                    filter.caloriesTo = null; // No upper limit
+                    filter.setCaloriesFrom(500L);
+                    filter.setCaloriesTo(null); // No upper limit
                     break;
             }
         }
@@ -577,18 +577,18 @@ public class RecipeSearchView {
 
         // Add macro filters (±10% range)
         if (carbValue > 0 && carbValue < 100) {
-            filter.carbsFrom = (long) Math.max(0, carbValue - 10);
-            filter.carbsTo = (long) Math.min(100, carbValue + 10);
+            filter.setCarbsFrom((long) Math.max(0, carbValue - 10));
+            filter.setCarbsTo((long) Math.min(100, carbValue + 10));
         }
 
         if (proteinValue > 0 && proteinValue < 100) {
-            filter.proteinFrom = (long) Math.max(0, proteinValue - 10);
-            filter.proteinTo = (long) Math.min(100, proteinValue + 10);
+            filter.setProteinFrom((long) Math.max(0, proteinValue - 10));
+            filter.setProteinTo((long) Math.min(100, proteinValue + 10));
         }
 
         if (fatValue > 0 && fatValue < 100) {
-            filter.fatFrom = (long) Math.max(0, fatValue - 10);
-            filter.fatTo = (long) Math.min(100, fatValue + 10);
+            filter.setFatFrom((long) Math.max(0, fatValue - 10));
+            filter.setFatTo((long) Math.min(100, fatValue + 10));
         }
 
         System.out.println("🔍 Built filter: " + formatFilterDebug(filter));
@@ -617,17 +617,17 @@ public class RecipeSearchView {
      */
     private String formatFilterDebug(RecipeFilter filter) {
         StringBuilder sb = new StringBuilder();
-        if (filter.caloriesFrom != null || filter.caloriesTo != null) {
-            sb.append("Calories: ").append(filter.caloriesFrom).append("-").append(filter.caloriesTo).append(", ");
+        if (filter.getCaloriesFrom() != null || filter.getCaloriesTo() != null) {
+            sb.append("Calories: ").append(filter.getCaloriesFrom()).append("-").append(filter.getCaloriesTo()).append(", ");
         }
-        if (filter.carbsFrom != null || filter.carbsTo != null) {
-            sb.append("Carbs: ").append(filter.carbsFrom).append("-").append(filter.carbsTo).append("%, ");
+        if (filter.getCarbsFrom() != null || filter.getCarbsTo() != null) {
+            sb.append("Carbs: ").append(filter.getCarbsFrom()).append("-").append(filter.getCarbsTo()).append("%, ");
         }
-        if (filter.proteinFrom != null || filter.proteinTo != null) {
-            sb.append("Protein: ").append(filter.proteinFrom).append("-").append(filter.proteinTo).append("%, ");
+        if (filter.getProteinFrom() != null || filter.getProteinTo() != null) {
+            sb.append("Protein: ").append(filter.getProteinFrom()).append("-").append(filter.getProteinTo()).append("%, ");
         }
-        if (filter.fatFrom != null || filter.fatTo != null) {
-            sb.append("Fat: ").append(filter.fatFrom).append("-").append(filter.fatTo).append("%");
+        if (filter.getFatFrom() != null || filter.getFatTo() != null) {
+            sb.append("Fat: ").append(filter.getFatFrom()).append("-").append(filter.getFatTo()).append("%");
         }
         return sb.length() > 0 ? sb.toString() : "No filters";
     }

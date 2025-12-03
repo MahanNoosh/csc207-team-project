@@ -1,6 +1,12 @@
 package tutcsc.group1.healthz.use_case.recipe_search.meta_data;
-import tutcsc.group1.healthz.use_case.recipe_search.meta_data.RecipeSearchInputData;
 
+/**
+ * The recipe search input boundary.
+ */
 public interface RecipeSearchInputBoundary {
-    void search(RecipeSearchInputData inputData);
+    /**
+     * Executes the recipe search use case.
+     * @param recipeSearchInputData the recipe search input data.
+     */
+    void execute(RecipeSearchInputData recipeSearchInputData);
 }

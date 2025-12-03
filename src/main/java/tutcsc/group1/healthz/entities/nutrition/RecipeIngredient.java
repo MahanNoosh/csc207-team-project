@@ -1,50 +1,97 @@
 package tutcsc.group1.healthz.entities.nutrition;
 
-public class RecipeIngredient {
-    private int id;
-    private String name;
-    private String description;
-    private String url;
-    private String measurement;
-    private double units;
-    private int servingId;
+/**
+ * A class representing a recipe ingredient.
+ */
+public final class RecipeIngredient {
+    /**
+     * The ID of the ingredient.
+     */
+    private final int id;
 
+    /**
+     * The name of the ingredient.
+     */
+    private final String name;
 
-    public RecipeIngredient(int id, String name, String description, String url, String measurement, double units, int servingId) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.url = url;
-        this.measurement = measurement;
-        this.units = units;
-        this.servingId = servingId;
+    /**
+     * A description of the ingredient.
+     */
+    private final String description;
+
+    /**
+     * The URL of the ingredient.
+     */
+    private final String url;
+
+    /**
+     * A description of the measurement of the ingredient.
+     */
+    private final String measurement;
+
+    /**
+     * The number of units of the ingredient.
+     */
+    private final double units;
+
+    /**
+     * The serving ID of the ingredient.
+     */
+    private final int servingId;
+
+    /**
+     * Constructor for a recipe ingredient entity.
+     *
+     * @param pid          the ID of the ingredient.
+     * @param pname        the name of the ingredient.
+     * @param pdescription a description of the ingredient.
+     * @param purl         the URL of the ingredient.
+     * @param pmeasurement a description of the measurement of the ingredient.
+     * @param punits       the number of units of the ingredient.
+     * @param pservingId   the serving ID.
+     */
+    public RecipeIngredient(final int pid, final String pname,
+                            final String pdescription, final String purl,
+                            final String pmeasurement, final double punits,
+                            final int pservingId) {
+        this.id = pid;
+        this.name = pname;
+        this.description = pdescription;
+        this.url = purl;
+        this.measurement = pmeasurement;
+        this.units = punits;
+        this.servingId = pservingId;
     }
 
+    /**
+     * Get the ID of the ingredient.
+     * @return the ID of the ingredient.
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Get the name of the ingredient.
+     * @return the name of the ingredient.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get a description of the ingredient.
+     * @return a description of the ingredient.
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Get the URL of the ingredient.
+     * @return the ingredient URL.
+     */
     public String getUrl() {
         return url;
-    }
-
-    public String getMeasurement() {
-        return measurement;
-    }
-
-    public double getUnits() {
-        return units;
-    }
-
-    public int getServingId() {
-        return servingId;
     }
 }

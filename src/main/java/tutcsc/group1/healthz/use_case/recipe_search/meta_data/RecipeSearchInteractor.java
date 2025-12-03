@@ -1,59 +1,56 @@
 package tutcsc.group1.healthz.use_case.recipe_search.meta_data;
 
 import tutcsc.group1.healthz.entities.nutrition.RecipeSearchResult;
-import tutcsc.group1.healthz.use_case.recipe_search.meta_data.RecipeSearchOutputBoundary;
+import tutcsc.group1.healthz.entities.nutrition.RecipeFilter;
+
 import java.util.List;
 
-public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
-    private final RecipeSearchGateway gateway;
-    private final RecipeSearchOutputBoundary presenter;
+/**
+ * The recipe search interactor.
+ */
+public final class RecipeSearchInteractor implements RecipeSearchInputBoundary {
+    /**
+     * The recipe search data access interface.
+     */
+    private final RecipeSearchDataAccessInterface recipeSearchDataAccessObject;
 
-    public RecipeSearchInteractor(RecipeSearchGateway gateway, RecipeSearchOutputBoundary presenter) {
-        this.gateway = gateway;
-        this.presenter = presenter;
+    /**
+     * The recipe search output boundary implemented by the presenter.
+     */
+    private final RecipeSearchOutputBoundary recipeSearchPresenter;
+
+    /**
+     * The recipe search interactor constructor.
+     * @param recipeSearchDataAccessInterface the data access interface.
+     * @param recipeSearchOutputBoundary the output boundary.
+     */
+    public RecipeSearchInteractor(final RecipeSearchDataAccessInterface
+                                          recipeSearchDataAccessInterface,
+                                  final RecipeSearchOutputBoundary
+                                          recipeSearchOutputBoundary) {
+        this.recipeSearchDataAccessObject = recipeSearchDataAccessInterface;
+        this.recipeSearchPresenter = recipeSearchOutputBoundary;
     }
 
     @Override
-    public void search(RecipeSearchInputData inputData) {
-        String query = inputData.getQuery();
+    public void execute(final RecipeSearchInputData recipeSearchInputData) {
+        final String query = recipeSearchInputData.getQuery();
+        final RecipeFilter filter = recipeSearchInputData.getFilter();
 
-        if (query == null || query.trim().isEmpty()) {
-            presenter.presentError("Please enter a search term");
+        if (query == null || query.isBlank()) {
+            recipeSearchPresenter.presentFailure(
+                    "Please enter a recipe name or ingredient to search for.");
             return;
         }
 
         try {
-            System.out.println("🔍 Interactor: Searching for: " + query);
-            System.out.println("🔍 Filter: " + formatFilter(inputData.getFilter()));
-
-            // ✅ Pass filter to gateway
-            List<RecipeSearchResult> results = gateway.search(query, inputData.getFilter());
-
-            System.out.println("✅ Interactor: Found " + results.size() + " results");
-            presenter.presentResults(results);
-
-        } catch (Exception e) {
-            System.err.println("❌ Interactor: Search failed - " + e.getMessage());
-            presenter.presentError("Search failed: " + e.getMessage());
+            final List<RecipeSearchResult> results =
+                    recipeSearchDataAccessObject.search(query.trim(), filter);
+            recipeSearchPresenter.presentSuccess(results);
         }
-    }
-
-    private String formatFilter(tutcsc.group1.healthz.entities.nutrition.RecipeFilter filter) {
-        if (filter == null) return "None";
-
-        StringBuilder sb = new StringBuilder();
-        if (filter.caloriesFrom != null || filter.caloriesTo != null) {
-            sb.append("Calories: ").append(filter.caloriesFrom).append("-").append(filter.caloriesTo).append(", ");
+        catch (Exception exception) {
+            recipeSearchPresenter.presentFailure(
+                    "Could not fetch recipe data: " + exception.getMessage());
         }
-        if (filter.carbsFrom != null || filter.carbsTo != null) {
-            sb.append("Carbs: ").append(filter.carbsFrom).append("-").append(filter.carbsTo).append("%, ");
-        }
-        if (filter.proteinFrom != null || filter.proteinTo != null) {
-            sb.append("Protein: ").append(filter.proteinFrom).append("-").append(filter.proteinTo).append("%, ");
-        }
-        if (filter.fatFrom != null || filter.fatTo != null) {
-            sb.append("Fat: ").append(filter.fatFrom).append("-").append(filter.fatTo).append("%");
-        }
-        return sb.length() > 0 ? sb.toString() : "None";
     }
 }

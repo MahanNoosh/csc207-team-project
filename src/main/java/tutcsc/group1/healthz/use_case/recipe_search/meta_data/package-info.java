@@ -1,0 +1,1 @@
+package tutcsc.group1.healthz.use_case.recipe_search.meta_data;
