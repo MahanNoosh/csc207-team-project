@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="300296b0-764f-4a52-acca-94e65cad2952" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/mystyle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/app/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/app/MainUI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/ClockGateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/PasswordHasher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/RecipeCatalogGateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/TokenIssuer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/UserDataAccessInterface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/api/FatSecretRecipeDetailDataAccessObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/api/FatSecretRecipeSearchDataAccessObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/api/FoodJsonParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/api/RecipeAPI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/api/RecipeJsonParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/api/SearchRecipe.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/api/fat_secret/FatSecret.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/api/fat_secret/FatSecretFoodDetailDataAccessObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/api/fat_secret/FatSecretFoodSearchDataAccessObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/api/oauth/OAuth.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/api/oauth/OAuthDataAccessObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/config/EnvConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/FavoriteRecipeFields.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/SupabaseActivityLogDataAccessObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/SupabaseAuthDataAccessObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/SupabaseClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/SupabaseExerciseDataAccessObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/SupabaseFavoriteRecipeDataAccessObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/SupabaseUserDataDataAccessObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/UserDataFields.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/food/FoodLogFields.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/food/SupabaseFoodLogGateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/NutritionAdvice.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/ServingSize.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/dashboard/ActivityEntry.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/dashboard/DietPreference.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/dashboard/Exercise.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/dashboard/Goal.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/dashboard/HealthCondition.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/dashboard/Profile.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/dashboard/Sex.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/BasicFood.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/FoodDetails.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/FoodLog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/FoodNutritionDetails.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/HealthyScorePolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/HealthyScorePresets.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/HealthyScoreService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/Macro.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/MacroSearchResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/NutritionFacts.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/Recipe.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/RecipeDetails.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/RecipeFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/RecipeIngredient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/RecipeSearchResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/nutrition/ServingInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/user/PasswordHash.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/user/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/user/UserId.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/activity/ActivityHistoryViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/activity/ActivityItem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/activity/ActivityLogLoadPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/activity/ActivityLogSavePresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/activity/ActivityPageController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/activity/CalorieCalculatorPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/activity/ExerciseFinderPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/activity/ExerciseListViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/activity/mapping/ActivityLogJsonMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/AuthController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/log_in/LoginController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/log_in/LoginPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/log_in/LoginViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/mapping/ProfileJsonMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/mapping/SignupProfileMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/sign_up/SignupController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/sign_up/SignupPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/sign_up/SignupViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/dashboard/DashboardController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/dashboard/DashboardPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/dashboard/DashboardViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/dashboard/RecentActivityController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/dashboard/RecentActivityPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/dashboard/RecentActivityViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/dashboard/TableFormatter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/dashboard/WeeklySummaryController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/dashboard/WeeklySummaryPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/dashboard/WeeklySummaryViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/favorite_recipe/AddFavoriteController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/favorite_recipe/FavoriteRecipeController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/favorite_recipe/FavoriteRecipePresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/favorite_recipe/FavoriteRecipeViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/food/FoodDetailPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/food/FoodSearchPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/food/LogFoodIntakeController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/food/LogFoodIntakePresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/food/LogFoodIntakeViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/food_log/GetFoodLogHistoryController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/food_log/GetFoodLogHistoryPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/food_log/GetFoodLogHistoryViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/macro/MacroDetailController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/macro/MacroDetailViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/macro/MacroSearchController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/macro/MacroSearchPresenter.java.bak" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/macro/MacroSearchViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/macro_summary/GetDailyMacroSummaryController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/macro_summary/GetDailyMacroSummaryPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/macro_summary/GetDailyMacroSummaryViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/recipe/RecipeDetailController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/recipe/RecipeDetailPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/recipe/RecipeDetailViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/recipe/RecipeSearchController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/recipe/RecipeSearchPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/recipe/RecipeSearchViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/setting/UpdateUserController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/setting/UpdateUserPresenter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/setting/UpdateUserViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/navigation/Navigator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/recipe_api/RecipeCategoryFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/test/testRecipeDetail.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/test/testRecipeSearch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogDataAccessInterface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogLoadOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogLoadOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogSaveOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogSaveOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/calorie_calculator/CalorieCalculatorInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/calorie_calculator/CalorieCalculatorInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/calorie_calculator/CalorieCalculatorInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/calorie_calculator/CalorieCalculatorOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/calorie_calculator/CalorieCalculatorOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/exercise_finder/ExerciseDataAccessInterface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/exercise_finder/ExerciseFinderInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/exercise_finder/ExerciseFinderInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/exercise_finder/ExerciseFinderOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/exercise_finder/ExerciseInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/exercise_finder/ExerciseListOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/recent/RecentActivityInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/recent/RecentActivityInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/recent/RecentActivityOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/recent/RecentActivityOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/weekly_summary/WeeklySummaryInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/weekly_summary/WeeklySummaryInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/weekly_summary/WeeklySummaryOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/weekly_summary/WeeklySummaryOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/AuthGateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/LoginInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/LoginInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/LoginOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/forgot_password/ForgotPasswordInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/forgot_password/ForgotPasswordInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/forgot_password/ForgotPasswordInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/forgot_password/ForgotPasswordOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/log_in/LoginInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/log_in/LoginInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/log_in/LoginInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/log_in/LoginOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/log_in/LoginOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/model/LoginRequestModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/model/LoginResponseModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/sign_up/SignupInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/sign_up/SignupInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/sign_up/SignupInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/sign_up/SignupOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/sign_up/SignupOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/choices/ChoicesGateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/dashboard/CalorieCalculator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/dashboard/DashboardInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/dashboard/DashboardInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/dashboard/DashboardOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/dashboard/DashboardOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/dashboard/MetricsConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/dashboard/ProfileInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/dashboard/ProfileInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/dashboard/ProfileOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/dashboard/UserDataDataAccessInterface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/favorite_recipe/AddFavoriteInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/favorite_recipe/AddFavoriteInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/favorite_recipe/DeleteFavoriteInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/favorite_recipe/DeleteFavoriteInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/favorite_recipe/FavoriteRecipeGateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/favorite_recipe/LoadFavoritesInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/favorite_recipe/LoadFavoritesInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/favorite_recipe/LoadFavoritesOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/detail/FoodDetailGateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/detail/GetFoodDetailInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/detail/GetFoodDetailInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/detail/GetFoodDetailInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/detail/GetFoodDetailOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/detail/GetFoodDetailOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/food_log_history/GetFoodLogHistoryInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/food_log_history/GetFoodLogHistoryInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/food_log_history/GetFoodLogHistoryInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/food_log_history/GetFoodLogHistoryOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/food_log_history/GetFoodLogHistoryOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/logging/FoodLogGateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/logging/LogFoodIntakeInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/logging/LogFoodIntakeInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/logging/LogFoodIntakeInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/logging/LogFoodIntakeOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/logging/LogFoodIntakeOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/search/FoodSearchDataAccessInterface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/search/SearchFoodInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/search/SearchFoodInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/search/SearchFoodInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/search/SearchFoodOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/food/search/SearchFoodOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/macro_summary/GetDailyCalorieSummaryInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/macro_summary/GetDailyCalorieSummaryInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/macro_summary/GetDailyCalorieSummaryInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/macro_summary/GetDailyCalorieSummaryOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/macro_summary/GetDailyCalorieSummaryOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/nutrition_advice/GetNutritionAdviceInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/nutrition_advice/HealthMetricsCalculator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/nutrition_advice/NutritionAdviceInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/nutrition_advice/NutritionAdvisorHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/recipe_search/detailed/RecipeDetailGateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/recipe_search/detailed/RecipeDetailInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/recipe_search/detailed/RecipeDetailInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/recipe_search/detailed/RecipeDetailInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/recipe_search/detailed/RecipeDetailOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/recipe_search/detailed/RecipeDetailOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/recipe_search/meta_data/RecipeSearchGateway.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/recipe_search/meta_data/RecipeSearchInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/recipe_search/meta_data/RecipeSearchInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/recipe_search/meta_data/RecipeSearchInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/recipe_search/meta_data/RecipeSearchOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/scoring/FoodFactsScorer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/setting/UpdateUserInputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/setting/UpdateUserInputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/setting/UpdateUserInteractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/setting/UpdateUserOutputBoundary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/setting/UpdateUserOutputData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/ScoreFoodViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/activity/ActivityView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/LandingView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/LoginView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/LogoutView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/SignupView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/signuppanels/EmailVerificationView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/signuppanels/Step1Panel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/signuppanels/Step2Panel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/signuppanels/Step3Panel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/signuppanels/Step4Panel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/signuppanels/Step5Panel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/signuppanels/Step6Panel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/auth/signuppanels/Step7Panel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/components/Sidebar.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/dashboard/DashboardView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/dashboard/ProfileCliRenderer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/macro/MacroSearchView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/macro/SingleMacroPage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/nutrition/FoodLogView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/recipe/FavoriteRecipeView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/recipe/RecipeDetailView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/recipe/RecipeSearchView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/settings/SettingsView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/ActivityLogInteractorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/ExerciseFinderinteractorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/IntelliLang.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/csc207-team-project.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/lib.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/lib1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/health-app-ca-lab.iml" beforeDir="false" afterPath="$PROJECT_DIR$/health-app-ca-lab.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/app/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/app/MainUI.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/API/FatSecret/FatSecret.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/API/FatSecret/FatSecretFoodDetailDataAccessObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/API/FatSecret/FatSecretFoodSearchDataAccessObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/API/FatSecretRecipeDetailDataAccessObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/API/FatSecretRecipeSearchDataAccessObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/API/FoodJsonParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/API/OAuth/OAuth.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/API/OAuth/OAuthDataAccessObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/API/RecipeAPI.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/API/RecipeJsonParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/API/SearchRecipe.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/ClockGateway.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/PasswordHasher.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/RecipeCatalogGateway.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/TokenIssuer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/UserDataAccessInterface.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/config/EnvConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/supabase/FavoriteRecipeFields.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/supabase/SupabaseActivityLogDataAccessObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/supabase/SupabaseAuthDataAccessObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/supabase/SupabaseClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/supabase/SupabaseExerciseDataAccessObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/supabase/SupabaseFavoriteRecipeDataAccessObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/supabase/SupabaseUserDataDataAccessObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/supabase/UserDataFields.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/supabase/food/FoodLogFields.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/dataaccess/supabase/food/SupabaseFoodLogGateway.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/Dashboard/ActivityEntry.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/Dashboard/DietPreference.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/Dashboard/Exercise.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/Dashboard/Goal.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/Dashboard/HealthCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/Dashboard/Profile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/Dashboard/Sex.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/NutritionAdvice.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/ServingSize.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/BasicFood.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/FoodDetails.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/FoodLog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/FoodNutritionDetails.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/HealthyScorePolicy.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/HealthyScorePresets.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/HealthyScoreService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/Macro.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/MacroSearchResult.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/NutritionFacts.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/Recipe.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/RecipeDetails.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/RecipeFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/RecipeIngredient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/RecipeSearchResult.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/nutrition/ServingInfo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/user/PasswordHash.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/user/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/entities/user/UserId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/activity/ActivityHistoryViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/activity/ActivityItem.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/activity/ActivityLogLoadPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/activity/ActivityLogSavePresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/activity/ActivityPageController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/activity/CalorieCalculatorPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/activity/ExerciseFinderPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/activity/ExerciseListViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/activity/mapping/ActivityLogJsonMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/auth/AuthController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/auth/login/LoginController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/auth/login/LoginPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/auth/login/LoginViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/auth/mapping/ProfileJsonMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/auth/mapping/SignupProfileMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/auth/signup/SignupController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/auth/signup/SignupPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/auth/signup/SignupViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/dashboard/DashboardController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/dashboard/DashboardPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/dashboard/DashboardViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/dashboard/RecentActivityController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/dashboard/RecentActivityPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/dashboard/RecentActivityViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/dashboard/TableFormatter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/dashboard/WeeklySummaryController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/dashboard/WeeklySummaryPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/dashboard/WeeklySummaryViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/favoriterecipe/AddFavoriteController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/favoriterecipe/FavoriteRecipeController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/favoriterecipe/FavoriteRecipePresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/favoriterecipe/FavoriteRecipeViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/food/FoodDetailPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/food/FoodSearchPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/food/LogFoodIntakeController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/food/LogFoodIntakePresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/food/LogFoodIntakeViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/foodlog/GetFoodLogHistoryController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/foodlog/GetFoodLogHistoryPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/foodlog/GetFoodLogHistoryViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/macro/MacroDetailController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/macro/MacroDetailViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/macro/MacroSearchController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/macro/MacroSearchPresenter.java.bak" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/macro/MacroSearchViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/macrosummary/GetDailyMacroSummaryController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/macrosummary/GetDailyMacroSummaryPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/macrosummary/GetDailyMacroSummaryViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/recipe/RecipeDetailController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/recipe/RecipeDetailPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/recipe/RecipeDetailViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/recipe/RecipeSearchController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/recipe/RecipeSearchPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/recipe/RecipeSearchViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/setting/UpdateUserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/setting/UpdateUserPresenter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/interfaceadapter/setting/UpdateUserViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/navigation/Navigator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/recipeapi/RecipeCategoryFetcher.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/test/testRecipeDetail.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/test/testRecipeSearch.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/activitylog/ActivityLogDataAccessInterface.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/activitylog/ActivityLogInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/activitylog/ActivityLogInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/activitylog/ActivityLogInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/activitylog/ActivityLogLoadOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/activitylog/ActivityLogLoadOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/activitylog/ActivityLogSaveOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/activitylog/ActivityLogSaveOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/caloriecalculator/CalorieCalculatorInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/caloriecalculator/CalorieCalculatorInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/caloriecalculator/CalorieCalculatorInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/caloriecalculator/CalorieCalculatorOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/caloriecalculator/CalorieCalculatorOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/exercisefinder/ExerciseDataAccessInterface.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/exercisefinder/ExerciseFinderInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/exercisefinder/ExerciseFinderInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/exercisefinder/ExerciseFinderOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/exercisefinder/ExerciseInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/exercisefinder/ExerciseListOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/recent/RecentActivityInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/recent/RecentActivityInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/recent/RecentActivityOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/recent/RecentActivityOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/weeklysummary/WeeklySummaryInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/weeklysummary/WeeklySummaryInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/weeklysummary/WeeklySummaryOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/activity/weeklysummary/WeeklySummaryOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/AuthGateway.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/LoginInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/LoginInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/LoginOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/forgotpassword/ForgotPasswordInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/forgotpassword/ForgotPasswordInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/forgotpassword/ForgotPasswordInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/forgotpassword/ForgotPasswordOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/login/LoginInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/login/LoginInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/login/LoginInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/login/LoginOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/login/LoginOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/model/LoginRequestModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/model/LoginResponseModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/signup/SignupInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/signup/SignupInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/signup/SignupInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/signup/SignupOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/auth/signup/SignupOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/choices/ChoicesGateway.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/dashboard/CalorieCalculator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/dashboard/DashboardInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/dashboard/DashboardInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/dashboard/DashboardOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/dashboard/DashboardOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/dashboard/MetricsConverter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/dashboard/ProfileInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/dashboard/ProfileInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/dashboard/ProfileOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/dashboard/UserDataDataAccessInterface.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/favoriterecipe/AddFavoriteInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/favoriterecipe/AddFavoriteInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/favoriterecipe/DeleteFavoriteInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/favoriterecipe/DeleteFavoriteInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/favoriterecipe/FavoriteRecipeGateway.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/favoriterecipe/LoadFavoritesInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/favoriterecipe/LoadFavoritesInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/favoriterecipe/LoadFavoritesOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/detail/FoodDetailGateway.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/detail/GetFoodDetailInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/detail/GetFoodDetailInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/detail/GetFoodDetailInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/detail/GetFoodDetailOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/detail/GetFoodDetailOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/foodloghistory/GetFoodLogHistoryInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/foodloghistory/GetFoodLogHistoryInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/foodloghistory/GetFoodLogHistoryInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/foodloghistory/GetFoodLogHistoryOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/foodloghistory/GetFoodLogHistoryOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/logging/FoodLogGateway.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/logging/LogFoodIntakeInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/logging/LogFoodIntakeInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/logging/LogFoodIntakeInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/logging/LogFoodIntakeOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/logging/LogFoodIntakeOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/search/FoodSearchDataAccessInterface.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/search/SearchFoodInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/search/SearchFoodInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/search/SearchFoodInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/search/SearchFoodOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/food/search/SearchFoodOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/macrosummary/GetDailyCalorieSummaryInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/macrosummary/GetDailyCalorieSummaryInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/macrosummary/GetDailyCalorieSummaryInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/macrosummary/GetDailyCalorieSummaryOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/macrosummary/GetDailyCalorieSummaryOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/nutritionadvice/GetNutritionAdviceInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/nutritionadvice/HealthMetricsCalculator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/nutritionadvice/NutritionAdviceInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/nutritionadvice/NutritionAdvisorHelper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/recipesearch/detailed/RecipeDetailGateway.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/recipesearch/detailed/RecipeDetailInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/recipesearch/detailed/RecipeDetailInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/recipesearch/detailed/RecipeDetailInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/recipesearch/detailed/RecipeDetailOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/recipesearch/detailed/RecipeDetailOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/recipesearch/metadata/RecipeSearchGateway.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/recipesearch/metadata/RecipeSearchInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/recipesearch/metadata/RecipeSearchInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/recipesearch/metadata/RecipeSearchInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/recipesearch/metadata/RecipeSearchOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/scoring/FoodFactsScorer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/setting/UpdateUserInputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/setting/UpdateUserInputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/setting/UpdateUserInteractor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/setting/UpdateUserOutputBoundary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/usecase/setting/UpdateUserOutputData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/ScoreFoodViewModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/activity/ActivityView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/LandingView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/LoginView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/LogoutView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/SignupView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/signuppanels/EmailVerificationView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/signuppanels/Step1Panel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/signuppanels/Step2Panel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/signuppanels/Step3Panel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/signuppanels/Step4Panel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/signuppanels/Step5Panel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/signuppanels/Step6Panel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/auth/signuppanels/Step7Panel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/components/Sidebar.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/dashboard/DashboardView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/dashboard/ProfileCliRenderer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/macro/MacroSearchView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/macro/SingleMacroPage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/nutrition/FoodLogView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/recipe/FavoriteRecipeView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/recipe/RecipeDetailView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/recipe/RecipeSearchView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/view/settings/SettingsView.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tut0301/group1/healthz/entities/nutrition/BasicFoodTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/entities/nutrition/BasicFoodTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tut0301/group1/healthz/entities/nutrition/FoodLogAndDetailsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/entities/nutrition/FoodLogAndDetailsTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tut0301/group1/healthz/usecase/activity/ActivityLogInteractorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/oldtestactivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tut0301/group1/healthz/usecase/dashboard/FoodlogTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/dashboard/FoodlogTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tut0301/group1/healthz/usecase/dashboard/ProfileTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/dashboard/ProfileTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tut0301/group1/healthz/usecase/food/detail/GetFoodDetailInteractorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/food/detail/GetFoodDetailInteractorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tut0301/group1/healthz/usecase/food/logging/LogFoodIntakeInteractorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/food/logging/LogFoodIntakeInteractorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tut0301/group1/healthz/usecase/food/search/SearchFoodInteractorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/food/search/SearchFoodInteractorTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "peivand-moradi"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/MahanNoosh/csc207-team-project.git",
+    "accountId": "cba4ecaa-4dd7-4ea0-9219-bf19c27598b7"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="36JQ8BTqlD1sZ6t1EckTs1L7QSn" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.MainUI.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "pelin-branch",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="MainUI" type="Application" factoryName="Application">
+      <envs>
+        <env name="SUPABASE_URL" value="https://gutqsmmssgsttyxigawt.supabase.co/" />
+        <env name="SUPABASE_ANON_KEY" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1dHFzbW1zc2dzdHR5eGlnYXd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzNTkxOTYsImV4cCI6MjA3NjkzNTE5Nn0.5ojUcQ52cBCYZNBvt7NuKxBjNGjxg2deoWhGC1_bp2w" />
+        <env name="FATSECRET_CLIENT_ID" value="9ef37d375ad34d71a2e1f0703d79c93c" />
+        <env name="FATSECRET_CLIENT_SECRET" value="c1d1657075174b2e93a8f4dc270a3aa5" />
+      </envs>
+      <option name="MAIN_CLASS_NAME" value="tutcsc.group1.healthz.app.MainUI" />
+      <module name="health-app-ca-lab" />
+      <option name="VM_PARAMETERS" value="--module-path &quot;C:\Users\Asus\javafx-sdk-21.0.9\lib&quot; --add-modules javafx.controls,javafx.fxml " />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.25557.131" />
+        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-IU-252.25557.131" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="300296b0-764f-4a52-acca-94e65cad2952" name="Changes" comment="" />
+      <created>1764722034338</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1764722034338</updated>
+      <workItem from="1764722036363" duration="1073000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
