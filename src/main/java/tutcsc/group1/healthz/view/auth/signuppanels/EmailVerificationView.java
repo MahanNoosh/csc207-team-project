@@ -177,7 +177,7 @@ public class EmailVerificationView {
         this.scene = new Scene(root, 900, 700);
     }
 
-    // ===== Getters / api for Navigator =====
+    // ===== Getters / API for Navigator =====
 
     public Scene getScene() {
         return scene;

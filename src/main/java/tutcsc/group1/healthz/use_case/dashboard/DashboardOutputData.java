@@ -1,7 +1,7 @@
 package tutcsc.group1.healthz.use_case.dashboard;
 
 /**
- * Output Data for dashboard
+ * Output Data for Dashboard
  */
 public class DashboardOutputData {
     private final int dailyCalorieGoal;

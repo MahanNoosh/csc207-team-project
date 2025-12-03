@@ -25,8 +25,8 @@ public class HealthMetricsCalculator {
         }
     }
     public static double calculateTDEE(Profile profile) {
-        if (profile.getActivityLevelMET() != null) {
-            return computeBMR(profile) * profile.getActivityLevelMET();
+        if (profile.getActivitylevelmet() != null) {
+            return computeBMR(profile) * profile.getActivitylevelmet();
         }
         return 2500;
     }

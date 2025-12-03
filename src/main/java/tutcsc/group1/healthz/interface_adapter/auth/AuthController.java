@@ -1,9 +1,9 @@
 package tutcsc.group1.healthz.interface_adapter.auth;
 
-import tutcsc.group1.healthz.interface_adapter.auth.login.LoginPresenter;
-import tutcsc.group1.healthz.interface_adapter.auth.login.LoginViewModel;
-import tutcsc.group1.healthz.use_case.auth.login.LoginInputBoundary;
-import tutcsc.group1.healthz.use_case.auth.login.LoginInputData;
+import tutcsc.group1.healthz.interface_adapter.auth.log_in.LoginPresenter;
+import tutcsc.group1.healthz.interface_adapter.auth.log_in.LoginViewModel;
+import tutcsc.group1.healthz.use_case.auth.log_in.LoginInputBoundary;
+import tutcsc.group1.healthz.use_case.auth.log_in.LoginInputData;
 
 public class AuthController {
     private final LoginInputBoundary loginUC;

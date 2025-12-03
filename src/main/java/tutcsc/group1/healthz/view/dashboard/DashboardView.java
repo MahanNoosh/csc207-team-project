@@ -1,8 +1,5 @@
 package tutcsc.group1.healthz.view.dashboard;
 
-import tutcsc.group1.healthz.interface_adapter.dashboard.*;
-import tutcsc.group1.healthz.interface_adapter.macro_summary.GetDailyMacroSummaryController;
-import tutcsc.group1.healthz.interface_adapter.macro_summary.GetDailyMacroSummaryViewModel;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,6 +14,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import tutcsc.group1.healthz.interface_adapter.activity.ActivityItem;
+import tutcsc.group1.healthz.interface_adapter.dashboard.RecentActivityController;
+import tutcsc.group1.healthz.interface_adapter.dashboard.RecentActivityViewModel;
+import tutcsc.group1.healthz.interface_adapter.dashboard.WeeklySummaryController;
+import tutcsc.group1.healthz.interface_adapter.dashboard.WeeklySummaryViewModel;
+import tutcsc.group1.healthz.interface_adapter.macro_summary.GetDailyMacroSummaryController;
+import tutcsc.group1.healthz.interface_adapter.dashboard.DashboardController;
+import tutcsc.group1.healthz.interface_adapter.dashboard.DashboardViewModel;
+import tutcsc.group1.healthz.interface_adapter.macro_summary.GetDailyMacroSummaryViewModel;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
@@ -26,7 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * dashboard View - daily summary, calories, macros, activity tracker, and recent entries
+ * Dashboard View - daily summary, calories, macros, activity tracker, and recent entries
  */
 public class DashboardView {
 
@@ -78,7 +83,7 @@ public class DashboardView {
                          DashboardViewModel dashboardViewModel,
                          GetDailyMacroSummaryController summaryController,
                          GetDailyMacroSummaryViewModel summaryViewModel,
-                         String userId) {
+                         String userId) throws Exception {
         this.userName = userName != null ? userName : "User";
         this.weeklySummaryViewModel = weeklySummaryViewModel;
         this.recentActivityController = recentActivityController;

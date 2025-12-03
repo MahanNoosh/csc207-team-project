@@ -1,7 +1,6 @@
 
 package tutcsc.group1.healthz.view.auth;
 
-import tutcsc.group1.healthz.view.auth.signuppanels.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,13 +11,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import tutcsc.group1.healthz.data_access.supabase.SupabaseAuthDataAccessObject;
 import tutcsc.group1.healthz.data_access.supabase.SupabaseClient;
-import tutcsc.group1.healthz.interface_adapter.auth.signup.SignupPresenter;
-import tutcsc.group1.healthz.interface_adapter.auth.signup.SignupViewModel;
+import tutcsc.group1.healthz.interface_adapter.auth.sign_up.SignupPresenter;
+import tutcsc.group1.healthz.interface_adapter.auth.sign_up.SignupViewModel;
 import tutcsc.group1.healthz.navigation.Navigator;
 import tutcsc.group1.healthz.use_case.auth.AuthGateway;
-import tutcsc.group1.healthz.use_case.auth.signup.SignupInputBoundary;
-import tutcsc.group1.healthz.use_case.auth.signup.SignupInteractor;
-import tutcsc.group1.healthz.interface_adapter.auth.signup.SignupController;
+import tutcsc.group1.healthz.use_case.auth.sign_up.SignupInputBoundary;
+import tutcsc.group1.healthz.use_case.auth.sign_up.SignupInteractor;
+import tutcsc.group1.healthz.view.auth.signuppanels.*;
+import tutcsc.group1.healthz.interface_adapter.auth.sign_up.SignupController;
 import java.util.List;
 
 

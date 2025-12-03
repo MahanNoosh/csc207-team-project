@@ -1,6 +1,5 @@
 package tutcsc.group1.healthz.data_access.supabase.food;
 
-import tutcsc.group1.healthz.entities.nutrition.Macro;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import tutcsc.group1.healthz.data_access.supabase.SupabaseClient;
@@ -119,7 +118,7 @@ public class SupabaseFoodLogGateway implements FoodLogGateway {
         double multiplier = foodLog.getServingMultiplier();
         json.put(FoodLogFields.SERVING_MULTIPLIER, multiplier);
 
-        Macro totalMacro = foodLog.getActualMacro();
+        tutcsc.group1.healthz.entities.nutrition.Macro totalMacro = foodLog.getActualMacro();
 
         json.put(FoodLogFields.CALORIES, totalMacro.calories());
         json.put(FoodLogFields.PROTEIN, totalMacro.proteinG());
@@ -187,7 +186,7 @@ public class SupabaseFoodLogGateway implements FoodLogGateway {
             calories, protein, fat, carbs, fiber, sugar, sodium
         );
 
-        // Log meta_data
+        // Log metadata
         String meal = row.getString(FoodLogFields.MEAL);
         LocalDateTime loggedAt = LocalDateTime.parse(
             row.getString(FoodLogFields.LOGGED_AT),

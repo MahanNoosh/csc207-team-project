@@ -1,19 +1,26 @@
 package tutcsc.group1.healthz.interface_adapter.activity;
 
 import java.util.List;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
  * ViewModel for the exercise list and calorie tracking UI.
- * <p>
  * Holds observable state for exercise names and the currently calculated
  * calories, enabling reactive updates in the view layer.
- * </p>
  */
 public class ExerciseListViewModel {
 
-    private final ObservableList<String> exerciseNames = FXCollections.observableArrayList();
+    /**
+     * Observable list of exercise names for UI binding.
+     */
+    private final ObservableList<String> exerciseNames =
+            FXCollections.observableArrayList();
+
+    /**
+     * Stores the currently calculated calories.
+     */
     private double currentCalories;
 
     /**

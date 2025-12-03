@@ -287,7 +287,7 @@ public class SettingsView {
         Double metVal = null;
         if (currentProfile != null) {
             // getActivityLevelMET() is a Double (nullable)
-            metVal = currentProfile.getActivityLevelMET();
+            metVal = currentProfile.getActivitylevelmet();
         }
         String activityInitial = mapMETToActivityLevel(metVal);
         activityLevelCombo.setValue(activityInitial);

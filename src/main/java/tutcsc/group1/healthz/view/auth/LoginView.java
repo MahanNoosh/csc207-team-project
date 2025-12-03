@@ -150,7 +150,7 @@ public class LoginView {
         return field;
     }
 
-    // ===== Public api for Navigator / Controllers =====
+    // ===== Public API for Navigator / Controllers =====
 
     public Scene getScene() {
         return scene;

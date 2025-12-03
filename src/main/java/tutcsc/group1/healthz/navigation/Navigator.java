@@ -7,10 +7,10 @@ import javafx.animation.Timeline;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import tutcsc.group1.healthz.data_access.api.FatSecret.FatSecretFoodDetailDataAccessObject;
-import tutcsc.group1.healthz.data_access.api.FatSecret.FatSecretFoodSearchDataAccessObject;
 import tutcsc.group1.healthz.data_access.api.FatSecretRecipeDetailDataAccessObject;
 import tutcsc.group1.healthz.data_access.api.FatSecretRecipeSearchDataAccessObject;
+import tutcsc.group1.healthz.data_access.api.fat_secret.FatSecretFoodDetailDataAccessObject;
+import tutcsc.group1.healthz.data_access.api.fat_secret.FatSecretFoodSearchDataAccessObject;
 import tutcsc.group1.healthz.data_access.api.oauth.OAuth;
 import tutcsc.group1.healthz.data_access.api.oauth.OAuthDataAccessObject;
 import tutcsc.group1.healthz.data_access.supabase.SupabaseActivityLogDataAccessObject;
@@ -340,7 +340,7 @@ public final class Navigator {
         primaryStage.setTitle("HealthZ - Favorite Recipes");
     }
 
-    // -@cs[IllegalCatch] Need to catch generic exceptions from oauth API
+    // -@cs[IllegalCatch] Need to catch generic exceptions from OAuth API
     private String getFatSecretToken() {
         final String result;
         try {
@@ -556,7 +556,7 @@ public final class Navigator {
     }
 
     /**
-     * Navigate to dashboard page.
+     * Navigate to Dashboard page.
      */
     @SuppressWarnings({"checkstyle:AbbreviationAsWordInName", "checkstyle:ExecutableStatementCount"})
     public void showDashboard() {
@@ -650,7 +650,7 @@ public final class Navigator {
             setupDashboardNavigation(dashboardView);
 
             primaryStage.setScene(dashboardView.getScene());
-            primaryStage.setTitle("HealthZ - dashboard");
+            primaryStage.setTitle("HealthZ - Dashboard");
         }
     }
 
@@ -680,7 +680,7 @@ public final class Navigator {
     }
 
     /**
-     * Navigate to Main App/dashboard (after successful login/signup).
+     * Navigate to Main App/Dashboard (after successful login/signup).
      */
     public void showMainApp() {
         System.out.println("Login/Signup successful! Navigating to main app...");
@@ -1010,7 +1010,7 @@ public final class Navigator {
     }
 
     /**
-     * Setup navigation for dashboard page.
+     * Setup navigation for Dashboard page.
      *
      * @param dashboardView the dashboard view to setup
      */
@@ -1057,7 +1057,7 @@ public final class Navigator {
         });
 
         logoutView.getCancelButton().setOnAction(event -> {
-            System.out.println("Returning to dashboard...");
+            System.out.println("Returning to Dashboard...");
             showDashboard();
         });
     }
@@ -1074,7 +1074,7 @@ public final class Navigator {
         });
 
         recipeSearchView.getHealthzButton().setOnAction(event -> {
-            System.out.println("Navigating to dashboard...");
+            System.out.println("Navigating to Dashboard...");
             showDashboard();
         });
     }

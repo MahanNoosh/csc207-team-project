@@ -3,7 +3,7 @@ package tutcsc.group1.healthz.interface_adapter.dashboard;
 import tutcsc.group1.healthz.use_case.dashboard.DashboardInputBoundary;
 
 /**
- * Controller for dashboard
+ * Controller for Dashboard
  */
 public class DashboardController {
     private final DashboardInputBoundary interactor;

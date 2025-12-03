@@ -4,6 +4,8 @@ import tutcsc.group1.healthz.entities.nutrition.Recipe;
 import java.util.ArrayList;
 import java.util.List;
 
+import tutcsc.group1.healthz.entities.nutrition.Recipe;
+
 /**
  * ViewModel for favorite recipes.
  * Holds the state of favorite recipes for display in the view.

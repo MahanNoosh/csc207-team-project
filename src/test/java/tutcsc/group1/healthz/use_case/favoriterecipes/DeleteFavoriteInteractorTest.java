@@ -2,11 +2,11 @@ package tutcsc.group1.healthz.use_case.favoriterecipes;
 
 import org.junit.jupiter.api.Test;
 import tutcsc.group1.healthz.entities.nutrition.Recipe;
-import tutcsc.group1.healthz.use_case.favoriterecipe.DeleteFavoriteInputBoundary;
-import tutcsc.group1.healthz.use_case.favoriterecipe.DeleteFavoriteInteractor;
-import tutcsc.group1.healthz.use_case.favoriterecipe.FavoriteRecipeGateway;
-import tutcsc.group1.healthz.use_case.favoriterecipe.LoadFavoritesOutputBoundary;
-import tutcsc.tut0301.group1.usecase.favoriterecipe.*;
+import tutcsc.group1.healthz.use_case.favorite_recipe.DeleteFavoriteInputBoundary;
+import tutcsc.group1.healthz.use_case.favorite_recipe.DeleteFavoriteInteractor;
+import tutcsc.group1.healthz.use_case.favorite_recipe.FavoriteRecipeGateway;
+import tutcsc.group1.healthz.use_case.favorite_recipe.LoadFavoritesOutputBoundary;
+import tutcsc.group1.healthz.use_case.favorite_recipe.*;
 
 import java.util.ArrayList;
 import java.util.List;

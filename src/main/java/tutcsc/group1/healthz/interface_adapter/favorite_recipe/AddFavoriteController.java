@@ -1,6 +1,6 @@
 package tutcsc.group1.healthz.interface_adapter.favorite_recipe;
 
-import tutcsc.group1.healthz.use_case.favoriterecipe.AddFavoriteInputBoundary;
+import tutcsc.group1.healthz.use_case.favorite_recipe.AddFavoriteInputBoundary;
 
 /**
  * Controller for adding favorite recipes.

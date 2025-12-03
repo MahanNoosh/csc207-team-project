@@ -1,8 +1,9 @@
 package tutcsc.group1.healthz.interface_adapter.favorite_recipe;
 
 import java.util.List;
+
 import tutcsc.group1.healthz.entities.nutrition.Recipe;
-import tutcsc.group1.healthz.use_case.favoriterecipe.LoadFavoritesOutputBoundary;
+import tutcsc.group1.healthz.use_case.favorite_recipe.LoadFavoritesOutputBoundary;
 
 /**
  * Presenter for favorite recipes.

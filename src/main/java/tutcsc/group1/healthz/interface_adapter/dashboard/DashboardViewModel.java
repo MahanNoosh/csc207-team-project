@@ -1,7 +1,7 @@
 package tutcsc.group1.healthz.interface_adapter.dashboard;
 
 /**
- * View Model for dashboard
+ * View Model for Dashboard
  */
 public class DashboardViewModel {
     private int dailyCalorieGoal;

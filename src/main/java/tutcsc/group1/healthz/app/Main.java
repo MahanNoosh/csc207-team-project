@@ -6,16 +6,16 @@ import tutcsc.group1.healthz.data_access.supabase.SupabaseAuthDataAccessObject;
 import tutcsc.group1.healthz.data_access.supabase.SupabaseClient;
 import tutcsc.group1.healthz.data_access.supabase.SupabaseUserDataDataAccessObject;
 import tutcsc.group1.healthz.use_case.auth.AuthGateway;
-import tutcsc.group1.healthz.use_case.auth.login.LoginInputBoundary;
-import tutcsc.group1.healthz.use_case.auth.login.LoginInteractor;
-import tutcsc.group1.healthz.interface_adapter.auth.login.LoginController;
-import tutcsc.group1.healthz.interface_adapter.auth.login.LoginPresenter;
-import tutcsc.group1.healthz.interface_adapter.auth.login.LoginViewModel;
-import tutcsc.group1.healthz.use_case.auth.signup.SignupInputBoundary;
-import tutcsc.group1.healthz.use_case.auth.signup.SignupInteractor;
-import tutcsc.group1.healthz.interface_adapter.auth.signup.SignupController;
-import tutcsc.group1.healthz.interface_adapter.auth.signup.SignupPresenter;
-import tutcsc.group1.healthz.interface_adapter.auth.signup.SignupViewModel;
+import tutcsc.group1.healthz.use_case.auth.log_in.LoginInputBoundary;
+import tutcsc.group1.healthz.use_case.auth.log_in.LoginInteractor;
+import tutcsc.group1.healthz.interface_adapter.auth.log_in.LoginController;
+import tutcsc.group1.healthz.interface_adapter.auth.log_in.LoginPresenter;
+import tutcsc.group1.healthz.interface_adapter.auth.log_in.LoginViewModel;
+import tutcsc.group1.healthz.use_case.auth.sign_up.SignupInputBoundary;
+import tutcsc.group1.healthz.use_case.auth.sign_up.SignupInteractor;
+import tutcsc.group1.healthz.interface_adapter.auth.sign_up.SignupController;
+import tutcsc.group1.healthz.interface_adapter.auth.sign_up.SignupPresenter;
+import tutcsc.group1.healthz.interface_adapter.auth.sign_up.SignupViewModel;
 import tutcsc.group1.healthz.view.auth.LandingView;
 import tutcsc.group1.healthz.view.auth.SignupView;
 
@@ -72,7 +72,7 @@ public class Main {
                     String email = prompt(sc, "Email: ");
                     String pw1   = prompt(sc, "Password: ");
                     String pw2   = prompt(sc, "Repeat password: ");
-                    //signupController.signup(email, pw1, , signupData.fullName);
+                    //signupController.sign_up(email, pw1, , signupData.fullName);
                 }
                 case "2" -> {
                     String email = prompt(sc, "Email: ");

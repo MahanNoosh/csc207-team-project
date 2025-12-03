@@ -1,54 +1,91 @@
+/**
+ * Contains entity classes used for displaying
+ * and structuring dashboard-related activity data.
+ */
+
 package tutcsc.group1.healthz.entities.dashboard;
 
 import java.time.LocalDateTime;
 
 /**
  * Represents a single recorded physical activity entry.
- * Each entry contains the activity ID, duration, calories burned, and timestamp.
+ * Each entry contains the activity ID,
+ * duration, calories burned, and timestamp.
  */
 public class ActivityEntry {
 
+    /**
+     * The unique identifier of the activity performed.
+     */
     private final long activityId;
+
+    /**
+     * The duration of the activity in minutes.
+     */
     private final int durationMinutes;
+
+    /**
+     * The number of calories burned during the activity.
+     */
     private final double caloriesBurned;
+
+    /**
+     * The date and time at which the activity was performed.
+     */
     private final LocalDateTime timestamp;
 
     /**
      * Constructs an ActivityEntry object.
      *
-     * @param activityId the unique ID of the activity
-     * @param durationMinutes the duration of the activity in minutes
-     * @param caloriesBurned the total calories burned during the activity
-     * @param timestamp the date and time when the activity occurred
+     * @param id             the unique ID of the activity
+     * @param minutes        the duration of the activity in minutes
+     * @param burnedCalories the total calories burned during the activity
+     * @param dateTime       the date and time when the activity occurred
      */
     public ActivityEntry(
-            final long activityId,
-            final int durationMinutes,
-            final double caloriesBurned,
-            final LocalDateTime timestamp) {
+            final long id,
+            final int minutes,
+            final double burnedCalories,
+            final LocalDateTime dateTime) {
 
-        this.activityId = activityId;
-        this.durationMinutes = durationMinutes;
-        this.caloriesBurned = caloriesBurned;
-        this.timestamp = timestamp;
+        this.activityId = id;
+        this.durationMinutes = minutes;
+        this.caloriesBurned = burnedCalories;
+        this.timestamp = dateTime;
     }
 
-    /** @return the unique activity ID */
+    /**
+     * Returns the unique ID of the activity.
+     *
+     * @return the activity ID
+     */
     public long getActivityId() {
         return activityId;
     }
 
-    /** @return the activity duration in minutes */
+    /**
+     * Returns the duration of the activity in minutes.
+     *
+     * @return the duration in minutes
+     */
     public int getDurationMinutes() {
         return durationMinutes;
     }
 
-    /** @return the total calories burned */
+    /**
+     * Returns the total number of calories burned during the activity.
+     *
+     * @return the calories burned
+     */
     public double getCaloriesBurned() {
         return caloriesBurned;
     }
 
-    /** @return the timestamp when the activity occurred */
+    /**
+     * Returns the date and time when the activity took place.
+     *
+     * @return the timestamp of the activity
+     */
     public LocalDateTime getTimestamp() {
         return timestamp;
     }

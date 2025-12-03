@@ -2,8 +2,9 @@ package tutcsc.group1.healthz.interface_adapter.activity;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import tutcsc.group1.healthz.use_case.activity.activitylog.ActivityLogSaveOutputBoundary;
-import tutcsc.group1.healthz.use_case.activity.activitylog.ActivityLogSaveOutputData;
+
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogSaveOutputBoundary;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogSaveOutputData;
 
 /**
  * Presenter for handling the output of the Activity Log Save use case.
@@ -21,10 +22,11 @@ public class ActivityLogSavePresenter implements ActivityLogSaveOutputBoundary {
     /**
      * Constructs a new ActivityLogSavePresenter.
      *
-     * @param historyViewModel the view model to update with new activity entries
+     * @param viewModel the view model
+     *                 to update with new activity entries
      */
-    public ActivityLogSavePresenter(ActivityHistoryViewModel historyViewModel) {
-        this.historyViewModel = historyViewModel;
+    public ActivityLogSavePresenter(final ActivityHistoryViewModel viewModel) {
+        this.historyViewModel = viewModel;
     }
 
     /**
@@ -33,15 +35,17 @@ public class ActivityLogSavePresenter implements ActivityLogSaveOutputBoundary {
      * @param outputData the output data containing saved activity details
      */
     @Override
-    public void prepareSuccessView(ActivityLogSaveOutputData outputData) {
-        ActivityItem item = new ActivityItem(
+    public void prepareSuccessView(final ActivityLogSaveOutputData outputData) {
+        final ActivityItem item = new ActivityItem(
                 outputData.getExerciseName(),
                 outputData.getDurationMinutes() + " min",
                 outputData.getTimestamp(),
                 outputData.getCalories()
         );
         historyViewModel.addLogEntry(item);
-        LOGGER.info("Activity log saved successfully for: " + outputData.getExerciseName());
+        LOGGER.info(
+                "Activity log saved successfully for: "
+                        + outputData.getExerciseName());
     }
 
     /**
@@ -50,7 +54,8 @@ public class ActivityLogSavePresenter implements ActivityLogSaveOutputBoundary {
      * @param errorMessage the message describing the failure reason
      */
     @Override
-    public void prepareFailView(String errorMessage) {
-        LOGGER.log(Level.WARNING, "Failed to save activity log: {0}", errorMessage);
+    public void prepareFailView(final String errorMessage) {
+        LOGGER.log(Level.WARNING,
+                "Failed to save activity log: {0}", errorMessage);
     }
 }

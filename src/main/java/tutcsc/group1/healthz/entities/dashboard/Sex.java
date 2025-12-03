@@ -1,5 +1,22 @@
 package tutcsc.group1.healthz.entities.dashboard;
 
+/**
+ * Represents the biological sex of a user.
+ */
 public enum Sex {
-    MALE, FEMALE, OTHER
+
+    /**
+     * Male biological sex.
+     */
+    MALE,
+
+    /**
+     * Female biological sex.
+     */
+    FEMALE,
+
+    /**
+     * Any sex identity not covered by male or female.
+     */
+    OTHER
 }

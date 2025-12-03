@@ -1,12 +1,5 @@
 package tutcsc.group1.healthz.data_access.supabase;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import tutcsc.group1.healthz.data_access.api.RecipeApi;
-import tutcsc.group1.healthz.data_access.api.SearchRecipe;
-import tutcsc.group1.healthz.entities.nutrition.Recipe;
-import tutcsc.group1.healthz.use_case.favoriterecipe.FavoriteRecipeGateway;
-
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -14,6 +7,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import tutcsc.group1.healthz.data_access.api.RecipeApi;
+import tutcsc.group1.healthz.data_access.api.SearchRecipe;
+import tutcsc.group1.healthz.entities.nutrition.Recipe;
+import tutcsc.group1.healthz.use_case.favorite_recipe.FavoriteRecipeGateway;
 
 /**
  * Supabase implementation of the FavoriteRecipeGateway.
@@ -31,7 +32,7 @@ public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGat
      * Constructs a SupabaseFavoriteRecipeDataAccessObject.
      *
      * @param client the Supabase client for database access
-     * @param oauthToken the oauth token for API authentication
+     * @param oauthToken the OAuth token for API authentication
      */
     public SupabaseFavoriteRecipeDataAccessObject(SupabaseClient client, String oauthToken) {
         this.client = client;
@@ -194,7 +195,7 @@ public class SupabaseFavoriteRecipeDataAccessObject implements FavoriteRecipeGat
                 recipeId,
                 name,
                 description,
-                Optional.empty(),
+                Optional.of(new ArrayList<>()),
                 new ArrayList<>(),
                 Optional.empty(),
                 Optional.empty(),

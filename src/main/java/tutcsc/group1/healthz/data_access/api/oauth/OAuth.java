@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 /**
- * Simple class that requests a FatSecret oauth 2.0 access token
+ * Simple class that requests a FatSecret OAuth 2.0 access token
  * and prints the raw JSON response (no parsing).
  */
 public class OAuth {

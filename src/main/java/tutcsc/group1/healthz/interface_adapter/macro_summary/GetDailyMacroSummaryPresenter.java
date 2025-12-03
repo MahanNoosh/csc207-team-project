@@ -1,7 +1,7 @@
 package tutcsc.group1.healthz.interface_adapter.macro_summary;
 
-import tutcsc.group1.healthz.use_case.macrosummary.GetDailyCalorieSummaryOutputBoundary;
-import tutcsc.group1.healthz.use_case.macrosummary.GetDailyCalorieSummaryOutputData;
+import tutcsc.group1.healthz.use_case.macro_summary.GetDailyCalorieSummaryOutputBoundary;
+import tutcsc.group1.healthz.use_case.macro_summary.GetDailyCalorieSummaryOutputData;
 
 /**
  * Presenter for Get Daily Calorie Summary functionality.

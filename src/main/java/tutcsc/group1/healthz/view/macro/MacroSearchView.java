@@ -15,8 +15,8 @@ import tutcsc.group1.healthz.entities.nutrition.Macro;
 import tutcsc.group1.healthz.interface_adapter.macro.MacroSearchController;
 import tutcsc.group1.healthz.interface_adapter.macro.MacroSearchViewModel;
 import tutcsc.group1.healthz.navigation.Navigator;
-// import heathz.group1.tutcsc.use_case.macrosearch.meta_data.MacroSearchInputBoundary;
-// import heathz.group1.tutcsc.use_case.macrosearch.meta_data.MacroSearchInputData;
+// import tut0301.group1.healthz.use_case.macrosearch.meta_data.MacroSearchInputBoundary;
+// import tut0301.group1.healthz.use_case.macrosearch.meta_data.MacroSearchInputData;
 
 /**
  * Macro Search page that allows user to search macro of food by name.
@@ -98,7 +98,7 @@ public class MacroSearchView {
         profileSection.setSpacing(10);
         HBox.setHgrow(profileSection, Priority.ALWAYS);
 
-        // Spacer to push tutcsc logo + profile to the right
+        // Spacer to push healthz logo + profile to the right
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
@@ -107,7 +107,13 @@ public class MacroSearchView {
         healthzButton.setFont(Font.font("Inter", FontWeight.BOLD, 32));
         healthzButton.setTextFill(Color.web("#27692A"));
         healthzButton.setStyle("-fx-background-color: transparent;");
-        healthzButton.setOnAction(e -> {navigator.showDashboard();});
+        healthzButton.setOnAction(e -> {
+            try {
+                navigator.showDashboard();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         // Profile picture (circle) on the right
         Circle profilePic = new Circle(25);

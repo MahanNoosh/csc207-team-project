@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
- * Adapter: implements UserDataGateway using Supabase's REST api.
+ * Adapter: implements UserDataGateway using Supabase's REST API.
  */
 public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInterface {
     private final SupabaseClient client;
@@ -78,7 +78,7 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
                 profile.getAgeYears(),
                 profile.getSex(),
                 profile.getGoal(),
-                profile.getActivityLevelMET(),
+                profile.getActivitylevelmet(),
                 profile.getTargetWeightKg(),
                 profile.getDailyCalorieTarget(),
                 profile.getHealthCondition()
@@ -118,7 +118,7 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
                 profile.getAgeYears(),
                 profile.getSex(),
                 profile.getGoal(),
-                profile.getActivityLevelMET(),
+                profile.getActivitylevelmet(),
                 profile.getTargetWeightKg(),
                 profile.getDailyCalorieTarget(),
                 profile.getHealthCondition()

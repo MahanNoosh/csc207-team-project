@@ -18,7 +18,7 @@ public final class ProfileCliRenderer {
         rows.put("Age (years)", num(p.getAgeYears()));
         rows.put("Sex", p.getSex() == null ? "-" : p.getSex().name());
         rows.put("Goal", p.getGoal() == null ? "-" : p.getGoal().name());
-        rows.put("Activity MET", num(p.getActivityLevelMET()));
+        rows.put("Activity MET", num(p.getActivitylevelmet()));
         rows.put("Target Weight (kg)", num(p.getTargetWeightKg()));
         rows.put("Daily Calorie Target", optDouble(p.getDailyCalorieTarget()));
         rows.put("Health Condition", p.getHealthCondition() == null ? "-" : p.getHealthCondition().name());

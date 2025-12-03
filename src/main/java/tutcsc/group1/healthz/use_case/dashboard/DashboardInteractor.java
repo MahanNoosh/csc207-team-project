@@ -3,14 +3,14 @@ package tutcsc.group1.healthz.use_case.dashboard;
 import tutcsc.group1.healthz.entities.dashboard.ActivityEntry;
 import tutcsc.group1.healthz.entities.dashboard.Profile;
 import tutcsc.group1.healthz.entities.nutrition.FoodLog;
-import tutcsc.group1.healthz.use_case.activity.activitylog.ActivityLogDataAccessInterface;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogDataAccessInterface;
 import tutcsc.group1.healthz.use_case.food.logging.FoodLogGateway;
 
 import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Interactor for dashboard Use Case
+ * Interactor for Dashboard Use Case
  */
 public class DashboardInteractor implements DashboardInputBoundary {
     private final UserDataDataAccessInterface userDataAccess;
@@ -85,7 +85,7 @@ public class DashboardInteractor implements DashboardInputBoundary {
 
             // Present to view
             presenter.presentDashboard(data);
-            System.out.println("dashboard data presented successfully");
+            System.out.println("Dashboard data presented successfully");
 
         } catch (Exception e) {
             System.err.println("Error loading dashboard: " + e.getMessage());

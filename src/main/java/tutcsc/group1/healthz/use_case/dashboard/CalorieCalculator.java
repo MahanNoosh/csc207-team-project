@@ -1,7 +1,7 @@
 package tutcsc.group1.healthz.use_case.dashboard;
 
 import tutcsc.group1.healthz.entities.dashboard.Profile;
-import tutcsc.group1.healthz.use_case.nutritionadvice.NutritionAdvisorHelper;
+import tutcsc.group1.healthz.use_case.nutrition_advice.NutritionAdvisorHelper;
 
 /**
  * Calculator for daily calorie goals

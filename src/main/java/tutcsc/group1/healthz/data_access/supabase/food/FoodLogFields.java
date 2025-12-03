@@ -36,7 +36,7 @@ public final class FoodLogFields {
     public static final String SUGAR = "sugar";
     public static final String SODIUM = "sodium";
 
-    // Log meta_data
+    // Log metadata
     public static final String MEAL = "meal";
     public static final String LOGGED_AT = "logged_at";
     public static final String CREATED_AT = "created_at";

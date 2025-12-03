@@ -1,5 +1,8 @@
 package tutcsc.group1.healthz.use_case.auth;
 
+import tutcsc.group1.healthz.data_access.*;
+import tutcsc.group1.healthz.entities.user.*;
+import tutcsc.group1.healthz.use_case.auth.model.*;
 import tutcsc.group1.healthz.data_access.ClockGateway;
 import tutcsc.group1.healthz.data_access.PasswordHasher;
 import tutcsc.group1.healthz.data_access.TokenIssuer;

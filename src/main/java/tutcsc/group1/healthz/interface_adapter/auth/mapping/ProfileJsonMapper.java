@@ -65,8 +65,8 @@ public final class ProfileJsonMapper {
         if (p.getAgeYears() != null) {
             obj.put(UserDataFields.AGE_YEARS, p.getAgeYears());
         }
-        if (p.getActivityLevelMET() != null) {
-            obj.put(UserDataFields.ACTIVITY_MET, p.getActivityLevelMET());
+        if (p.getActivitylevelmet() != null) {
+            obj.put(UserDataFields.ACTIVITY_MET, p.getActivitylevelmet());
         }
         if (p.getTargetWeightKg() != null) {
             obj.put(UserDataFields.TARGET_WEIGHT_KG, p.getTargetWeightKg());

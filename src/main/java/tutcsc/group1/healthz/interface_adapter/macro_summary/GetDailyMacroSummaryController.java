@@ -1,7 +1,7 @@
 package tutcsc.group1.healthz.interface_adapter.macro_summary;
 
-import tutcsc.group1.healthz.use_case.macrosummary.GetDailyCalorieSummaryInputBoundary;
-import tutcsc.group1.healthz.use_case.macrosummary.GetDailyCalorieSummaryInputData;
+import tutcsc.group1.healthz.use_case.macro_summary.GetDailyCalorieSummaryInputBoundary;
+import tutcsc.group1.healthz.use_case.macro_summary.GetDailyCalorieSummaryInputData;
 
 import java.time.LocalDate;
 

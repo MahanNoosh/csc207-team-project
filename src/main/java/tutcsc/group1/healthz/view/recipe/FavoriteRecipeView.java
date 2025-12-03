@@ -28,6 +28,12 @@ import tutcsc.group1.healthz.navigation.Navigator;
 import tutcsc.group1.healthz.interface_adapter.favorite_recipe.FavoriteRecipeController;
 import tutcsc.group1.healthz.interface_adapter.favorite_recipe.FavoriteRecipeViewModel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+
 /**
  * Displays the user's favorite recipes.
  */

@@ -29,7 +29,7 @@ public class Sidebar extends VBox {
     /**
      * Constructor
      * @param navigator The Navigator instance for navigation
-     * @param currentPage The current page name (e.g., "dashboard")
+     * @param currentPage The current page name (e.g., "Dashboard")
      */
     public Sidebar(Navigator navigator, String currentPage) {
         this.navigator = navigator;
@@ -152,13 +152,13 @@ public class Sidebar extends VBox {
         navBox.setPadding(new Insets(10, 0, 10, 0));
 
         // Create navigation buttons
-        Button dashboardBtn = createNavButton("dashboard", "📊", "dashboard");
+        Button dashboardBtn = createNavButton("Dashboard", "📊", "Dashboard");
         Button activityBtn = createNavButton("Activity Log", "🔍", "Activity Log");
         Button foodBtn = createNavButton("Food Log", "♥️", "Food Log");
         Button settingsBtn = createNavButton("Settings", "⚙️", "Settings");
 
         // Store buttons for external access
-        navButtons.put("dashboard", dashboardBtn);
+        navButtons.put("Dashboard", dashboardBtn);
         navButtons.put("Activity Log", activityBtn);
         navButtons.put("Food Log", foodBtn);
         navButtons.put("Settings", settingsBtn);
@@ -217,18 +217,24 @@ public class Sidebar extends VBox {
         }
 
         // Navigation action
-        button.setOnAction(e -> navigate(pageName));
+        button.setOnAction(e -> {
+            try {
+                navigate(pageName);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         return button;
     }
 
-    private void navigate(String pageName) {
+    private void navigate(String pageName) throws Exception {
         if (pageName.equals(currentPage)) {
             return;
         }
 
         switch (pageName) {
-            case "dashboard":
+            case "Dashboard":
                 navigator.showMainApp();
                 break;
             case "Activity Log":

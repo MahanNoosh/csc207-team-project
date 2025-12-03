@@ -24,7 +24,7 @@ public final class FoodFactsScorer {
     }
 
     /**
-     * Preferred: score using an explicit policy (from PolicyProvider/dashboard).
+     * Preferred: score using an explicit policy (from PolicyProvider/Dashboard).
      */
     public double scoreWithPolicy(FoodLabelRaw label, HealthyScorePolicy policy) {
         Macro macro = toMacro(label);
@@ -57,7 +57,7 @@ public final class FoodFactsScorer {
     public enum ActivityLevel {SEDENTARY, LIGHT, MODERATE, HIGH}
 
     /**
-     * Raw nutrition facts from label/api per serving. Nullable fields allowed.
+     * Raw nutrition facts from label/API per serving. Nullable fields allowed.
      */
     public static final class FoodLabelRaw {
         public final Double calories;

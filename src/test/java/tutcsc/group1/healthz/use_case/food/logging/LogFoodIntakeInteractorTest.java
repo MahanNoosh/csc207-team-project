@@ -1,8 +1,8 @@
-//package heathz.group1.tutcsc.use_case.food.logging;
+//package tut0301.group1.healthz.use_case.food.logging;
 //
-//import nutrition.entities.tutcsc.heathz.group1.FoodDetails;
-//import nutrition.entities.tutcsc.heathz.group1.FoodLog;
-//import nutrition.entities.tutcsc.heathz.group1.ServingInfo;
+//import tut0301.group1.healthz.entities.nutrition.FoodDetails;
+//import tut0301.group1.healthz.entities.nutrition.FoodLog;
+//import tut0301.group1.healthz.entities.nutrition.ServingInfo;
 //
 //import java.util.ArrayList;
 //import java.util.Collections;

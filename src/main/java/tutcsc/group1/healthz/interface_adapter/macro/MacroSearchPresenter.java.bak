@@ -1,10 +1,10 @@
-package heathz.group1.tutcsc.interfaceadapter.macro;
+package tut0301.group1.healthz.interface_adapter.macro;
 
 import java.util.List;
 
-import nutrition.entities.tutcsc.heathz.group1.MacroSearchResult;
-import heathz.group1.tutcsc.usecase.macrosearch.metadata.MacroSearchOutputBoundary;
-import heathz.group1.tutcsc.usecase.macrosearch.metadata.MacroSearchOutputData;
+import tut0301.group1.healthz.entities.nutrition.MacroSearchResult;
+import tut0301.group1.healthz.use_case.macrosearch.meta_data.MacroSearchOutputBoundary;
+import tut0301.group1.healthz.use_case.macrosearch.meta_data.MacroSearchOutputData;
 
 public class MacroSearchPresenter implements MacroSearchOutputBoundary {
 

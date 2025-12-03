@@ -5,34 +5,46 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import tutcsc.group1.healthz.entities.dashboard.ActivityEntry;
-import tutcsc.group1.healthz.use_case.activity.activitylog.ActivityLogLoadOutputBoundary;
-import tutcsc.group1.healthz.use_case.activity.activitylog.ActivityLogLoadOutputData;
-import tutcsc.group1.healthz.use_case.activity.exercisefinder.ExerciseFinderInputBoundary;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogLoadOutputBoundary;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogLoadOutputData;
+import tutcsc.group1.healthz.use_case.activity.exercise_finder.ExerciseFinderInputBoundary;
 
 /**
  * Presenter for loading activity logs.
- * Converts use case output data into objects suitable for display in the UI, updating
+ * Converts use case output data into
+ * objects suitable for display in the UI, updating
  * the ActivityHistoryViewModel.
  */
 public class ActivityLogLoadPresenter implements ActivityLogLoadOutputBoundary {
 
+    /**
+     * Logger used to record presenter events and errors.
+     */
     private static final Logger LOGGER =
             Logger.getLogger(ActivityLogLoadPresenter.class.getName());
 
+    /**
+     * ViewModel that receives UI-ready activity history items.
+     */
     private final ActivityHistoryViewModel viewModel;
+
+    /**
+     * Interactor used to look up exercise names based on identifiers.
+     */
     private final ExerciseFinderInputBoundary exerciseFinderInteractor;
 
     /**
      * Constructs a new ActivityLogLoadPresenter.
      *
-     * @param viewModel                the view model to update with activity entries
-     * @param exerciseFinderInteractor the interactor for resolving exercise names by ID
+     * @param viewmodel   the view model to update with activity entries
+     * @param interactor the interactor for resolving exercise names by ID
      */
-    public ActivityLogLoadPresenter(ActivityHistoryViewModel viewModel,
-                                    ExerciseFinderInputBoundary exerciseFinderInteractor) {
-        this.viewModel = viewModel;
-        this.exerciseFinderInteractor = exerciseFinderInteractor;
+    public ActivityLogLoadPresenter(final ActivityHistoryViewModel viewmodel,
+                            final ExerciseFinderInputBoundary interactor) {
+        this.viewModel = viewmodel;
+        this.exerciseFinderInteractor = interactor;
     }
 
     /**
@@ -41,44 +53,46 @@ public class ActivityLogLoadPresenter implements ActivityLogLoadOutputBoundary {
      * @param errorMessage a descriptive message about the failure
      */
     @Override
-    public void prepareFailView(String errorMessage) {
-        LOGGER.log(Level.WARNING, "Failed to load activity logs: {0}", errorMessage);
+    public void prepareFailView(final String errorMessage) {
+        LOGGER.log(Level.WARNING,
+                "Failed to load activity logs: {0}", errorMessage);
         viewModel.setErrorMessage(errorMessage);
     }
 
     /**
-     * Converts activity log output data into UI-ready items and updates the ViewModel.
+     * Converts activity log output data
+     * into UI-ready items and updates the ViewModel.
      *
      * @param outputData contains the list of {@link ActivityEntry} to display
      */
     @Override
-    public void presentActivityLogs(ActivityLogLoadOutputData outputData) {
-        List<ActivityEntry> logs = outputData.getLogs();
-        List<ActivityItem> items = new ArrayList<>();
+    public void presentActivityLogs(
+            final ActivityLogLoadOutputData outputData) throws Exception {
+        final List<ActivityEntry> logs = outputData.getLogs();
+        final List<ActivityItem> items = new ArrayList<>();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy");
+        final DateTimeFormatter formatter = DateTimeFormatter
+                .ofPattern("d MMM yyyy");
 
         for (ActivityEntry entry : logs) {
-            try {
-                String exerciseName = exerciseFinderInteractor
-                        .findExerciseById(entry.getActivityId())
-                        .getName();
+            final String exerciseName = exerciseFinderInteractor
+                    .findExerciseById(entry.getActivityId())
+                    .getName();
 
-                ActivityItem item = new ActivityItem(
-                        exerciseName,
-                        entry.getDurationMinutes() + " min",
-                        entry.getTimestamp().toLocalDate().format(formatter),
-                        (int) entry.getCaloriesBurned()
-                );
+            final ActivityItem item = new ActivityItem(
+                    exerciseName,
+                    entry.getDurationMinutes() + " min",
+                    entry.getTimestamp().toLocalDate().format(formatter),
+                    (int) entry.getCaloriesBurned()
+            );
 
-                items.add(item);
-
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, () -> "Error mapping activity entry: " + entry);
-            }
-
-            viewModel.setHistory(items);
-            LOGGER.info(() -> "✅ Loaded " + items.size() + " activity log entries.");
+            items.add(item);
         }
+
+        viewModel.setHistory(items);
+        LOGGER.info(() -> {
+            return "Loaded " + items.size() + " activity log entries.";
+        });
+
     }
 }

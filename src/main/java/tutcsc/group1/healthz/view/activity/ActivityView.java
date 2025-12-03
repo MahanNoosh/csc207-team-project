@@ -58,7 +58,8 @@ public class ActivityView {
     public ActivityView(ActivityPageController controller,
                         ExerciseListViewModel exerciseListViewModel,
                         ActivityHistoryViewModel historyViewModel,
-                        Profile currentProfile, Navigator navigator, String displayName, String email) {
+                        Profile currentProfile, Navigator navigator
+                        , String displayName, String email) throws Exception {
         this.controller = controller;
         this.exerciseListViewModel = exerciseListViewModel;
         this.historyViewModel = historyViewModel;

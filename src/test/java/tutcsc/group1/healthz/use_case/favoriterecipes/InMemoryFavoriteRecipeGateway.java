@@ -1,7 +1,7 @@
 package tutcsc.group1.healthz.use_case.favoriterecipes;
 
 import tutcsc.group1.healthz.entities.nutrition.Recipe;
-import tutcsc.group1.healthz.use_case.favoriterecipe.FavoriteRecipeGateway;
+import tutcsc.group1.healthz.use_case.favorite_recipe.FavoriteRecipeGateway;
 
 import java.util.*;
 

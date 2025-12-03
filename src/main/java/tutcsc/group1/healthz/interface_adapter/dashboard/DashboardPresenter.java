@@ -4,7 +4,7 @@ import tutcsc.group1.healthz.use_case.dashboard.DashboardOutputBoundary;
 import tutcsc.group1.healthz.use_case.dashboard.DashboardOutputData;
 
 /**
- * Presenter for dashboard
+ * Presenter for Dashboard
  */
 public class DashboardPresenter implements DashboardOutputBoundary {
     private final DashboardViewModel viewModel;

@@ -1,7 +1,7 @@
 package tutcsc.group1.healthz.interface_adapter.favorite_recipe;
 
-import tutcsc.group1.healthz.use_case.favoriterecipe.LoadFavoritesInputBoundary;
-import tutcsc.group1.healthz.use_case.favoriterecipe.DeleteFavoriteInputBoundary;
+import tutcsc.group1.healthz.use_case.favorite_recipe.LoadFavoritesInputBoundary;
+import tutcsc.group1.healthz.use_case.favorite_recipe.DeleteFavoriteInputBoundary;
 
 /**
  * Controller for favorite recipes.

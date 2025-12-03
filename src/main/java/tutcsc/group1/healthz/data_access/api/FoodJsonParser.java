@@ -1,12 +1,9 @@
 package tutcsc.group1.healthz.data_access.api;
 
-import tutcsc.group1.healthz.entities.nutrition.BasicFood;
-import tutcsc.group1.healthz.entities.nutrition.FoodDetails;
-import tutcsc.group1.healthz.entities.nutrition.Macro;
-import tutcsc.group1.healthz.entities.nutrition.ServingInfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import tutcsc.group1.healthz.entities.ServingSize;
+import tutcsc.group1.healthz.entities.nutrition.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Utility class to parse JSON responses returned by the FatSecret api.
+ * Utility class to parse JSON responses returned by the FatSecret API.
  */
 public class FoodJsonParser {
 
@@ -177,13 +174,13 @@ public class FoodJsonParser {
     }
 
     /**
-     * Parse the JSON response from FatSecret foods.search api and convert to List<BasicFood>.
+     * Parse the JSON response from FatSecret foods.search API and convert to List<BasicFood>.
      *
      * Handles two cases:
      * - Single food object: {"foods": {"food": {...}}}
      * - Multiple foods: {"foods": {"food": [{...}, {...}]}}
      *
-     * @param jsonResponse JSON string from api
+     * @param jsonResponse JSON string from API
      * @return List of BasicFood entities
      */
     public static List<BasicFood> parseBasicFoodList(String jsonResponse) {
