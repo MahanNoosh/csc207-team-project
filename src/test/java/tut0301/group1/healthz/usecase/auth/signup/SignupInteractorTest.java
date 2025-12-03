@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SignupInteractorTest {
 
+    /**
+     * Fake implementation of AuthGateway for testing SignupInteractor.
+     */
     private static class FakeAuthGateway implements AuthGateway {
 
         boolean signUpCalled;
@@ -30,16 +33,51 @@ class SignupInteractorTest {
         }
 
         // All other AuthGateway methods unused in signup tests
-        @Override public void signInEmail(String email, String password) { throw new UnsupportedOperationException(); }
-        @Override public void requestPasswordReset(String email, String redirectUrl) { throw new UnsupportedOperationException(); }
-        @Override public String getCurrentUserId() { throw new UnsupportedOperationException(); }
-        @Override public String getCurrentUserEmail() { throw new UnsupportedOperationException(); }
-        @Override public String getAccessToken() { throw new UnsupportedOperationException(); }
-        @Override public String getRefreshToken() { throw new UnsupportedOperationException(); }
-        @Override public String getCurrentUserName() { throw new UnsupportedOperationException(); }
-        @Override public void resendSignupVerification(String email) { throw new UnsupportedOperationException(); }
+
+        @Override
+        public void signInEmail(String email, String password) {
+            throw new UnsupportedOperationException("Not used in SignupInteractorTest");
+        }
+
+        @Override
+        public void requestPasswordReset(String email, String redirectUrl) {
+            throw new UnsupportedOperationException("Not used in SignupInteractorTest");
+        }
+
+        @Override
+        public String getCurrentUserId() {
+            throw new UnsupportedOperationException("Not used in SignupInteractorTest");
+        }
+
+        @Override
+        public String getCurrentUserEmail() {
+            throw new UnsupportedOperationException("Not used in SignupInteractorTest");
+        }
+
+        @Override
+        public String getAccessToken() {
+            throw new UnsupportedOperationException("Not used in SignupInteractorTest");
+        }
+
+        @Override
+        public String getRefreshToken() {
+            throw new UnsupportedOperationException("Not used in SignupInteractorTest");
+        }
+
+        @Override
+        public String getCurrentUserName() {
+            throw new UnsupportedOperationException("Not used in SignupInteractorTest");
+        }
+
+        @Override
+        public void resendSignupVerification(String email) {
+            throw new UnsupportedOperationException("Not used in SignupInteractorTest");
+        }
     }
 
+    /**
+     * Fake presenter for capturing output from SignupInteractor.
+     */
     private static class FakePresenter implements SignupOutputBoundary {
 
         boolean successCalled;
@@ -62,7 +100,7 @@ class SignupInteractorTest {
     }
 
     @Test
-    void execute_passwordsDoNotMatch_callsFailViewAndSkipsGateway() {
+    void execute_passwordsDoNotMatch_callsFailViewAndSkipsGateway() throws Exception {
         FakeAuthGateway auth = new FakeAuthGateway();
         FakePresenter presenter = new FakePresenter();
         SignupInteractor interactor = new SignupInteractor(auth, presenter);
@@ -76,14 +114,17 @@ class SignupInteractorTest {
 
         interactor.execute(input);
 
+        // Gateway should not be called
         assertFalse(auth.signUpCalled);
+
+        // Presenter should be called with failure
         assertTrue(presenter.failCalled);
         assertFalse(presenter.successCalled);
         assertEquals("Passwords do not match.", presenter.failMessage);
     }
 
     @Test
-    void execute_successfulSignup_callsSuccessViewAndGateway() {
+    void execute_successfulSignup_callsSuccessViewAndGateway() throws Exception {
         FakeAuthGateway auth = new FakeAuthGateway();
         FakePresenter presenter = new FakePresenter();
         SignupInteractor interactor = new SignupInteractor(auth, presenter);
@@ -107,12 +148,11 @@ class SignupInteractorTest {
         assertTrue(presenter.successCalled);
         assertFalse(presenter.failCalled);
         assertNotNull(presenter.successData);
-
         assertEquals("user@example.com", presenter.successData.getEmail());
     }
 
     @Test
-    void execute_gatewayThrowsWithNullMessage_usesUnknownError() {
+    void execute_gatewayThrowsWithNullMessage_usesUnknownError() throws Exception {
         FakeAuthGateway auth = new FakeAuthGateway();
         FakePresenter presenter = new FakePresenter();
         SignupInteractor interactor = new SignupInteractor(auth, presenter);
@@ -130,11 +170,12 @@ class SignupInteractorTest {
         interactor.execute(input);
 
         assertTrue(presenter.failCalled);
+        assertFalse(presenter.successCalled);
         assertEquals("Sign-up failed: Unknown error.", presenter.failMessage);
     }
 
     @Test
-    void execute_gatewayThrowsWithEmptyMessage_usesUnknownError() {
+    void execute_gatewayThrowsWithEmptyMessage_usesUnknownError() throws Exception {
         FakeAuthGateway auth = new FakeAuthGateway();
         FakePresenter presenter = new FakePresenter();
         SignupInteractor interactor = new SignupInteractor(auth, presenter);
@@ -152,11 +193,12 @@ class SignupInteractorTest {
         interactor.execute(input);
 
         assertTrue(presenter.failCalled);
+        assertFalse(presenter.successCalled);
         assertEquals("Sign-up failed: Unknown error.", presenter.failMessage);
     }
 
     @Test
-    void execute_gatewayThrowsWithJsonContainingMsg_extractsMsg() {
+    void execute_gatewayThrowsWithJsonContainingMsg_extractsMsg() throws Exception {
         FakeAuthGateway auth = new FakeAuthGateway();
         FakePresenter presenter = new FakePresenter();
         SignupInteractor interactor = new SignupInteractor(auth, presenter);
@@ -176,11 +218,12 @@ class SignupInteractorTest {
         interactor.execute(input);
 
         assertTrue(presenter.failCalled);
+        assertFalse(presenter.successCalled);
         assertEquals("Sign-up failed: Email already in use", presenter.failMessage);
     }
 
     @Test
-    void execute_gatewayThrowsWithJsonWithoutMsg_fallsBackToRawMessage() {
+    void execute_gatewayThrowsWithJsonWithoutMsg_fallsBackToRawMessage() throws Exception {
         FakeAuthGateway auth = new FakeAuthGateway();
         FakePresenter presenter = new FakePresenter();
         SignupInteractor interactor = new SignupInteractor(auth, presenter);
@@ -199,11 +242,12 @@ class SignupInteractorTest {
         interactor.execute(input);
 
         assertTrue(presenter.failCalled);
+        assertFalse(presenter.successCalled);
         assertEquals("Sign-up failed: " + raw, presenter.failMessage);
     }
 
     @Test
-    void execute_gatewayThrowsWithInvalidJson_fallsBackToRawMessage() {
+    void execute_gatewayThrowsWithInvalidJson_fallsBackToRawMessage() throws Exception {
         FakeAuthGateway auth = new FakeAuthGateway();
         FakePresenter presenter = new FakePresenter();
         SignupInteractor interactor = new SignupInteractor(auth, presenter);
@@ -222,6 +266,7 @@ class SignupInteractorTest {
         interactor.execute(input);
 
         assertTrue(presenter.failCalled);
+        assertFalse(presenter.successCalled);
         assertEquals("Sign-up failed: " + raw, presenter.failMessage);
     }
 }
