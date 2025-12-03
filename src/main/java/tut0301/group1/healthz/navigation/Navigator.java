@@ -758,13 +758,6 @@ public final class Navigator {
             showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
         }
         else {
-            final SupabaseClient client = new SupabaseClient(url, anon);
-            final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
-            final LoginViewModel loginVm = new LoginViewModel();
-            final LoginPresenter loginPresenter = new LoginPresenter(loginVm);
-            final LoginInputBoundary loginUc = new LoginInteractor(authGateway, loginPresenter);
-            final LoginController loginController = new LoginController(loginUc, loginPresenter);
-
             try {
                 final SupabaseClient client = new SupabaseClient(url, anon);
                 final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
@@ -773,7 +766,7 @@ public final class Navigator {
                 final LoginInputBoundary loginUseCase = new LoginInteractor(authGateway, loginPresenter);
                 final LoginController loginController = new LoginController(loginUseCase, loginPresenter);
 
-                // 1) Try login (can throw Exception)
+                // Try login (can throw Exception)
                 loginController.login(loginView.getEmail(), loginView.getPassword());
 
                 if (loginViewModel.isLoggedIn()) {
@@ -781,19 +774,21 @@ public final class Navigator {
 
                     authenticatedClient = client;
 
-                    // 2) Make sure user_data row exists (can throw Exception)
+                    // Make sure user_data row exists (can throw Exception)
                     final SupabaseUserDataDataAccessObject userDataGateway =
                             new SupabaseUserDataDataAccessObject(client);
                     userDataGateway.createBlankForCurrentUserIfMissing();
                     System.out.println("user_data row present/created.");
 
-                    // 3) Continue to main app
+                    // Continue to main app
                     showMainApp();
-                } else {
+                }
+                else {
                     System.out.println("Login failed.");
                     showError("Login failed. Please check your email and password, or verify your email.");
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 System.err.println("Login error: " + ex.getMessage());
                 showError("Login error: " + ex.getMessage());
             }
@@ -911,69 +906,64 @@ public final class Navigator {
         else {
             final SignupView.SignupData signupData = pendingSignupData;
 
-        final SignupView.SignupData signupData = pendingSignupData;
-
-        final String url = System.getenv("SUPABASE_URL");
-        final String anon = System.getenv("SUPABASE_ANON_KEY");
-        if (url == null || anon == null) {
-            if (!silent) {
-                showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
-            }
-            return;
-        }
-
-        try {
-            final SupabaseClient client = new SupabaseClient(url, anon);
-            final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
-            final LoginViewModel loginViewModel = new LoginViewModel();
-            final LoginPresenter loginPresenter = new LoginPresenter(loginViewModel);
-            final LoginInputBoundary loginUseCase = new LoginInteractor(authGateway, loginPresenter);
-            final LoginController loginController = new LoginController(loginUseCase, loginPresenter);
-
-                System.out.println("Attempting login for " + signupData.getEmail());
-                // <-- this can throw Exception, we now catch it
-            loginController.login(signupData.getEmail(), signupData.getPassword());
-
-            if (!loginViewModel.isLoggedIn()) {
-                System.out.println("Still not logged in (email probably not verified yet).");
+            final String url = System.getenv("SUPABASE_URL");
+            final String anon = System.getenv("SUPABASE_ANON_KEY");
+            if (url == null || anon == null) {
                 if (!silent) {
-                    showError(
-                            "We couldn't log you in yet.\n"
-                                    + "Please make sure you clicked the verification link in your email,\n"
-                                    + "then try again."
-                    );
+                    showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
                 }
                 return;
             }
 
-            final String userId = loginViewModel.getUserId();
-            System.out.println("Login succeeded. userId = " + userId);
+            try {
+                final SupabaseClient client = new SupabaseClient(url, anon);
+                final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
+                final LoginViewModel loginViewModel = new LoginViewModel();
+                final LoginPresenter loginPresenter = new LoginPresenter(loginViewModel);
+                final LoginInputBoundary loginUseCase = new LoginInteractor(authGateway, loginPresenter);
+                final LoginController loginController = new LoginController(loginUseCase, loginPresenter);
 
-                        authenticatedClient = client;
+                System.out.println("Attempting login for " + signupData.getEmail());
+                loginController.login(signupData.getEmail(), signupData.getPassword());
 
-            // Map signup data -> Profile
-            final Profile profile = SignupProfileMapper.toProfile(userId, signupData);
-
-            // Save profile (also can throw Exception)
-            final SupabaseUserDataDataAccessObject userDataGateway =
-                    new SupabaseUserDataDataAccessObject(client);
-            userDataGateway.upsertProfile(profile);
-
-                        System.out.println("Profile saved successfully. Navigating to main app...");
-
-                        if (emailCheckTimeline != null) {
-                            emailCheckTimeline.stop();
-                            emailCheckTimeline = null;
-                        }
-
-                        showMainApp();
+                if (!loginViewModel.isLoggedIn()) {
+                    System.out.println("Still not logged in (email probably not verified yet).");
+                    if (!silent) {
+                        showError(
+                                "We couldn't log you in yet.\n"
+                                        + "Please make sure you clicked the verification link in your email,\n"
+                                        + "then try again."
+                        );
                     }
-                    catch (Exception ex) {
-                        System.err.println("Login / profile save failed: " + ex.getMessage());
-                        if (!silent) {
-                            showError("Failed to save your profile: " + ex.getMessage());
-                        }
-                    }
+                    return;
+                }
+
+                final String userId = loginViewModel.getUserId();
+                System.out.println("Login succeeded. userId = " + userId);
+
+                authenticatedClient = client;
+
+                // Map signup data -> Profile
+                final Profile profile = SignupProfileMapper.toProfile(userId, signupData);
+
+                // Save profile (also can throw Exception)
+                final SupabaseUserDataDataAccessObject userDataGateway =
+                        new SupabaseUserDataDataAccessObject(client);
+                userDataGateway.upsertProfile(profile);
+
+                System.out.println("Profile saved successfully. Navigating to main app...");
+
+                if (emailCheckTimeline != null) {
+                    emailCheckTimeline.stop();
+                    emailCheckTimeline = null;
+                }
+
+                showMainApp();
+            }
+            catch (Exception ex) {
+                System.err.println("Login / profile save failed: " + ex.getMessage());
+                if (!silent) {
+                    showError("Failed to save your profile: " + ex.getMessage());
                 }
             }
         }
