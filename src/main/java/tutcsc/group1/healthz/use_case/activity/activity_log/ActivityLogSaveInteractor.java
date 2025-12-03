@@ -1,22 +1,15 @@
 package tutcsc.group1.healthz.use_case.activity.activity_log;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
 import tutcsc.group1.healthz.entities.dashboard.ActivityEntry;
 import tutcsc.group1.healthz.entities.dashboard.Exercise;
 import tutcsc.group1.healthz.entities.dashboard.Profile;
 import tutcsc.group1.healthz.use_case.activity.exercise_finder.ExerciseFinderInputBoundary;
 
-/**
- * Interactor for handling activity logging and retrieval operations.
- * Coordinates between the data access interface,
- * exercise finder, and presenters.
- * Exceptions are propagated to the caller to be handled at a higher level.
- */
-public class ActivityLogInteractor
-        implements ActivityLogInputBoundary {
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+public class ActivityLogSaveInteractor implements ActivityLogSaveInputBoundary{
 
     /**
      *  Conversion factor used in calorie calculation
@@ -35,26 +28,20 @@ public class ActivityLogInteractor
     /** Presenter for handling successful or failed save operations. */
     private final ActivityLogSaveOutputBoundary savePresenter;
 
-    /** Presenter for handling successful or failed load operations. */
-    private final ActivityLogLoadOutputBoundary loadPresenter;
-
     /**
      * Constructs an ActivityLogInteractor.
      *
      * @param logDataAccessInterface the data access interface for activity logs
      * @param finderInputBoundary  the interactor for exercise lookup
      * @param saveOutputBoundary  presenter for logging activities
-     * @param loadOutputBoundary     presenter for loading activity history
      */
-    public ActivityLogInteractor(
+    public ActivityLogSaveInteractor(
             final ActivityLogDataAccessInterface logDataAccessInterface,
             final ExerciseFinderInputBoundary finderInputBoundary,
-            final ActivityLogSaveOutputBoundary saveOutputBoundary,
-            final ActivityLogLoadOutputBoundary loadOutputBoundary) {
+            final ActivityLogSaveOutputBoundary saveOutputBoundary) {
         this.activityDataAccess = logDataAccessInterface;
         this.exerciseFinderInputBoundary = finderInputBoundary;
         this.savePresenter = saveOutputBoundary;
-        this.loadPresenter = loadOutputBoundary;
     }
 
     /**
@@ -65,7 +52,7 @@ public class ActivityLogInteractor
      * @throws Exception if saving the activity fails
      */
     @Override
-    public void logActivity(final ActivityLogInputData activityLogInputData,
+    public void execute(final ActivityLogInputData activityLogInputData,
                             final Profile profile) throws Exception {
         if (activityLogInputData == null || profile == null) {
             savePresenter.prepareFailView("Input data or profile is null.");
@@ -105,18 +92,6 @@ public class ActivityLogInteractor
         );
 
         savePresenter.prepareSuccessView(output);
-    }
-
-    /**
-     * Loads all activity logs for the current user.
-     *
-     * @throws Exception if loading activities fails
-     */
-    @Override
-    public void loadLogsForUser() throws Exception {
-        final List<ActivityEntry> logs =
-                activityDataAccess.getActivitiesForUser();
-        loadPresenter.presentActivityLogs(new ActivityLogLoadOutputData(logs));
     }
 
     /**

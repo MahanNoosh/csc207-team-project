@@ -43,14 +43,10 @@ import tutcsc.group1.healthz.interface_adapter.recipe.*;
 import tutcsc.group1.healthz.interface_adapter.favorite_recipe.FavoriteRecipeController;
 import tutcsc.group1.healthz.interface_adapter.favorite_recipe.FavoriteRecipePresenter;
 import tutcsc.group1.healthz.interface_adapter.favorite_recipe.FavoriteRecipeViewModel;
-import tutcsc.group1.healthz.use_case.activity.activity_log.*;
 import tutcsc.group1.healthz.interface_adapter.setting.UpdateUserController;
 import tutcsc.group1.healthz.interface_adapter.setting.UpdateUserPresenter;
 import tutcsc.group1.healthz.interface_adapter.setting.UpdateUserViewModel;
-import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogInputBoundary;
-import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogInteractor;
-import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogLoadOutputBoundary;
-import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogSaveOutputBoundary;
+import tutcsc.group1.healthz.use_case.activity.activity_log.*;
 import tutcsc.group1.healthz.use_case.activity.calorie_calculator.CalorieCalculatorInputBoundary;
 import tutcsc.group1.healthz.use_case.activity.calorie_calculator.CalorieCalculatorInteractor;
 import tutcsc.group1.healthz.use_case.activity.calorie_calculator.CalorieCalculatorOutputBoundary;
@@ -85,7 +81,6 @@ import tutcsc.group1.healthz.use_case.food.foodloghistory.GetFoodLogHistoryInput
 import tutcsc.group1.healthz.use_case.food.foodloghistory.GetFoodLogHistoryInteractor;
 import tutcsc.group1.healthz.use_case.macro_summary.GetDailyCalorieSummaryInputBoundary;
 import tutcsc.group1.healthz.use_case.macro_summary.GetDailyCalorieSummaryInteractor;
-import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogDataAccessInterface;
 //import tut0301.group1.healthz.use_case.macrosearch.MacroDetailGateway;
 //import tut0301.group1.healthz.use_case.macrosearch.MacroDetailInputBoundary;
 //import tut0301.group1.healthz.use_case.macrosearch.MacroDetailInteractor;
@@ -483,13 +478,17 @@ public class Navigator {
         ActivityLogLoadOutputBoundary activityLogLoadPresenter = new ActivityLogLoadPresenter(historyVM,exerciseFinder);
 
         CalorieCalculatorInputBoundary calorieCalculator = new CalorieCalculatorInteractor(exerciseFinder, caloriePresenter);
-        ActivityLogInputBoundary activityLog = new ActivityLogInteractor(
+        ActivityLogSaveInputBoundary activitySaveLog = new ActivityLogSaveInteractor(
                 activityLogDAO,
                 exerciseFinder,
-                activityLogSavePresenter,
+                activityLogSavePresenter
+        );
+        ActivityLogLoadInputBoundary activityLogLoad = new ActivityLogLoadInteractor(
+                activityLogDAO,
                 activityLogLoadPresenter
         );
-        ActivityPageController controller = new ActivityPageController(exerciseFinder, calorieCalculator, activityLog);
+        ActivityPageController controller = new ActivityPageController(exerciseFinder, calorieCalculator,
+                activitySaveLog, activityLogLoad);
         SupabaseUserDataDataAccessObject userDataDAO = new SupabaseUserDataDataAccessObject(authenticatedClient);
         try{
             Optional<Profile> maybeProfile = userDataDAO.loadCurrentUserProfile();

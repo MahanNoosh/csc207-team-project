@@ -2,8 +2,9 @@ package tutcsc.group1.healthz.interface_adapter.activity;
 
 import java.util.logging.Logger;
 import tutcsc.group1.healthz.entities.dashboard.Profile;
-import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogInputBoundary;
 import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogInputData;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogLoadInputBoundary;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogSaveInputBoundary;
 import tutcsc.group1.healthz.use_case.activity.calorie_calculator.CalorieCalculatorInputBoundary;
 import tutcsc.group1.healthz.use_case.activity.calorie_calculator.CalorieCalculatorInputData;
 import tutcsc.group1.healthz.use_case.activity.exercise_finder.ExerciseFinderInputBoundary;
@@ -36,25 +37,33 @@ public class ActivityPageController {
     private final CalorieCalculatorInputBoundary calorieCalculatorInteractor;
 
     /**
-     * Interactor responsible for logging activity entries
+     * Interactor responsible for saving activity entries
+     */
+    private final ActivityLogSaveInputBoundary activityLogSaveInteractor;
+
+    /**
+     * Interactor responsible for loading activity entries
      * and retrieving user activity history.
      */
-    private final ActivityLogInputBoundary activityLogInteractor;
+    private final ActivityLogLoadInputBoundary  activityLogLoadInteractor;
 
     /**
      * Constructs a new ActivityPageController.
      *
      * @param exerciseInteractor the interactor for exercise search
      * @param calorieInteractor the interactor for calorie calculation
-     * @param logInteractor the interactor for activity logging
+     * @param saveInteractor the interactor for activity saving
+     * @param loadInteractor the interactor for activity loading
      */
     public ActivityPageController(
             final ExerciseFinderInputBoundary exerciseInteractor,
             final CalorieCalculatorInputBoundary calorieInteractor,
-            final ActivityLogInputBoundary logInteractor) {
+            final ActivityLogSaveInputBoundary saveInteractor,
+            final ActivityLogLoadInputBoundary loadInteractor) {
         this.exerciseFinderInteractor = exerciseInteractor;
         this.calorieCalculatorInteractor = calorieInteractor;
-        this.activityLogInteractor = logInteractor;
+        this.activityLogSaveInteractor = saveInteractor;
+        this.activityLogLoadInteractor = loadInteractor;
     }
 
     /**
@@ -108,7 +117,7 @@ public class ActivityPageController {
         final int minutes = Integer.parseInt(durationText);
         final ActivityLogInputData inputData =
                 new ActivityLogInputData(exerciseName, minutes);
-        activityLogInteractor.logActivity(inputData, profile);
+        activityLogSaveInteractor.execute(inputData, profile);
     }
 
     /**
@@ -117,7 +126,7 @@ public class ActivityPageController {
      * @throws Exception if loading logs fails
      */
     public void loadActivityHistory() throws Exception {
-        activityLogInteractor.loadLogsForUser();
+        activityLogLoadInteractor.execute();
         LOGGER.info("Activity history loaded successfully.");
     }
 }
