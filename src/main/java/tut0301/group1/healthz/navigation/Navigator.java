@@ -765,28 +765,37 @@ public final class Navigator {
             final LoginInputBoundary loginUc = new LoginInteractor(authGateway, loginPresenter);
             final LoginController loginController = new LoginController(loginUc, loginPresenter);
 
-            loginController.login(loginView.getEmail(), loginView.getPassword());
+            try {
+                final SupabaseClient client = new SupabaseClient(url, anon);
+                final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
+                final LoginViewModel loginViewModel = new LoginViewModel();
+                final LoginPresenter loginPresenter = new LoginPresenter(loginViewModel);
+                final LoginInputBoundary loginUseCase = new LoginInteractor(authGateway, loginPresenter);
+                final LoginController loginController = new LoginController(loginUseCase, loginPresenter);
 
-            if (loginVm.isLoggedIn()) {
-                System.out.println("Login successful, ensuring profile row exists...");
+                // 1) Try login (can throw Exception)
+                loginController.login(loginView.getEmail(), loginView.getPassword());
 
-                this.authenticatedClient = client;
+                if (loginViewModel.isLoggedIn()) {
+                    System.out.println("Login successful, ensuring profile row exists...");
 
-                try {
+                    authenticatedClient = client;
+
+                    // 2) Make sure user_data row exists (can throw Exception)
                     final SupabaseUserDataDataAccessObject userDataGateway =
                             new SupabaseUserDataDataAccessObject(client);
                     userDataGateway.createBlankForCurrentUserIfMissing();
                     System.out.println("user_data row present/created.");
-                }
-                catch (Exception ex) {
-                    System.err.println("Failed to init user_data row: " + ex.getMessage());
-                }
 
-                showMainApp();
-            }
-            else {
-                System.out.println("Login failed.");
-                showError("Login failed. Please check your email and password, or verify your email.");
+                    // 3) Continue to main app
+                    showMainApp();
+                } else {
+                    System.out.println("Login failed.");
+                    showError("Login failed. Please check your email and password, or verify your email.");
+                }
+            } catch (Exception ex) {
+                System.err.println("Login error: " + ex.getMessage());
+                showError("Login error: " + ex.getMessage());
             }
         }
     }
@@ -893,7 +902,7 @@ public final class Navigator {
     // -@cs[IllegalCatch] Need to catch generic exceptions from authentication
     @SuppressWarnings({"checkstyle:AbbreviationAsWordInName", "checkstyle:CyclomaticComplexity",
             "checkstyle:NPathComplexity", "checkstyle:ExecutableStatementCount"})
-    private void tryLoginAndSaveProfileOnce(boolean silent) {
+    private void tryLoginAndSaveProfileOnce(final boolean silent) {
         if (pendingSignupData == null) {
             if (!silent) {
                 showError("No signup in progress. Please sign up again.");
@@ -902,47 +911,53 @@ public final class Navigator {
         else {
             final SignupView.SignupData signupData = pendingSignupData;
 
-            final String url = System.getenv(SUPABASE_URL_ENV);
-            final String anon = System.getenv(SUPABASE_ANON_KEY_ENV);
-            if (url == null || anon == null) {
-                if (!silent) {
-                    showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
-                }
-            }
-            else {
-                final SupabaseClient client = new SupabaseClient(url, anon);
+        final SignupView.SignupData signupData = pendingSignupData;
 
-                final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
-                final LoginViewModel loginVm = new LoginViewModel();
-                final LoginPresenter loginPresenter = new LoginPresenter(loginVm);
-                final LoginInputBoundary loginUc = new LoginInteractor(authGateway, loginPresenter);
-                final LoginController loginController = new LoginController(loginUc, loginPresenter);
+        final String url = System.getenv("SUPABASE_URL");
+        final String anon = System.getenv("SUPABASE_ANON_KEY");
+        if (url == null || anon == null) {
+            if (!silent) {
+                showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
+            }
+            return;
+        }
+
+        try {
+            final SupabaseClient client = new SupabaseClient(url, anon);
+            final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
+            final LoginViewModel loginViewModel = new LoginViewModel();
+            final LoginPresenter loginPresenter = new LoginPresenter(loginViewModel);
+            final LoginInputBoundary loginUseCase = new LoginInteractor(authGateway, loginPresenter);
+            final LoginController loginController = new LoginController(loginUseCase, loginPresenter);
 
                 System.out.println("Attempting login for " + signupData.getEmail());
-                loginController.login(signupData.getEmail(), signupData.getPassword());
+                // <-- this can throw Exception, we now catch it
+            loginController.login(signupData.getEmail(), signupData.getPassword());
 
-                if (!loginVm.isLoggedIn()) {
-                    System.out.println("Still not logged in (email probably not verified yet).");
-                    if (!silent) {
-                        showError(
-                                "We couldn't log you in yet.\n"
-                                        + "Please make sure you clicked the verification link in your email,\n"
-                                        + "then try again."
-                        );
-                    }
+            if (!loginViewModel.isLoggedIn()) {
+                System.out.println("Still not logged in (email probably not verified yet).");
+                if (!silent) {
+                    showError(
+                            "We couldn't log you in yet.\n"
+                                    + "Please make sure you clicked the verification link in your email,\n"
+                                    + "then try again."
+                    );
                 }
-                else {
-                    try {
-                        final String userId = loginVm.getUserId();
-                        System.out.println("Login succeeded. userId = " + userId);
+                return;
+            }
 
-                        this.authenticatedClient = client;
+            final String userId = loginViewModel.getUserId();
+            System.out.println("Login succeeded. userId = " + userId);
 
-                        final Profile profile = SignupProfileMapper.toProfile(userId, signupData);
+                        authenticatedClient = client;
 
-                        final SupabaseUserDataDataAccessObject userDataGateway =
-                                new SupabaseUserDataDataAccessObject(client);
-                        userDataGateway.upsertProfile(profile);
+            // Map signup data -> Profile
+            final Profile profile = SignupProfileMapper.toProfile(userId, signupData);
+
+            // Save profile (also can throw Exception)
+            final SupabaseUserDataDataAccessObject userDataGateway =
+                    new SupabaseUserDataDataAccessObject(client);
+            userDataGateway.upsertProfile(profile);
 
                         System.out.println("Profile saved successfully. Navigating to main app...");
 
@@ -964,7 +979,7 @@ public final class Navigator {
         }
     }
 
-    // -@cs[IllegalCatch] Need to catch generic exceptions from client
+
     private void resendVerificationEmail(SignupView.SignupData signupData, EmailVerificationView view) {
         final String url = System.getenv(SUPABASE_URL_ENV);
         final String anon = System.getenv(SUPABASE_ANON_KEY_ENV);

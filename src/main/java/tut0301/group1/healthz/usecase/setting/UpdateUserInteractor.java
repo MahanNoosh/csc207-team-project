@@ -3,28 +3,39 @@ package tut0301.group1.healthz.usecase.setting;
 import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
 
+/**
+ * Interactor responsible for executing the update-user use case.
+ * Retrieves the updated profile, forwards it to the data access layer,
+ * and delegates presentation of the result to the output boundary.
+ */
 public class UpdateUserInteractor implements UpdateUserInputBoundary {
 
-    private final UserDataDataAccessInterface userDataDAO;
+    private final UserDataDataAccessInterface userDataDao;
     private final UpdateUserOutputBoundary presenter;
 
-    public UpdateUserInteractor(UserDataDataAccessInterface userDataDAO,
-                                UpdateUserOutputBoundary presenter) {
-        this.userDataDAO = userDataDAO;
+    /**
+     * Creates a new UpdateUserInteractor.
+     *
+     * @param userDataDao the data access object used to update user profiles
+     * @param presenter   the presenter responsible for preparing output views
+     */
+    public UpdateUserInteractor(final UserDataDataAccessInterface userDataDao,
+                                final UpdateUserOutputBoundary presenter) {
+        this.userDataDao = userDataDao;
         this.presenter = presenter;
     }
 
+    /**
+     * Executes the update-user flow.
+     *
+     * @param inputData the data containing the updated profile
+     * @throws Exception if updating the user profile fails
+     */
     @Override
-    public void updateUser(UpdateUserInputData inputData) throws Exception {
-        Profile profile = inputData.getNewProfile();
-
-        // Update or create user data in Supabase
-        Profile updated = userDataDAO.updateCurrentUserProfile(profile);
-
-        // Prepare output
-        UpdateUserOutputData outputData = new UpdateUserOutputData(updated);
-
-        // Present response
+    public void updateUser(final UpdateUserInputData inputData) throws Exception {
+        final Profile profile = inputData.getNewProfile();
+        final Profile updated = userDataDao.updateCurrentUserProfile(profile);
+        final UpdateUserOutputData outputData = new UpdateUserOutputData(updated);
         presenter.prepareSuccessView(outputData);
     }
 }

@@ -1,47 +1,48 @@
 package tut0301.group1.healthz.usecase.auth.signup;
 
-import org.json.JSONObject;
+
 import tut0301.group1.healthz.usecase.auth.AuthGateway;
 
+/**
+ * Handles the user sign-up use case.
+ */
 public class SignupInteractor implements SignupInputBoundary {
-    private final AuthGateway auth;
+
+    private final AuthGateway authGateway;
     private final SignupOutputBoundary presenter;
 
-    public SignupInteractor(AuthGateway auth, SignupOutputBoundary presenter) {
-        this.auth = auth;
+    /**
+     * Creates a new signup interactor.
+     *
+     * @param authGateway the authentication gateway used to perform signup
+     * @param presenter   the presenter used to prepare the signup views
+     */
+    public SignupInteractor(final AuthGateway authGateway,
+                            final SignupOutputBoundary presenter) {
+        this.authGateway = authGateway;
         this.presenter = presenter;
     }
 
+    /**
+     * Executes the sign-up flow.
+     *
+     * @param input the sign-up data
+     * @throws Exception if the authentication gateway encounters an error
+     */
     @Override
-    public void execute(SignupInputData input) {
-        try {
-            // 1. Validate passwords match
-            if (!input.passwordsMatch()) {
-                presenter.prepareFailView("Passwords do not match.");
-                return;
-            }
+    public void execute(final SignupInputData input) throws Exception {
+        if (!input.passwordsMatch()) {
+            presenter.prepareFailView("Passwords do not match.");
+        }
+        else {
+            authGateway.signUpEmail(
+                    input.getEmail(),
+                    input.getPassword1(),
+                    input.getDisplayName()
+            );
 
-            // 2. Perform signup via gateway
-            auth.signUpEmail(input.getEmail(), input.getPassword1(), input.getDisplayName());
-
-            // 3. On success, return minimal output data
-            SignupOutputData output = new SignupOutputData(input.getEmail());
-            presenter.prepareSuccessView(output);
-
-        } catch (Exception e) {
-            // 4. Extract a clean message if the error body is JSON (Supabase-style)
-            String message = e.getMessage();
-            try {
-                int brace = message.indexOf('{');
-                if (brace >= 0) {
-                    JSONObject err = new JSONObject(message.substring(brace));
-                    message = err.optString("msg", message);
-                }
-            } catch (Exception ignore) {
-                // not JSON, keep the original message
-            }
-
-            presenter.prepareFailView("Sign-up failed: " + message);
+            final SignupOutputData outputData = new SignupOutputData(input.getEmail());
+            presenter.prepareSuccessView(outputData);
         }
     }
 }
