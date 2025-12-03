@@ -1,1 +1,0 @@
-package healthz.tut0301.group1.usecase.recipesearch.metadata;

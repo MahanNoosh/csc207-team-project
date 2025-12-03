@@ -101,7 +101,7 @@
         <property name="maximum" value="0"/>
         <property name="message" value="Trailing whitespace is not allowed"/>
     </module>
-    <!-- This is needed for correct metadata generation -->
+    <!-- This is needed for correct meta_data generation -->
     <module name="RegexpSingleline">
         <property name="id" value="propertyTypeOnNewLine"/>
         <property name="format" value="^ \* .+(Type|Default value|Validation type) is \{@code "/>
