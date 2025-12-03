@@ -43,7 +43,10 @@ public class FoodLogView {
     private final GetFoodLogHistoryController summaryController;
     private final GetFoodLogHistoryViewModel summaryViewModel;
 
+    // needed info for sidebar
     private final String userId;
+    private final String displayName;
+    private final String email;
 
     private LocalDate currentDate = LocalDate.now();
     private Label dateLabel;
@@ -58,7 +61,9 @@ public class FoodLogView {
                        MacroDetailViewModel macroDetailViewModel,
                        GetFoodLogHistoryController summaryController,
                        GetFoodLogHistoryViewModel summaryViewModel,
-                       String userId) {
+                       String userId,
+                       String displayName,
+                       String email) {
         this.navigator = navigator;
         this.macroSearchController = macroSearchController;
         this.macroSearchViewModel = macroSearchViewModel;
@@ -69,6 +74,8 @@ public class FoodLogView {
         this.summaryController = summaryController;
         this.summaryViewModel = summaryViewModel;
         this.userId = userId;
+        this.displayName = displayName;
+        this.email = email;
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
@@ -84,7 +91,7 @@ public class FoodLogView {
 
         // Sidebar
         // TODO: use actual user credentials
-        Sidebar sidebar = new Sidebar(navigator, "Meal Tracker", "Bob Dylan", "bob.dylan@gmail.com");
+        Sidebar sidebar = new Sidebar(navigator, "Meal Tracker", displayName, email);
         root.setLeft(sidebar);
 
         // Main content area

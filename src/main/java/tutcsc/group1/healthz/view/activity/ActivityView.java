@@ -48,6 +48,9 @@ public class ActivityView {
     private final Navigator navigator;
     private LocalDate currentDate = LocalDate.now();
 
+    // user info for sidebar
+    private final String displayName;
+    private final String email;
 
     // History
     private ListView<ActivityItem> historyListView;
@@ -55,12 +58,15 @@ public class ActivityView {
     public ActivityView(ActivityPageController controller,
                         ExerciseListViewModel exerciseListViewModel,
                         ActivityHistoryViewModel historyViewModel,
-                        Profile currentProfile, Navigator navigator) throws Exception {
+                        Profile currentProfile, Navigator navigator
+                        , String displayName, String email) throws Exception {
         this.controller = controller;
         this.exerciseListViewModel = exerciseListViewModel;
         this.historyViewModel = historyViewModel;
         this.currentProfile = currentProfile;
         this.navigator = navigator;
+        this.displayName = displayName;
+        this.email = email;
 
         BorderPane root = createMainLayout();
         scene = new Scene(root, 1280, 900);
@@ -80,7 +86,7 @@ public class ActivityView {
         root.setStyle("-fx-background-color: #F5F5F5;");
 
         // Sidebar
-        Sidebar sidebar = new Sidebar(navigator, "Activity Tracker", "Bob Dylan", "bob.dylan@gmail.com");
+        Sidebar sidebar = new Sidebar(navigator, "Activity Tracker", displayName, email);
         root.setLeft(sidebar);
 
         // Main content

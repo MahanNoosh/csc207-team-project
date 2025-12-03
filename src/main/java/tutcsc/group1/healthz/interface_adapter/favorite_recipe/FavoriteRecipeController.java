@@ -4,13 +4,21 @@ import tutcsc.group1.healthz.use_case.favorite_recipe.LoadFavoritesInputBoundary
 import tutcsc.group1.healthz.use_case.favorite_recipe.DeleteFavoriteInputBoundary;
 
 /**
- * Controller for favorite recipes
+ * Controller for favorite recipes.
+ * Coordinates loading and deleting favorite recipes by delegating to use case interactors.
  */
 public class FavoriteRecipeController {
     private final LoadFavoritesInputBoundary loadInteractor;
     private final DeleteFavoriteInputBoundary deleteInteractor;
     private final FavoriteRecipePresenter presenter;
 
+    /**
+     * Constructs a FavoriteRecipeController with the specified interactors and presenter.
+     *
+     * @param loadInteractor the interactor for loading favorites
+     * @param deleteInteractor the interactor for deleting favorites
+     * @param presenter the presenter for displaying favorite recipes
+     */
     public FavoriteRecipeController(LoadFavoritesInputBoundary loadInteractor,
                                     DeleteFavoriteInputBoundary deleteInteractor,
                                     FavoriteRecipePresenter presenter) {
@@ -20,22 +28,32 @@ public class FavoriteRecipeController {
     }
 
     /**
-     * Load user's favorite recipes
+     * Load user's favorite recipes.
+     *
+     * @param userId the ID of the user whose favorites to load
      */
     public void loadFavorites(String userId) {
-        System.out.println("🎮 Controller: Loading favorites for user: " + userId);
+        System.out.println("Controller: Loading favorites for user: " + userId);
         presenter.getViewModel().setLoading(true);
         loadInteractor.loadFavorites(userId);
     }
 
     /**
-     * Delete a favorite recipe
+     * Delete a favorite recipe.
+     *
+     * @param userId the ID of the user removing the favorite
+     * @param recipeId the ID of the recipe to delete
      */
     public void deleteFavorite(String userId, String recipeId) {
-        System.out.println("🎮 Controller: Deleting favorite: " + recipeId);
+        System.out.println("Controller: Deleting favorite: " + recipeId);
         deleteInteractor.deleteFavorite(userId, recipeId);
     }
 
+    /**
+     * Gets the view model for favorite recipes.
+     *
+     * @return the favorite recipe view model
+     */
     public FavoriteRecipeViewModel getViewModel() {
         return presenter.getViewModel();
     }
