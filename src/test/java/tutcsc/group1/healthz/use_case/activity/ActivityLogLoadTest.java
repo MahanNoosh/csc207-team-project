@@ -232,6 +232,7 @@ public class ActivityLogLoadTest {
     /**
      * Tests that presenter failure handling works independently.
      */
+
     @Test
     public void testPresenterReceivesFailureMessage() {
         final String error = "Something went wrong.";
