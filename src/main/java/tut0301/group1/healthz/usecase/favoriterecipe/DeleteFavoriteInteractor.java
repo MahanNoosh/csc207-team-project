@@ -1,37 +1,55 @@
 package tut0301.group1.healthz.usecase.favoriterecipe;
 
 /**
- * Interactor for deleting a favorite recipe
+ * Interactor for deleting a favorite recipe.
+ * Implements the Delete Favorite use case by validating inputs, removing the favorite,
+ * and reloading the updated favorites list.
  */
 public class DeleteFavoriteInteractor implements DeleteFavoriteInputBoundary {
     private final FavoriteRecipeGateway gateway;
     private final LoadFavoritesOutputBoundary presenter;
 
+    /**
+     * Constructs a DeleteFavoriteInteractor with the specified gateway and presenter.
+     *
+     * @param gateway the gateway for accessing favorite recipe data
+     * @param presenter the presenter for displaying results to the user
+     */
     public DeleteFavoriteInteractor(FavoriteRecipeGateway gateway,
                                     LoadFavoritesOutputBoundary presenter) {
         this.gateway = gateway;
         this.presenter = presenter;
     }
 
+    /**
+     * Deletes a recipe from the user's favorites.
+     * Validates inputs, removes the favorite, and reloads the updated list.
+     * If validation fails or deletion encounters an error, presents an error message.
+     *
+     * @param userId the ID of the user removing the favorite
+     * @param recipeId the ID of the recipe to remove from favorites
+     */
     @Override
     public void deleteFavorite(String userId, String recipeId) {
         if (userId == null || userId.isEmpty()) {
             presenter.presentError("User not logged in");
-            return;
         }
-
-        if (recipeId == null || recipeId.isEmpty()) {
+        else if (recipeId == null || recipeId.isEmpty()) {
             presenter.presentError("Recipe ID is missing");
-            return;
         }
+        else {
+            this.executeDelete(userId, recipeId);
+        }
+    }
 
+    private void executeDelete(String userId, String recipeId) {
         try {
             gateway.removeFavorite(userId, recipeId);
-            // Reload favorites after deletion
-            var favorites = gateway.getFavoriteRecipes(userId);
+            final var favorites = gateway.getFavoriteRecipes(userId);
             presenter.presentFavorites(favorites);
-        } catch (Exception e) {
-            presenter.presentError("Failed to delete favorite: " + e.getMessage());
+        }
+        catch (Exception ex) {
+            presenter.presentError("Failed to delete favorite: " + ex.getMessage());
         }
     }
 }
