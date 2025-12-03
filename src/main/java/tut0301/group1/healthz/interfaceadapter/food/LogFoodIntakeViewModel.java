@@ -4,7 +4,6 @@ import tut0301.group1.healthz.entities.nutrition.FoodLog;
 
 /**
  * ViewModel for LogFoodIntake functionality.
- *
  * Holds the UI state for displaying food log results.
  * Follows the same pattern as MacroSearchViewModel and MacroDetailViewModel.
  */
@@ -28,10 +27,6 @@ public class LogFoodIntakeViewModel {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public FoodLog getFoodLog() {
-        return foodLog;
     }
 
     public void setFoodLog(FoodLog foodLog) {

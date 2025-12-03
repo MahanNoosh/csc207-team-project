@@ -4,10 +4,9 @@ import java.time.LocalDate;
 
 /**
  * Input Data for Get Daily Calorie Summary use case.
- *
  * Contains the data required to execute the use case.
  */
-public class GetDailyCalorieSummaryInputData {
+public class GetDailyMacroSummaryInputData {
     private final String userId;
     private final LocalDate date;
 
@@ -16,8 +15,9 @@ public class GetDailyCalorieSummaryInputData {
      *
      * @param userId The user's unique identifier
      * @param date The date to get the summary for
+     * @throws IllegalArgumentException  userId date are null
      */
-    public GetDailyCalorieSummaryInputData(String userId, LocalDate date) {
+    public GetDailyMacroSummaryInputData(String userId, LocalDate date) {
         if (userId == null || userId.trim().isEmpty()) {
             throw new IllegalArgumentException("User ID cannot be null or empty");
         }

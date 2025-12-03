@@ -4,7 +4,7 @@ import tut0301.group1.healthz.entities.Dashboard.ActivityEntry;
 import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogDataAccessInterface;
-import tut0301.group1.healthz.usecase.food.logging.FoodLogGateway;
+import tut0301.group1.healthz.usecase.food.logging.FoodLogDataAccessInterface;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,12 +14,12 @@ import java.util.List;
  */
 public class DashboardInteractor implements DashboardInputBoundary {
     private final UserDataDataAccessInterface userDataAccess;
-    private final FoodLogGateway foodLogGateway;
+    private final FoodLogDataAccessInterface foodLogGateway;
     private final ActivityLogDataAccessInterface activityLogDataAccess;
     private final DashboardOutputBoundary presenter;
 
     public DashboardInteractor(UserDataDataAccessInterface userDataAccess,
-                               FoodLogGateway foodLogGateway,
+                               FoodLogDataAccessInterface foodLogGateway,
                                ActivityLogDataAccessInterface activityLogDataAccess,
                                DashboardOutputBoundary presenter) {
         this.userDataAccess = userDataAccess;

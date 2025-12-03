@@ -159,12 +159,12 @@ public class GetFoodDetailInteractorTest {
             interactor.execute(new GetFoodDetailInputData(999L));
 
             FoodDetails result = presenter.getCapturedOutput().getFoodDetails();
-            assertEquals(999L, result.foodId);
-            assertEquals("Banana", result.name);
-            assertEquals("Fruit", result.foodType);
-            assertEquals("Organic", result.brandName);
-            assertEquals("http://example.com/banana", result.foodUrl);
-            assertEquals(1, result.servings.size());
+            assertEquals(999L, result.getFoodId());
+            assertEquals("Banana", result.getName());
+            assertEquals("Fruit", result.getFoodType());
+            assertEquals("Organic", result.getBrandName());
+            assertEquals("http://example.com/banana", result.getFoodUrl());
+            assertEquals(1, result.getServings().size());
             passed++;
         } catch (AssertionError e) { failed++; }
 

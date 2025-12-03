@@ -1,14 +1,13 @@
 package tut0301.group1.healthz.usecase.food.foodloghistory;
 
-import tut0301.group1.healthz.entities.nutrition.FoodLog;
-
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
+import tut0301.group1.healthz.entities.nutrition.FoodLog;
+
 /**
  * Output Data for Get Food Log History use case.
- *
  * Contains the list of food logs for a specific date.
  */
 public class GetFoodLogHistoryOutputData {
@@ -22,6 +21,7 @@ public class GetFoodLogHistoryOutputData {
      *
      * @param date The date of the logs
      * @param foodLogs The list of food logs for the date
+     * @throws IllegalArgumentException if date or foodLogs is null
      */
     public GetFoodLogHistoryOutputData(LocalDate date, List<FoodLog> foodLogs) {
         if (date == null) {

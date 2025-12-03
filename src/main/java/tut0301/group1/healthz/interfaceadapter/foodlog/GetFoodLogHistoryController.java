@@ -1,16 +1,14 @@
 package tut0301.group1.healthz.interfaceadapter.foodlog;
 
+import java.time.LocalDate;
+
 import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInputBoundary;
 import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInputData;
 
-import java.time.LocalDate;
-
 /**
  * Controller for Get Food Log History functionality.
- *
  * Responsible for handling user requests to retrieve food log history
  * and converting them into use case input.
- *
  * Clean Architecture compliance:
  * - Controller (Interface Adapter layer) depends on InputBoundary (Use Case layer interface)
  * - Controller converts user requests into InputData format
@@ -33,16 +31,7 @@ public class GetFoodLogHistoryController {
      * @param date The date to retrieve logs for
      */
     public void execute(String userId, LocalDate date) {
-        GetFoodLogHistoryInputData inputData = new GetFoodLogHistoryInputData(userId, date);
+        final GetFoodLogHistoryInputData inputData = new GetFoodLogHistoryInputData(userId, date);
         interactor.execute(inputData);
-    }
-
-    /**
-     * Execute the use case to retrieve today's food log history for a specific user.
-     *
-     * @param userId The ID of the user
-     */
-    public void executeToday(String userId) {
-        execute(userId, LocalDate.now());
     }
 }

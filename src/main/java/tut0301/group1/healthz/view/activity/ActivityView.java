@@ -1,4 +1,3 @@
-
 package tut0301.group1.healthz.view.activity;
 
 import javafx.geometry.Insets;

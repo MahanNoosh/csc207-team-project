@@ -1,19 +1,19 @@
 package tut0301.group1.healthz.usecase.food.foodloghistory;
 
-import tut0301.group1.healthz.entities.nutrition.FoodLog;
-import tut0301.group1.healthz.usecase.food.logging.FoodLogGateway;
-
+import java.io.IOException;
 import java.util.List;
+
+import tut0301.group1.healthz.entities.nutrition.FoodLog;
+import tut0301.group1.healthz.usecase.food.logging.FoodLogDataAccessInterface;
 
 /**
  * Interactor for Get Food Log History use case.
- *
  * This class implements the business logic for retrieving food logs for a specific date.
  * It follows Clean Architecture principles by depending on abstractions (interfaces)
  * rather than concrete implementations.
  */
 public class GetFoodLogHistoryInteractor implements GetFoodLogHistoryInputBoundary {
-    private final FoodLogGateway foodLogGateway;
+    private final FoodLogDataAccessInterface foodLogGateway;
     private final GetFoodLogHistoryOutputBoundary outputBoundary;
 
     /**
@@ -21,8 +21,9 @@ public class GetFoodLogHistoryInteractor implements GetFoodLogHistoryInputBounda
      *
      * @param foodLogGateway The gateway for accessing food log data
      * @param outputBoundary The presenter for formatting and presenting output
+     * @throws IllegalArgumentException if gateway or outputBoundary is null
      */
-    public GetFoodLogHistoryInteractor(FoodLogGateway foodLogGateway,
+    public GetFoodLogHistoryInteractor(FoodLogDataAccessInterface foodLogGateway,
                                        GetFoodLogHistoryOutputBoundary outputBoundary) {
         if (foodLogGateway == null) {
             throw new IllegalArgumentException("FoodLogGateway cannot be null");
@@ -38,13 +39,13 @@ public class GetFoodLogHistoryInteractor implements GetFoodLogHistoryInputBounda
     public void execute(GetFoodLogHistoryInputData inputData) {
         try {
             // Get food logs for the specified date
-            List<FoodLog> foodLogs = foodLogGateway.getFoodLogsByDate(
+            final List<FoodLog> foodLogs = foodLogGateway.getFoodLogsByDate(
                     inputData.getUserId(),
                     inputData.getDate()
             );
 
             // Create output data
-            GetFoodLogHistoryOutputData outputData = new GetFoodLogHistoryOutputData(
+            final GetFoodLogHistoryOutputData outputData = new GetFoodLogHistoryOutputData(
                     inputData.getDate(),
                     foodLogs
             );
@@ -52,8 +53,9 @@ public class GetFoodLogHistoryInteractor implements GetFoodLogHistoryInputBounda
             // Present the results
             outputBoundary.presentFoodLogHistory(outputData);
 
-        } catch (Exception e) {
-            outputBoundary.presentError("Failed to retrieve food log history: " + e.getMessage());
+        }
+        catch (IOException exception) {
+            outputBoundary.presentError("Failed to retrieve food log history: " + exception.getMessage());
         }
     }
 }
