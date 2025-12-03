@@ -2,7 +2,6 @@ package tut0301.group1.healthz.usecase.food.foodloghistory;
 
 /**
  * Output Boundary for Get Food Log History use case.
- *
  * Defines the contract for presenting food log history results.
  * This interface is defined in the Use Case layer and implemented by the Presenter.
  */

@@ -1,9 +1,9 @@
 package tut0301.group1.healthz.usecase.food.logging;
 
+import java.time.LocalDateTime;
+
 import tut0301.group1.healthz.entities.nutrition.FoodDetails;
 import tut0301.group1.healthz.entities.nutrition.ServingInfo;
-
-import java.time.LocalDateTime;
 
 /**
  * Input DTO for logging food intake.
@@ -25,6 +25,7 @@ public class LogFoodIntakeInputData {
      * @param servingMultiplier How many servings
      * @param meal The meal type (Breakfast, Lunch, Dinner, Snack)
      * @param loggedAt The timestamp when the food was consumed (if null, uses current time)
+     * @throws IllegalArgumentException if userId, food, or meal are invalid, or if servingMultiplier is not positive.
      */
     public LogFoodIntakeInputData(String userId, FoodDetails food, ServingInfo servingInfo,
                                   double servingMultiplier, String meal, LocalDateTime loggedAt) {
@@ -49,7 +50,12 @@ public class LogFoodIntakeInputData {
         this.servingInfo = servingInfo;
         this.servingMultiplier = servingMultiplier;
         this.meal = meal;
-        this.loggedAt = loggedAt != null ? loggedAt : LocalDateTime.now();
+        if (loggedAt == null) {
+            this.loggedAt = LocalDateTime.now();
+        }
+        else {
+            this.loggedAt = loggedAt;
+        }
     }
 
     /**
@@ -64,16 +70,6 @@ public class LogFoodIntakeInputData {
     public LogFoodIntakeInputData(String userId, FoodDetails food, ServingInfo servingInfo,
                                   double servingMultiplier, String meal) {
         this(userId, food, servingInfo, servingMultiplier, meal, null);
-    }
-
-    /**
-     * Constructor with actual amount (calculates multiplier automatically).
-     */
-    public static LogFoodIntakeInputData withActualAmount(String userId, FoodDetails food,
-                                                          ServingInfo servingInfo,
-                                                          double actualAmount, String meal) {
-        double multiplier = actualAmount / servingInfo.servingAmount;
-        return new LogFoodIntakeInputData(userId, food, servingInfo, multiplier, meal);
     }
 
     public String getUserId() {

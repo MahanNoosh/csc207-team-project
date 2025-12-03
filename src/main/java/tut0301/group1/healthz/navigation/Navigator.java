@@ -19,7 +19,7 @@ import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseExerciseDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseFavoriteRecipeDataAccessObject;
 import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject;
-import tut0301.group1.healthz.dataaccess.supabase.food.SupabaseFoodLogGateway;
+import tut0301.group1.healthz.dataaccess.supabase.food.SupabaseFoodLogDataAccess;
 import tut0301.group1.healthz.entities.Dashboard.Profile;
 import tut0301.group1.healthz.interfaceadapter.activity.ActivityHistoryViewModel;
 import tut0301.group1.healthz.interfaceadapter.activity.ActivityLogLoadPresenter;
@@ -105,15 +105,15 @@ import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInputBoundary;
 import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInteractor;
 import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInputBoundary;
 import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInteractor;
-import tut0301.group1.healthz.usecase.food.logging.FoodLogGateway;
+import tut0301.group1.healthz.usecase.food.logging.FoodLogDataAccessInterface;
 import tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInputBoundary;
 import tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInteractor;
 import tut0301.group1.healthz.usecase.food.search.FoodSearchDataAccessInterface;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodInputBoundary;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodInteractor;
 import tut0301.group1.healthz.usecase.food.search.SearchFoodOutputBoundary;
-import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInputBoundary;
-import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInteractor;
+import tut0301.group1.healthz.usecase.macrosummary.GetDailyMacroSummaryInputBoundary;
+import tut0301.group1.healthz.usecase.macrosummary.GetDailyMacroSummaryInteractor;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
 import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
@@ -249,7 +249,7 @@ public final class Navigator {
 
         final LogFoodIntakeViewModel logViewModel = new LogFoodIntakeViewModel();
         final LogFoodIntakePresenter logPresenter = new LogFoodIntakePresenter(logViewModel);
-        final FoodLogGateway logGateway = new SupabaseFoodLogGateway(authenticatedClient);
+        final SupabaseFoodLogDataAccess logGateway = new SupabaseFoodLogDataAccess(authenticatedClient);
         final LogFoodIntakeInputBoundary logInteractor = new LogFoodIntakeInteractor(logGateway, logPresenter);
         final LogFoodIntakeController logController = new LogFoodIntakeController(logInteractor);
 
@@ -607,7 +607,7 @@ public final class Navigator {
             final UserDataDataAccessInterface userDataAccess =
                     new SupabaseUserDataDataAccessObject(authenticatedClient);
 
-            final FoodLogGateway foodLogGateway = new SupabaseFoodLogGateway(authenticatedClient);
+            final  FoodLogDataAccessInterface foodLogGateway = new SupabaseFoodLogDataAccess(authenticatedClient);
 
             final ActivityLogDataAccessInterface activityLogDataAccess =
                     new SupabaseActivityLogDataAccessObject(authenticatedClient);
@@ -623,10 +623,8 @@ public final class Navigator {
             final GetDailyMacroSummaryViewModel summaryViewModel = new GetDailyMacroSummaryViewModel();
             final GetDailyMacroSummaryPresenter summaryPresenter = new GetDailyMacroSummaryPresenter(summaryViewModel);
 
-            final GetDailyCalorieSummaryInputBoundary summaryInteractor = new GetDailyCalorieSummaryInteractor(
+            GetDailyMacroSummaryInputBoundary summaryInteractor = new GetDailyMacroSummaryInteractor(
                     foodLogGateway,
-                    activityLogDataAccess,
-                    userDataAccess,
                     summaryPresenter
             );
 
@@ -824,7 +822,7 @@ public final class Navigator {
 
         final LogFoodIntakeViewModel logFoodIntakeViewModel = new LogFoodIntakeViewModel();
         final LogFoodIntakePresenter logFoodIntakePresenter = new LogFoodIntakePresenter(logFoodIntakeViewModel);
-        final FoodLogGateway foodLogGateway = new SupabaseFoodLogGateway(authenticatedClient);
+        final FoodLogDataAccessInterface foodLogGateway = new SupabaseFoodLogDataAccess(authenticatedClient);
         final LogFoodIntakeInputBoundary logFoodIntakeInteractor = new LogFoodIntakeInteractor(
                 foodLogGateway,
                 logFoodIntakePresenter

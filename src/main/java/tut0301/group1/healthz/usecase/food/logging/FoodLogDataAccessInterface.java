@@ -1,15 +1,16 @@
 package tut0301.group1.healthz.usecase.food.logging;
 
+import java.io.IOException;
+import java.util.List;
 import tut0301.group1.healthz.entities.nutrition.FoodLog;
 
 /**
  * Gateway interface for food log data access.
- *
  * This interface is defined in the Use Case layer and implemented
  * in the Data Access layer, following the Dependency Inversion Principle.
  */
-public interface FoodLogGateway {
-    void saveFoodLog(String userId, FoodLog foodLog) throws Exception;
+public interface FoodLogDataAccessInterface {
+    void saveFoodLog(String userId, FoodLog foodLog) throws IOException, InterruptedException;
 
-    java.util.List<FoodLog> getFoodLogsByDate(String userId, java.time.LocalDate date) throws Exception;
+    List<FoodLog> getFoodLogsByDate(String userId, java.time.LocalDate date) throws IOException;
 }

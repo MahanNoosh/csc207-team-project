@@ -6,9 +6,6 @@ package tut0301.group1.healthz.dataaccess.supabase.food;
  */
 public final class FoodLogFields {
 
-    private FoodLogFields() {
-    }
-
     // Primary fields
     public static final String ID = "id";
     public static final String USER_ID = "user_id";
@@ -43,6 +40,7 @@ public final class FoodLogFields {
 
     /**
      * Returns all field names as a comma-separated string for SELECT queries.
+     * @return String
      */
     public static String projection() {
         return String.join(",",

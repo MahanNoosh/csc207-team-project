@@ -1,27 +1,27 @@
 package tut0301.group1.healthz.usecase.food.logging;
 
-import tut0301.group1.healthz.entities.nutrition.FoodLog;
+import java.io.IOException;
 
-import java.time.LocalDateTime;
+import tut0301.group1.healthz.entities.nutrition.FoodLog;
 
 /**
  * Interactor for logging food intake.
- *
  * This class implements the business logic for recording
  * food consumption, following Clean Architecture principles.
  */
 public class LogFoodIntakeInteractor implements LogFoodIntakeInputBoundary {
-    private final FoodLogGateway gateway;
+
+    private final FoodLogDataAccessInterface gateway;
     private final LogFoodIntakeOutputBoundary outputBoundary;
 
     /**
      * Constructor with dependency injection.
      *
-     * @param gateway the gateway for saving food logs
+     * @param gateway        the gateway for saving food logs
      * @param outputBoundary the presenter for displaying results
+     * @throws IllegalArgumentException if gateway or outputBoundary is null
      */
-    public LogFoodIntakeInteractor(FoodLogGateway gateway,
-                                   LogFoodIntakeOutputBoundary outputBoundary) {
+    public LogFoodIntakeInteractor(FoodLogDataAccessInterface gateway, LogFoodIntakeOutputBoundary outputBoundary) {
         if (gateway == null) {
             throw new IllegalArgumentException("FoodLogGateway cannot be null");
         }
@@ -36,31 +36,24 @@ public class LogFoodIntakeInteractor implements LogFoodIntakeInputBoundary {
     public void execute(LogFoodIntakeInputData inputData) {
         try {
             // Create FoodLog with the timestamp from input data
-            FoodLog foodLog = new FoodLog(
-                inputData.getFood(),
-                inputData.getServingInfo(),
-                inputData.getServingMultiplier(),
-                inputData.getMeal(),
-                inputData.getLoggedAt()
-            );
+            final FoodLog foodLog = new FoodLog(inputData.getFood(), inputData.getServingInfo(),
+                    inputData.getServingMultiplier(), inputData.getMeal(), inputData.getLoggedAt());
 
             // Save through gateway
             gateway.saveFoodLog(inputData.getUserId(), foodLog);
 
             // Create success output
-            LogFoodIntakeOutputData outputData = new LogFoodIntakeOutputData(
-                foodLog,
-                "Food intake logged successfully"
-            );
+            final LogFoodIntakeOutputData outputData = new LogFoodIntakeOutputData(foodLog,
+                    "Food intake logged " + "successfully");
 
             // Pass to presenter
             outputBoundary.presentLogResult(outputData);
 
-        } catch (Exception e) {
+        }
+        catch (IOException | InterruptedException exception) {
             // Create error output
-            LogFoodIntakeOutputData outputData = new LogFoodIntakeOutputData(
-                "Failed to log food intake: " + e.getMessage()
-            );
+            final LogFoodIntakeOutputData outputData =
+                    new LogFoodIntakeOutputData("Failed to log food intake: " + exception.getMessage());
 
             // Pass error to presenter
             outputBoundary.presentLogResult(outputData);

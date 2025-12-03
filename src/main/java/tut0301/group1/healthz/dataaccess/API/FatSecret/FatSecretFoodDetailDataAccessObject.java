@@ -7,7 +7,6 @@ import java.io.IOException;
 
 /**
  * Gateway implementation for retrieving food details from FatSecret API.
- *
  * This class is in the Data Access layer and implements the Gateway interface
  * defined in the Use Case layer, following the Dependency Inversion Principle.
  */
