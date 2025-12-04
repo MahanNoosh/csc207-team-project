@@ -1,7 +1,11 @@
-package tut0301.group1.healthz.usecase.auth.signup;
+package tut0301.group1.healthz.auth.signup;
 
 import org.junit.jupiter.api.Test;
-import tut0301.group1.healthz.usecase.auth.AuthGateway;
+import tutcsc.group1.healthz.use_case.auth.AuthGateway;
+import tutcsc.group1.healthz.use_case.auth.sign_up.SignupInputData;
+import tutcsc.group1.healthz.use_case.auth.sign_up.SignupInteractor;
+import tutcsc.group1.healthz.use_case.auth.sign_up.SignupOutputBoundary;
+import tutcsc.group1.healthz.use_case.auth.sign_up.SignupOutputData;
 
 import static org.junit.jupiter.api.Assertions.*;
 

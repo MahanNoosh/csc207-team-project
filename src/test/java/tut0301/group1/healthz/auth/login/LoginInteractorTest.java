@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.usecase.auth.login;
+package tut0301.group1.healthz.auth.login;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -9,7 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import tut0301.group1.healthz.usecase.auth.AuthGateway;
+import tutcsc.group1.healthz.use_case.auth.AuthGateway;
+import tutcsc.group1.healthz.use_case.auth.log_in.LoginInputData;
+import tutcsc.group1.healthz.use_case.auth.log_in.LoginInteractor;
+import tutcsc.group1.healthz.use_case.auth.log_in.LoginOutputBoundary;
+import tutcsc.group1.healthz.use_case.auth.log_in.LoginOutputData;
 
 class LoginInteractorTest {
 
