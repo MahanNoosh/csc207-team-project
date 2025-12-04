@@ -5,19 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="300296b0-764f-4a52-acca-94e65cad2952" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogLoadInputBoundary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogLoadInteractor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogSaveInputBoundary.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogSaveInteractor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/ActivityLogLoadTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/ActivityLogSaveInteractorTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/activity/ActivityPageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/activity/ActivityPageController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/navigation/Navigator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/navigation/Navigator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogInputBoundary.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/activity/activity_log/ActivityLogInteractor.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/ActivityLogInteractorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/ActivityLogInteractorTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/oldtestactivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/oldtestactivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tut0301/group1/healthz/usecase/favoriterecipe/AddFavoriteInteractorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tut0301/group1/healthz/usecase/favoriterecipe/DeleteFavoriteInteractorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tut0301/group1/healthz/usecase/favoriterecipe/LoadFavoritesInteractorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/entities/nutrition/BasicFoodTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/entities/nutrition/FoodLogAndDetailsTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/ActivityLogLoadTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/ActivityLogLoadTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/ActivityLogSaveInteractorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/activity/ActivityLogSaveInteractorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/dashboard/FoodlogTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/dashboard/ProfileTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/food/detail/GetFoodDetailInteractorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/food/logging/LogFoodIntakeInteractorTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/tutcsc/group1/healthz/use_case/food/search/SearchFoodInteractorTest.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +32,9 @@
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="origin/dev" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -60,6 +64,7 @@
   "keyToString": {
     "Application.MainUI.executor": "Run",
     "JUnit.ActivityLogInteractorTest.successTest.executor": "Run",
+    "JUnit.ActivityLogLoadTest and 1 more.executor": "Run",
     "JUnit.ActivityLogLoadTest.executor": "Run",
     "JUnit.ActivityLogSaveInteractorTest.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
@@ -76,6 +81,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "editor.preferences.tabs",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -106,6 +112,17 @@
       <option name="MAIN_CLASS_NAME" value="tutcsc.group1.healthz.use_case.activity.ActivityLogInteractorTest" />
       <option name="METHOD_NAME" value="successTest" />
       <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ActivityLogLoadTest and 1 more" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="health-app-ca-lab" />
+      <option name="TEST_OBJECT" value="pattern" />
+      <patterns>
+        <pattern testClass="tutcsc.group1.healthz.use_case.activity.ActivityLogLoadTest" />
+        <pattern testClass="tutcsc.group1.healthz.use_case.activity.ActivityLogSaveInteractorTest" />
+      </patterns>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -144,12 +161,14 @@
       <item itemvalue="Application.MainUI" />
       <item itemvalue="JUnit.ActivityLogInteractorTest.successTest" />
       <item itemvalue="JUnit.ActivityLogLoadTest" />
+      <item itemvalue="JUnit.ActivityLogLoadTest and 1 more" />
       <item itemvalue="JUnit.ActivityLogSaveInteractorTest" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.ActivityLogSaveInteractorTest" />
         <item itemvalue="JUnit.ActivityLogLoadTest" />
+        <item itemvalue="JUnit.ActivityLogLoadTest and 1 more" />
+        <item itemvalue="JUnit.ActivityLogSaveInteractorTest" />
         <item itemvalue="JUnit.ActivityLogInteractorTest.successTest" />
       </list>
     </recent_temporary>
@@ -169,7 +188,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1764722034338</updated>
-      <workItem from="1764722036363" duration="6578000" />
+      <workItem from="1764722036363" duration="13441000" />
     </task>
     <servers />
   </component>

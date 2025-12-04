@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.navigation;
+package tutcsc.group1.healthz.navigation;
 
 import java.util.Optional;
 
@@ -7,134 +7,136 @@ import javafx.animation.Timeline;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodDetailDataAccessObject;
-import tut0301.group1.healthz.dataaccess.API.FatSecret.FatSecretFoodSearchDataAccessObject;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeDetailDataAccessObject;
-import tut0301.group1.healthz.dataaccess.API.FatSecretRecipeSearchDataAccessObject;
-import tut0301.group1.healthz.dataaccess.API.OAuth.OAuth;
-import tut0301.group1.healthz.dataaccess.API.OAuth.OAuthDataAccessObject;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseActivityLogDataAccessObject;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseAuthDataAccessObject;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseClient;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseExerciseDataAccessObject;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseFavoriteRecipeDataAccessObject;
-import tut0301.group1.healthz.dataaccess.supabase.SupabaseUserDataDataAccessObject;
-import tut0301.group1.healthz.dataaccess.supabase.food.SupabaseFoodLogGateway;
-import tut0301.group1.healthz.entities.Dashboard.Profile;
-import tut0301.group1.healthz.interfaceadapter.activity.ActivityHistoryViewModel;
-import tut0301.group1.healthz.interfaceadapter.activity.ActivityLogLoadPresenter;
-import tut0301.group1.healthz.interfaceadapter.activity.ActivityLogSavePresenter;
-import tut0301.group1.healthz.interfaceadapter.activity.ActivityPageController;
-import tut0301.group1.healthz.interfaceadapter.activity.CalorieCalculatorPresenter;
-import tut0301.group1.healthz.interfaceadapter.activity.ExerciseFinderPresenter;
-import tut0301.group1.healthz.interfaceadapter.activity.ExerciseListViewModel;
-import tut0301.group1.healthz.interfaceadapter.auth.login.LoginController;
-import tut0301.group1.healthz.interfaceadapter.auth.login.LoginPresenter;
-import tut0301.group1.healthz.interfaceadapter.auth.login.LoginViewModel;
-import tut0301.group1.healthz.interfaceadapter.auth.mapping.SignupProfileMapper;
-import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardController;
-import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardPresenter;
-import tut0301.group1.healthz.interfaceadapter.dashboard.DashboardViewModel;
-import tut0301.group1.healthz.interfaceadapter.dashboard.RecentActivityController;
-import tut0301.group1.healthz.interfaceadapter.dashboard.RecentActivityPresenter;
-import tut0301.group1.healthz.interfaceadapter.dashboard.RecentActivityViewModel;
-import tut0301.group1.healthz.interfaceadapter.dashboard.WeeklySummaryController;
-import tut0301.group1.healthz.interfaceadapter.dashboard.WeeklySummaryPresenter;
-import tut0301.group1.healthz.interfaceadapter.dashboard.WeeklySummaryViewModel;
-import tut0301.group1.healthz.interfaceadapter.favoriterecipe.AddFavoriteController;
-import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeController;
-import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipePresenter;
-import tut0301.group1.healthz.interfaceadapter.favoriterecipe.FavoriteRecipeViewModel;
-import tut0301.group1.healthz.interfaceadapter.food.FoodDetailPresenter;
-import tut0301.group1.healthz.interfaceadapter.food.FoodSearchPresenter;
-import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeController;
-import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakePresenter;
-import tut0301.group1.healthz.interfaceadapter.food.LogFoodIntakeViewModel;
-import tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryController;
-import tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryPresenter;
-import tut0301.group1.healthz.interfaceadapter.foodlog.GetFoodLogHistoryViewModel;
-import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailController;
-import tut0301.group1.healthz.interfaceadapter.macro.MacroDetailViewModel;
-import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchController;
-import tut0301.group1.healthz.interfaceadapter.macro.MacroSearchViewModel;
-import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryController;
-import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryPresenter;
-import tut0301.group1.healthz.interfaceadapter.macrosummary.GetDailyMacroSummaryViewModel;
-import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailController;
-import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailPresenter;
-import tut0301.group1.healthz.interfaceadapter.recipe.RecipeDetailViewModel;
-import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchController;
-import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchPresenter;
-import tut0301.group1.healthz.interfaceadapter.recipe.RecipeSearchViewModel;
-import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserController;
-import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserPresenter;
-import tut0301.group1.healthz.interfaceadapter.setting.UpdateUserViewModel;
-import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogDataAccessInterface;
-import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogInputBoundary;
-import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogInteractor;
-import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogLoadOutputBoundary;
-import tut0301.group1.healthz.usecase.activity.activitylog.ActivityLogSaveOutputBoundary;
-import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorInputBoundary;
-import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorInteractor;
-import tut0301.group1.healthz.usecase.activity.caloriecalculator.CalorieCalculatorOutputBoundary;
-import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseDataAccessInterface;
-import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderInputBoundary;
-import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderInteractor;
-import tut0301.group1.healthz.usecase.activity.exercisefinder.ExerciseFinderOutputBoundary;
-import tut0301.group1.healthz.usecase.activity.recent.RecentActivityInputBoundary;
-import tut0301.group1.healthz.usecase.activity.recent.RecentActivityInteractor;
-import tut0301.group1.healthz.usecase.activity.recent.RecentActivityOutputBoundary;
-import tut0301.group1.healthz.usecase.activity.weeklysummary.WeeklySummaryInputBoundary;
-import tut0301.group1.healthz.usecase.activity.weeklysummary.WeeklySummaryInteractor;
-import tut0301.group1.healthz.usecase.activity.weeklysummary.WeeklySummaryOutputBoundary;
-import tut0301.group1.healthz.usecase.auth.AuthGateway;
-import tut0301.group1.healthz.usecase.auth.login.LoginInputBoundary;
-import tut0301.group1.healthz.usecase.auth.login.LoginInteractor;
-import tut0301.group1.healthz.usecase.dashboard.DashboardInputBoundary;
-import tut0301.group1.healthz.usecase.dashboard.DashboardInteractor;
-import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
-import tut0301.group1.healthz.usecase.favoriterecipe.AddFavoriteInputBoundary;
-import tut0301.group1.healthz.usecase.favoriterecipe.AddFavoriteInteractor;
-import tut0301.group1.healthz.usecase.favoriterecipe.DeleteFavoriteInputBoundary;
-import tut0301.group1.healthz.usecase.favoriterecipe.DeleteFavoriteInteractor;
-import tut0301.group1.healthz.usecase.favoriterecipe.FavoriteRecipeGateway;
-import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesInputBoundary;
-import tut0301.group1.healthz.usecase.favoriterecipe.LoadFavoritesInteractor;
-import tut0301.group1.healthz.usecase.food.detail.FoodDetailGateway;
-import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInputBoundary;
-import tut0301.group1.healthz.usecase.food.detail.GetFoodDetailInteractor;
-import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInputBoundary;
-import tut0301.group1.healthz.usecase.food.foodloghistory.GetFoodLogHistoryInteractor;
-import tut0301.group1.healthz.usecase.food.logging.FoodLogGateway;
-import tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInputBoundary;
-import tut0301.group1.healthz.usecase.food.logging.LogFoodIntakeInteractor;
-import tut0301.group1.healthz.usecase.food.search.FoodSearchDataAccessInterface;
-import tut0301.group1.healthz.usecase.food.search.SearchFoodInputBoundary;
-import tut0301.group1.healthz.usecase.food.search.SearchFoodInteractor;
-import tut0301.group1.healthz.usecase.food.search.SearchFoodOutputBoundary;
-import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInputBoundary;
-import tut0301.group1.healthz.usecase.macrosummary.GetDailyCalorieSummaryInteractor;
-import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailGateway;
-import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInputBoundary;
-import tut0301.group1.healthz.usecase.recipesearch.detailed.RecipeDetailInteractor;
-import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchGateway;
-import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInputBoundary;
-import tut0301.group1.healthz.usecase.recipesearch.metadata.RecipeSearchInteractor;
-import tut0301.group1.healthz.usecase.setting.UpdateUserInteractor;
-import tut0301.group1.healthz.view.activity.ActivityView;
-import tut0301.group1.healthz.view.auth.LandingView;
-import tut0301.group1.healthz.view.auth.LoginView;
-import tut0301.group1.healthz.view.auth.LogoutView;
-import tut0301.group1.healthz.view.auth.SignupView;
-import tut0301.group1.healthz.view.auth.signuppanels.EmailVerificationView;
-import tut0301.group1.healthz.view.dashboard.DashboardView;
-import tut0301.group1.healthz.view.macro.MacroSearchView;
-import tut0301.group1.healthz.view.macro.SingleMacroPage;
-import tut0301.group1.healthz.view.nutrition.FoodLogView;
-import tut0301.group1.healthz.view.recipe.FavoriteRecipeView;
-import tut0301.group1.healthz.view.recipe.RecipeDetailView;
-import tut0301.group1.healthz.view.recipe.RecipeSearchView;
-import tut0301.group1.healthz.view.settings.SettingsView;
+import tutcsc.group1.healthz.data_access.api.fat_secret.FatSecretFoodDetailDataAccessObject;
+import tutcsc.group1.healthz.data_access.api.fat_secret.FatSecretFoodSearchDataAccessObject;
+import tutcsc.group1.healthz.data_access.api.FatSecretRecipeDetailDataAccessObject;
+import tutcsc.group1.healthz.data_access.api.FatSecretRecipeSearchDataAccessObject;
+import tutcsc.group1.healthz.data_access.api.oauth.OAuth;
+import tutcsc.group1.healthz.data_access.api.oauth.OAuthDataAccessObject;
+import tutcsc.group1.healthz.data_access.supabase.SupabaseActivityLogDataAccessObject;
+import tutcsc.group1.healthz.data_access.supabase.SupabaseAuthDataAccessObject;
+import tutcsc.group1.healthz.data_access.supabase.SupabaseClient;
+import tutcsc.group1.healthz.data_access.supabase.SupabaseExerciseDataAccessObject;
+import tutcsc.group1.healthz.data_access.supabase.SupabaseFavoriteRecipeDataAccessObject;
+import tutcsc.group1.healthz.data_access.supabase.SupabaseUserDataDataAccessObject;
+import tutcsc.group1.healthz.data_access.supabase.food.SupabaseFoodLogGateway;
+import tutcsc.group1.healthz.entities.dashboard.Profile;
+import tutcsc.group1.healthz.interface_adapter.activity.ActivityHistoryViewModel;
+import tutcsc.group1.healthz.interface_adapter.activity.ActivityLogLoadPresenter;
+import tutcsc.group1.healthz.interface_adapter.activity.ActivityLogSavePresenter;
+import tutcsc.group1.healthz.interface_adapter.activity.ActivityPageController;
+import tutcsc.group1.healthz.interface_adapter.activity.CalorieCalculatorPresenter;
+import tutcsc.group1.healthz.interface_adapter.activity.ExerciseFinderPresenter;
+import tutcsc.group1.healthz.interface_adapter.activity.ExerciseListViewModel;
+import tutcsc.group1.healthz.interface_adapter.auth.log_in.LoginController;
+import tutcsc.group1.healthz.interface_adapter.auth.log_in.LoginPresenter;
+import tutcsc.group1.healthz.interface_adapter.auth.log_in.LoginViewModel;
+import tutcsc.group1.healthz.interface_adapter.auth.mapping.SignupProfileMapper;
+import tutcsc.group1.healthz.interface_adapter.dashboard.DashboardController;
+import tutcsc.group1.healthz.interface_adapter.dashboard.DashboardPresenter;
+import tutcsc.group1.healthz.interface_adapter.dashboard.DashboardViewModel;
+import tutcsc.group1.healthz.interface_adapter.dashboard.RecentActivityController;
+import tutcsc.group1.healthz.interface_adapter.dashboard.RecentActivityPresenter;
+import tutcsc.group1.healthz.interface_adapter.dashboard.RecentActivityViewModel;
+import tutcsc.group1.healthz.interface_adapter.dashboard.WeeklySummaryController;
+import tutcsc.group1.healthz.interface_adapter.dashboard.WeeklySummaryPresenter;
+import tutcsc.group1.healthz.interface_adapter.dashboard.WeeklySummaryViewModel;
+import tutcsc.group1.healthz.interface_adapter.favorite_recipe.AddFavoriteController;
+import tutcsc.group1.healthz.interface_adapter.favorite_recipe.FavoriteRecipeController;
+import tutcsc.group1.healthz.interface_adapter.favorite_recipe.FavoriteRecipePresenter;
+import tutcsc.group1.healthz.interface_adapter.favorite_recipe.FavoriteRecipeViewModel;
+import tutcsc.group1.healthz.interface_adapter.food.FoodDetailPresenter;
+import tutcsc.group1.healthz.interface_adapter.food.FoodSearchPresenter;
+import tutcsc.group1.healthz.interface_adapter.food.LogFoodIntakeController;
+import tutcsc.group1.healthz.interface_adapter.food.LogFoodIntakePresenter;
+import tutcsc.group1.healthz.interface_adapter.food.LogFoodIntakeViewModel;
+import tutcsc.group1.healthz.interface_adapter.food_log.GetFoodLogHistoryController;
+import tutcsc.group1.healthz.interface_adapter.food_log.GetFoodLogHistoryPresenter;
+import tutcsc.group1.healthz.interface_adapter.food_log.GetFoodLogHistoryViewModel;
+import tutcsc.group1.healthz.interface_adapter.macro.MacroDetailController;
+import tutcsc.group1.healthz.interface_adapter.macro.MacroDetailViewModel;
+import tutcsc.group1.healthz.interface_adapter.macro.MacroSearchController;
+import tutcsc.group1.healthz.interface_adapter.macro.MacroSearchViewModel;
+import tutcsc.group1.healthz.interface_adapter.macro_summary.GetDailyMacroSummaryController;
+import tutcsc.group1.healthz.interface_adapter.macro_summary.GetDailyMacroSummaryPresenter;
+import tutcsc.group1.healthz.interface_adapter.macro_summary.GetDailyMacroSummaryViewModel;
+import tutcsc.group1.healthz.interface_adapter.recipe.RecipeDetailController;
+import tutcsc.group1.healthz.interface_adapter.recipe.RecipeDetailPresenter;
+import tutcsc.group1.healthz.interface_adapter.recipe.RecipeDetailViewModel;
+import tutcsc.group1.healthz.interface_adapter.recipe.RecipeSearchController;
+import tutcsc.group1.healthz.interface_adapter.recipe.RecipeSearchPresenter;
+import tutcsc.group1.healthz.interface_adapter.recipe.RecipeSearchViewModel;
+import tutcsc.group1.healthz.interface_adapter.setting.UpdateUserController;
+import tutcsc.group1.healthz.interface_adapter.setting.UpdateUserPresenter;
+import tutcsc.group1.healthz.interface_adapter.setting.UpdateUserViewModel;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogDataAccessInterface;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogSaveInputBoundary;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogLoadInputBoundary;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogSaveInteractor;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogLoadInteractor;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogLoadOutputBoundary;
+import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogSaveOutputBoundary;
+import tutcsc.group1.healthz.use_case.activity.calorie_calculator.CalorieCalculatorInputBoundary;
+import tutcsc.group1.healthz.use_case.activity.calorie_calculator.CalorieCalculatorInteractor;
+import tutcsc.group1.healthz.use_case.activity.calorie_calculator.CalorieCalculatorOutputBoundary;
+import tutcsc.group1.healthz.use_case.activity.exercise_finder.ExerciseDataAccessInterface;
+import tutcsc.group1.healthz.use_case.activity.exercise_finder.ExerciseFinderInputBoundary;
+import tutcsc.group1.healthz.use_case.activity.exercise_finder.ExerciseFinderInteractor;
+import tutcsc.group1.healthz.use_case.activity.exercise_finder.ExerciseFinderOutputBoundary;
+import tutcsc.group1.healthz.use_case.activity.recent.RecentActivityInputBoundary;
+import tutcsc.group1.healthz.use_case.activity.recent.RecentActivityInteractor;
+import tutcsc.group1.healthz.use_case.activity.recent.RecentActivityOutputBoundary;
+import tutcsc.group1.healthz.use_case.activity.weekly_summary.WeeklySummaryInputBoundary;
+import tutcsc.group1.healthz.use_case.activity.weekly_summary.WeeklySummaryInteractor;
+import tutcsc.group1.healthz.use_case.activity.weekly_summary.WeeklySummaryOutputBoundary;
+import tutcsc.group1.healthz.use_case.auth.AuthGateway;
+import tutcsc.group1.healthz.use_case.auth.log_in.LoginInputBoundary;
+import tutcsc.group1.healthz.use_case.auth.log_in.LoginInteractor;
+import tutcsc.group1.healthz.use_case.dashboard.DashboardInputBoundary;
+import tutcsc.group1.healthz.use_case.dashboard.DashboardInteractor;
+import tutcsc.group1.healthz.use_case.dashboard.UserDataDataAccessInterface;
+import tutcsc.group1.healthz.use_case.favorite_recipe.AddFavoriteInputBoundary;
+import tutcsc.group1.healthz.use_case.favorite_recipe.AddFavoriteInteractor;
+import tutcsc.group1.healthz.use_case.favorite_recipe.DeleteFavoriteInputBoundary;
+import tutcsc.group1.healthz.use_case.favorite_recipe.DeleteFavoriteInteractor;
+import tutcsc.group1.healthz.use_case.favorite_recipe.FavoriteRecipeGateway;
+import tutcsc.group1.healthz.use_case.favorite_recipe.LoadFavoritesInputBoundary;
+import tutcsc.group1.healthz.use_case.favorite_recipe.LoadFavoritesInteractor;
+import tutcsc.group1.healthz.use_case.food.detail.FoodDetailGateway;
+import tutcsc.group1.healthz.use_case.food.detail.GetFoodDetailInputBoundary;
+import tutcsc.group1.healthz.use_case.food.detail.GetFoodDetailInteractor;
+import tutcsc.group1.healthz.use_case.food.foodloghistory.GetFoodLogHistoryInputBoundary;
+import tutcsc.group1.healthz.use_case.food.foodloghistory.GetFoodLogHistoryInteractor;
+import tutcsc.group1.healthz.use_case.food.logging.FoodLogGateway;
+import tutcsc.group1.healthz.use_case.food.logging.LogFoodIntakeInputBoundary;
+import tutcsc.group1.healthz.use_case.food.logging.LogFoodIntakeInteractor;
+import tutcsc.group1.healthz.use_case.food.search.FoodSearchDataAccessInterface;
+import tutcsc.group1.healthz.use_case.food.search.SearchFoodInputBoundary;
+import tutcsc.group1.healthz.use_case.food.search.SearchFoodInteractor;
+import tutcsc.group1.healthz.use_case.food.search.SearchFoodOutputBoundary;
+import tutcsc.group1.healthz.use_case.macro_summary.GetDailyCalorieSummaryInputBoundary;
+import tutcsc.group1.healthz.use_case.macro_summary.GetDailyCalorieSummaryInteractor;
+import tutcsc.group1.healthz.use_case.recipe_search.detailed.RecipeDetailGateway;
+import tutcsc.group1.healthz.use_case.recipe_search.detailed.RecipeDetailInputBoundary;
+import tutcsc.group1.healthz.use_case.recipe_search.detailed.RecipeDetailInteractor;
+import tutcsc.group1.healthz.use_case.recipe_search.meta_data.RecipeSearchGateway;
+import tutcsc.group1.healthz.use_case.recipe_search.meta_data.RecipeSearchInputBoundary;
+import tutcsc.group1.healthz.use_case.recipe_search.meta_data.RecipeSearchInteractor;
+import tutcsc.group1.healthz.use_case.setting.UpdateUserInteractor;
+import tutcsc.group1.healthz.view.activity.ActivityView;
+import tutcsc.group1.healthz.view.auth.LandingView;
+import tutcsc.group1.healthz.view.auth.LoginView;
+import tutcsc.group1.healthz.view.auth.LogoutView;
+import tutcsc.group1.healthz.view.auth.SignupView;
+import tutcsc.group1.healthz.view.auth.signuppanels.EmailVerificationView;
+import tutcsc.group1.healthz.view.dashboard.DashboardView;
+import tutcsc.group1.healthz.view.macro.MacroSearchView;
+import tutcsc.group1.healthz.view.macro.SingleMacroPage;
+import tutcsc.group1.healthz.view.nutrition.FoodLogView;
+import tutcsc.group1.healthz.view.recipe.FavoriteRecipeView;
+import tutcsc.group1.healthz.view.recipe.RecipeDetailView;
+import tutcsc.group1.healthz.view.recipe.RecipeSearchView;
+import tutcsc.group1.healthz.view.settings.SettingsView;
 
 /**
  * Navigator - Handles all navigation between views.
@@ -486,7 +488,7 @@ public final class Navigator {
     @SuppressWarnings({"checkstyle:AbbreviationAsWordInName", "checkstyle:ExecutableStatementCount"})
     public void showActivityTracker() {
         final ExerciseDataAccessInterface exerciseDao = new SupabaseExerciseDataAccessObject(authenticatedClient);
-        final ActivityLogDataAccessInterface activityLogDao = new SupabaseActivityLogDataAccessObject(
+        final ActivityLogDataAccessInterface activityLogDataAccessObject = new SupabaseActivityLogDataAccessObject(
                 authenticatedClient
         );
 
@@ -512,17 +514,17 @@ public final class Navigator {
                 exerciseFinder,
                 caloriePresenter
         );
-        final ActivityLogInputBoundary activityLog = new ActivityLogInteractor(
-                activityLogDao,
+        final ActivityLogSaveInputBoundary activitySaveLog = new ActivityLogSaveInteractor(
+                activityLogDataAccessObject,
                 exerciseFinder,
-                activityLogSavePresenter,
+                activityLogSavePresenter
+        );
+        final ActivityLogLoadInputBoundary activityLogLoad = new ActivityLogLoadInteractor(
+                activityLogDataAccessObject,
                 activityLogLoadPresenter
         );
-        final ActivityPageController controller = new ActivityPageController(
-                exerciseFinder,
-                calorieCalculator,
-                activityLog
-        );
+        final ActivityPageController controller = new ActivityPageController(exerciseFinder, calorieCalculator,
+                activitySaveLog, activityLogLoad);
         final SupabaseUserDataDataAccessObject userDataDao = new SupabaseUserDataDataAccessObject(
                 authenticatedClient
         );
@@ -559,7 +561,7 @@ public final class Navigator {
      * Navigate to Dashboard page.
      */
     @SuppressWarnings({"checkstyle:AbbreviationAsWordInName", "checkstyle:ExecutableStatementCount"})
-    public void showDashboard() {
+    public void showDashboard() throws Exception {
         final String userId = getCurrentUserId();
         final String userName = getUserDisplayName();
         final ExerciseDataAccessInterface exerciseDao = new SupabaseExerciseDataAccessObject(authenticatedClient);
@@ -682,7 +684,7 @@ public final class Navigator {
     /**
      * Navigate to Main App/Dashboard (after successful login/signup).
      */
-    public void showMainApp() {
+    public void showMainApp() throws Exception {
         System.out.println("Login/Signup successful! Navigating to main app...");
         showDashboard();
     }
@@ -741,7 +743,11 @@ public final class Navigator {
         });
 
         loginView.getLoginButton().setOnAction(event -> {
-            this.performLogin(loginView);
+            try {
+                this.performLogin(loginView);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
 
         primaryStage.setScene(loginView.getScene());
@@ -749,8 +755,8 @@ public final class Navigator {
     }
 
     // -@cs[IllegalCatch] Need to catch generic exceptions from authentication
-    @SuppressWarnings({"checkstyle:AbbreviationAsWordInName", "checkstyle:LambdaBodyLength"})
-    private void performLogin(LoginView loginView) {
+    @SuppressWarnings({"checkstyle:AbbreviationAsWordInName", "checkstyle:LambdaBodyLength", "checkstyle:IllegalCatch"})
+    private void performLogin(LoginView loginView) throws Exception {
         System.out.println("Logging in with " + loginView.getEmail());
 
         final String url = System.getenv(SUPABASE_URL_ENV);
@@ -1058,7 +1064,11 @@ public final class Navigator {
 
         logoutView.getCancelButton().setOnAction(event -> {
             System.out.println("Returning to Dashboard...");
-            showDashboard();
+            try {
+                showDashboard();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
@@ -1067,6 +1077,7 @@ public final class Navigator {
      *
      * @param recipeSearchView the recipe search view to setup
      */
+    @SuppressWarnings({"checkstyle:RightCurly", "checkstyle:CatchParameterName"})
     private void setupRecipeNavigation(RecipeSearchView recipeSearchView) {
         recipeSearchView.getFavoriteRecipesButton().setOnAction(event -> {
             System.out.println("Navigating to favorite recipes page...");
@@ -1075,7 +1086,11 @@ public final class Navigator {
 
         recipeSearchView.getHealthzButton().setOnAction(event -> {
             System.out.println("Navigating to Dashboard...");
-            showDashboard();
+            try {
+                showDashboard();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
