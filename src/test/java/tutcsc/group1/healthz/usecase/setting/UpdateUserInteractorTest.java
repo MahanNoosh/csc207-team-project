@@ -1,8 +1,12 @@
-package tut0301.group1.healthz.usecase.setting;
+package tutcsc.group1.healthz.usecase.setting;
 
 import org.junit.jupiter.api.Test;
-import tut0301.group1.healthz.entities.Dashboard.Profile;
-import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
+import tutcsc.group1.healthz.entities.dashboard.Profile;
+import tutcsc.group1.healthz.use_case.dashboard.UserDataDataAccessInterface;
+import tutcsc.group1.healthz.use_case.setting.UpdateUserInputData;
+import tutcsc.group1.healthz.use_case.setting.UpdateUserInteractor;
+import tutcsc.group1.healthz.use_case.setting.UpdateUserOutputBoundary;
+import tutcsc.group1.healthz.use_case.setting.UpdateUserOutputData;
 
 import java.util.Optional;
 

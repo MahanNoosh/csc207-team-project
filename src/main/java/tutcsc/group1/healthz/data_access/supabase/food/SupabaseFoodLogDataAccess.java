@@ -6,7 +6,7 @@ import tutcsc.group1.healthz.data_access.supabase.SupabaseClient;
 import tutcsc.group1.healthz.entities.nutrition.FoodDetails;
 import tutcsc.group1.healthz.entities.nutrition.FoodLog;
 import tutcsc.group1.healthz.entities.nutrition.ServingInfo;
-import tutcsc.group1.healthz.use_case.food.logging.FoodLogGateway;
+import tutcsc.group1.healthz.use_case.food.logging.FoodLogDataAccessInterface;
 
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
@@ -30,12 +30,12 @@ import java.util.List;
  * - Uses SupabaseClient for data persistence
  * - Converts between domain entities and database JSON format
  */
-public class SupabaseFoodLogGateway implements FoodLogGateway {
+public class SupabaseFoodLogDataAccess implements FoodLogDataAccessInterface {
 
     private final SupabaseClient client;
     private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
 
-    public SupabaseFoodLogGateway(SupabaseClient client) {
+    public SupabaseFoodLogDataAccess(SupabaseClient client) {
         if (client == null) {
             throw new IllegalArgumentException("SupabaseClient cannot be null");
         }
@@ -43,7 +43,7 @@ public class SupabaseFoodLogGateway implements FoodLogGateway {
     }
 
     @Override
-    public void saveFoodLog(String userId, FoodLog foodLog) throws Exception {
+    public void saveFoodLog(String userId, FoodLog foodLog) throws java.io.IOException, InterruptedException {
         JSONObject body = foodLogToJson(userId, foodLog);
 
         String endpoint = "food_logs";
@@ -60,36 +60,40 @@ public class SupabaseFoodLogGateway implements FoodLogGateway {
         }
     }
     @Override
-    public List<FoodLog> getFoodLogsByDate(String userId, LocalDate date) throws Exception {
+    public List<FoodLog> getFoodLogsByDate(String userId, LocalDate date) throws java.io.IOException {
+        try {
+            String startOfDay = date.atStartOfDay().format(ISO_FORMATTER);
+            String endOfDay = date.plusDays(1).atStartOfDay().format(ISO_FORMATTER);
 
-        String startOfDay = date.atStartOfDay().format(ISO_FORMATTER);
-        String endOfDay = date.plusDays(1).atStartOfDay().format(ISO_FORMATTER);
+            String endpoint = "food_logs?select=" + FoodLogFields.projection() +
+                    "&user_id=eq." + URLEncoder.encode(userId, StandardCharsets.UTF_8) +
+                    "&logged_at=gte." + URLEncoder.encode(startOfDay, StandardCharsets.UTF_8) +
+                    "&logged_at=lt." + URLEncoder.encode(endOfDay, StandardCharsets.UTF_8) +
+                    "&order=logged_at.desc";
 
-        String endpoint = "food_logs?select=" + FoodLogFields.projection() +
-                "&user_id=eq." + URLEncoder.encode(userId, StandardCharsets.UTF_8) +
-                "&logged_at=gte." + URLEncoder.encode(startOfDay, StandardCharsets.UTF_8) +
-                "&logged_at=lt." + URLEncoder.encode(endOfDay, StandardCharsets.UTF_8) +
-                "&order=logged_at.desc";
+            HttpRequest req = client.rest(endpoint)
+                    .header("Authorization", "Bearer " + client.getAccessToken())
+                    .GET()
+                    .build();
 
-        HttpRequest req = client.rest(endpoint)
-                .header("Authorization", "Bearer " + client.getAccessToken())
-                .GET()
-                .build();
+            HttpResponse<String> res = client.send(req);
+            if (res.statusCode() >= 400) {
+                throw new RuntimeException("Failed to fetch daily logs: " + res.body());
+            }
 
-        HttpResponse<String> res = client.send(req);
-        if (res.statusCode() >= 400) {
-            throw new RuntimeException("Failed to fetch daily logs: " + res.body());
+            JSONArray arr = new JSONArray(res.body());
+            List<FoodLog> foodLogs = new ArrayList<>();
+
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject row = arr.getJSONObject(i);
+                foodLogs.add(jsonToFoodLog(row));
+            }
+
+            return foodLogs;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new java.io.IOException("Request interrupted", e);
         }
-
-        JSONArray arr = new JSONArray(res.body());
-        List<FoodLog> foodLogs = new ArrayList<>();
-
-        for (int i = 0; i < arr.length(); i++) {
-            JSONObject row = arr.getJSONObject(i);
-            foodLogs.add(jsonToFoodLog(row));
-        }
-
-        return foodLogs;
     }
 
     /**
@@ -102,18 +106,18 @@ public class SupabaseFoodLogGateway implements FoodLogGateway {
         json.put(FoodLogFields.USER_ID, userId);
 
         FoodDetails food = foodLog.getFood();
-        json.put(FoodLogFields.FOOD_ID, food.foodId);
-        json.put(FoodLogFields.FOOD_NAME, food.name);
-        json.put(FoodLogFields.FOOD_TYPE, food.foodType != null ? food.foodType : JSONObject.NULL);
-        json.put(FoodLogFields.BRAND_NAME, food.brandName != null ? food.brandName : JSONObject.NULL);
-        json.put(FoodLogFields.FOOD_URL, food.foodUrl != null ? food.foodUrl : JSONObject.NULL);
+        json.put(FoodLogFields.FOOD_ID, food.getFoodId());
+        json.put(FoodLogFields.FOOD_NAME, food.getName());
+        json.put(FoodLogFields.FOOD_TYPE, food.getFoodType() != null ? food.getFoodType() : JSONObject.NULL);
+        json.put(FoodLogFields.BRAND_NAME, food.getBrandName() != null ? food.getBrandName() : JSONObject.NULL);
+        json.put(FoodLogFields.FOOD_URL, food.getFoodUrl() != null ? food.getFoodUrl() : JSONObject.NULL);
 
         ServingInfo serving = foodLog.getServingInfo();
-        json.put(FoodLogFields.SERVING_ID, serving.servingId);
-        json.put(FoodLogFields.SERVING_DESCRIPTION, serving.servingDescription);
-        json.put(FoodLogFields.SERVING_AMOUNT, serving.servingAmount);
+        json.put(FoodLogFields.SERVING_ID, serving.getServingId());
+        json.put(FoodLogFields.SERVING_DESCRIPTION, serving.getServingDescription());
+        json.put(FoodLogFields.SERVING_AMOUNT, serving.getServingAmount());
 
-        json.put(FoodLogFields.SERVING_UNIT, serving.servingUnit);
+        json.put(FoodLogFields.SERVING_UNIT, serving.getServingUnit());
 
         double multiplier = foodLog.getServingMultiplier();
         json.put(FoodLogFields.SERVING_MULTIPLIER, multiplier);
@@ -125,9 +129,9 @@ public class SupabaseFoodLogGateway implements FoodLogGateway {
         json.put(FoodLogFields.FAT, totalMacro.fatG());
         json.put(FoodLogFields.CARBS, totalMacro.carbsG());
 
-        json.put(FoodLogFields.FIBER, serving.fiber != null ? serving.fiber * multiplier : JSONObject.NULL);
-        json.put(FoodLogFields.SUGAR, serving.sugar != null ? serving.sugar * multiplier : JSONObject.NULL);
-        json.put(FoodLogFields.SODIUM, serving.sodium != null ? serving.sodium * multiplier : JSONObject.NULL);
+        json.put(FoodLogFields.FIBER, serving.getFiber() != null ? serving.getFiber() * multiplier : JSONObject.NULL);
+        json.put(FoodLogFields.SUGAR, serving.getSugar() != null ? serving.getSugar() * multiplier : JSONObject.NULL);
+        json.put(FoodLogFields.SODIUM, serving.getSodium() != null ? serving.getSodium() * multiplier : JSONObject.NULL);
 
         // 6. Log Metadata
         json.put(FoodLogFields.MEAL, foodLog.getMeal());

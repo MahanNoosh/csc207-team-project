@@ -1,12 +1,9 @@
 package tutcsc.group1.healthz.use_case.food.logging;
 
-<<<<<<<< HEAD:src/main/java/tutcsc/group1/healthz/use_case/food/logging/FoodLogGateway.java
-import tutcsc.group1.healthz.entities.nutrition.FoodLog;
-========
 import java.io.IOException;
 import java.util.List;
-import tut0301.group1.healthz.entities.nutrition.FoodLog;
->>>>>>>> main:src/main/java/tutcsc/group1/healthz/use_case/food/logging/FoodLogDataAccessInterface.java
+
+import tutcsc.group1.healthz.entities.nutrition.FoodLog;
 
 /**
  * Gateway interface for food log data access.

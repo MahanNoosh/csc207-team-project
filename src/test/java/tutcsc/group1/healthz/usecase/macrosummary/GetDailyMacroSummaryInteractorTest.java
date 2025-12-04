@@ -1,10 +1,14 @@
-package tut0301.group1.healthz.usecase.macrosummary;
+package tutcsc.group1.healthz.usecase.macrosummary;
 
-import tut0301.group1.healthz.entities.nutrition.FoodDetails;
-import tut0301.group1.healthz.entities.nutrition.FoodLog;
-import tut0301.group1.healthz.entities.nutrition.Macro;
-import tut0301.group1.healthz.entities.nutrition.ServingInfo;
-import tut0301.group1.healthz.usecase.food.logging.FoodLogDataAccessInterface;
+import tutcsc.group1.healthz.entities.nutrition.FoodDetails;
+import tutcsc.group1.healthz.entities.nutrition.FoodLog;
+import tutcsc.group1.healthz.entities.nutrition.Macro;
+import tutcsc.group1.healthz.entities.nutrition.ServingInfo;
+import tutcsc.group1.healthz.use_case.food.logging.FoodLogDataAccessInterface;
+import tutcsc.group1.healthz.use_case.macro_summary.GetDailyMacroSummaryInputData;
+import tutcsc.group1.healthz.use_case.macro_summary.GetDailyMacroSummaryInteractor;
+import tutcsc.group1.healthz.use_case.macro_summary.GetDailyMacroSummaryOutputBoundary;
+import tutcsc.group1.healthz.use_case.macro_summary.GetDailyMacroSummaryOutputData;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -16,7 +20,7 @@ import java.util.List;
 /**
  * Unit test for GetDailyMacroSummaryInteractor with Clean Architecture compliance.
  */
-public class GetDailyCalorieSummaryInteractorTest {
+public class GetDailyMacroSummaryInteractorTest {
     private static void assertEquals(double expected, double actual, double delta) {
         assert Math.abs(expected - actual) < delta : "Expected: " + expected + ", but got: " + actual;
     }

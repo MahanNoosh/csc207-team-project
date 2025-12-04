@@ -413,7 +413,7 @@ public class FoodLogView {
         VBox foodInfo = new VBox(2);
         HBox.setHgrow(foodInfo, Priority.ALWAYS);
 
-        Label nameLabel = new Label(foodLog.getFood().name);
+        Label nameLabel = new Label(foodLog.getFood().getName());
         nameLabel.setFont(Font.font("Inter", FontWeight.SEMI_BOLD, 16));
         nameLabel.setTextFill(Color.web("#111827"));
 

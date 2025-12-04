@@ -1,7 +1,7 @@
 package tutcsc.group1.healthz.interface_adapter.food_log;
 
-import tutcsc.group1.healthz.use_case.food.foodloghistory.GetFoodLogHistoryInputBoundary;
-import tutcsc.group1.healthz.use_case.food.foodloghistory.GetFoodLogHistoryInputData;
+import tutcsc.group1.healthz.use_case.food.food_log_history.GetFoodLogHistoryInputBoundary;
+import tutcsc.group1.healthz.use_case.food.food_log_history.GetFoodLogHistoryInputData;
 
 import java.time.LocalDate;
 
