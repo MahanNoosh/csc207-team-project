@@ -1,151 +1,215 @@
-package tutcsc.group1.healthz.data_access.supabase;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import tutcsc.group1.healthz.interface_adapter.auth.mapping.ProfileJsonMapper;
-import tutcsc.group1.healthz.entities.dashboard.Profile;
-import tutcsc.group1.healthz.use_case.dashboard.UserDataDataAccessInterface;
+package tut0301.group1.healthz.dataaccess.supabase;
 
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tut0301.group1.healthz.interfaceadapter.auth.mapping.ProfileJsonMapper;
+import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
+
 /**
- * Adapter: implements UserDataGateway using Supabase's REST API.
+ * Data access object that implements {@link UserDataDataAccessInterface} using Supabase's REST API.
  */
 public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInterface {
+
+    private static final String HEADER_AUTHORIZATION = "Authorization";
+    private static final String HEADER_CONTENT_TYPE = "Content-Type";
+    private static final String HEADER_PREFER = "Prefer";
+    private static final String MIME_APPLICATION_JSON = "application/json";
+    private static final String AUTH_BEARER_PREFIX = "Bearer ";
+    private static final String PREFER_INIT =
+            "resolution=merge-duplicates,return=representation";
+    private static final String PREFER_UPDATE = "return=representation";
+
+    private static final int HTTP_ERROR_STATUS_THRESHOLD = 400;
+
     private final SupabaseClient client;
 
-    public SupabaseUserDataDataAccessObject(SupabaseClient client) {
-        this.client = client;
+    /**
+     * Creates a new SupabaseUserDataDataAccessObject.
+     *
+     * @param supabaseClient the Supabase client used to communicate with the backend
+     */
+    public SupabaseUserDataDataAccessObject(final SupabaseClient supabaseClient) {
+        this.client = supabaseClient;
     }
 
+    /**
+     * Loads the current user's profile from Supabase.
+     *
+     * @return an {@link Optional} containing the profile if it exists, otherwise empty
+     * @throws Exception        if the HTTP request fails
+     * @throws RuntimeException if Supabase returns an error response
+     */
     @Override
     public Optional<Profile> loadCurrentUserProfile() throws Exception {
-        String userId = client.getUserId(); // ensures session/token
-        String endpoint =
-                "user_data?select=" + UserDataFields.projection() +
-                        "&userId=eq." + userId + "&limit=1";
+        final String userId = client.getUserId();
+        final String endpoint =
+                "user_data?select=" + UserDataFields.projection()
+                        + "&userId=eq." + userId + "&limit=1";
 
-        HttpRequest req = client.rest(endpoint)
-                .header("Authorization", "Bearer " + client.getAccessToken())
+        final HttpRequest req = client.rest(endpoint)
+                .header(HEADER_AUTHORIZATION, AUTH_BEARER_PREFIX + client.getAccessToken())
                 .GET()
                 .build();
 
-        HttpResponse<String> res = client.send(req);
-        if (res.statusCode() >= 400) {
+        final HttpResponse<String> res = client.send(req);
+        if (res.statusCode() >= HTTP_ERROR_STATUS_THRESHOLD) {
             throw new RuntimeException("Fetch user_data failed: " + res.body());
         }
 
-        JSONArray arr = new JSONArray(res.body());
-        if (arr.length() == 0) return Optional.empty();
-        return Optional.of(ProfileJsonMapper.fromRow(arr.getJSONObject(0)));
+        final JSONArray arr = new JSONArray(res.body());
+
+        final Optional<Profile> result;
+        if (arr.isEmpty()) {
+            result = Optional.empty();
+        }
+        else {
+            result = Optional.of(ProfileJsonMapper.fromRow(arr.getJSONObject(0)));
+        }
+
+        return result;
     }
 
+    /**
+     * Creates a blank profile for the current user if one does not already exist.
+     *
+     * @return the created or existing profile
+     * @throws Exception           if the HTTP request fails
+     * @throws RuntimeException    if Supabase returns an error response
+     * @throws IllegalStateException if no profile is returned after initialization
+     */
     @Override
     public Profile createBlankForCurrentUserIfMissing() throws Exception {
-        client.getUserId(); // ensures valid session/token
+        client.getUserId();
 
-        String endpoint = "user_data?on_conflict=userId";
-        HttpRequest req = client.rest(endpoint)
-                .header("Authorization", "Bearer " + client.getAccessToken())
-                .header("Content-Type", "application/json")
-                .header("Prefer", "resolution=merge-duplicates,return=representation")
-                .POST(HttpRequest.BodyPublishers.ofString(new JSONObject().toString(), StandardCharsets.UTF_8))
+        final String endpoint = "user_data?on_conflict=userId";
+        final HttpRequest req = client.rest(endpoint)
+                .header(HEADER_AUTHORIZATION, AUTH_BEARER_PREFIX + client.getAccessToken())
+                .header(HEADER_CONTENT_TYPE, MIME_APPLICATION_JSON)
+                .header(HEADER_PREFER, PREFER_INIT)
+                .POST(HttpRequest.BodyPublishers.ofString(
+                        new JSONObject().toString(), StandardCharsets.UTF_8))
                 .build();
 
-        HttpResponse<String> res = client.send(req);
-        if (res.statusCode() >= 400) {
+        final HttpResponse<String> res = client.send(req);
+        if (res.statusCode() >= HTTP_ERROR_STATUS_THRESHOLD) {
             throw new RuntimeException("Init profile failed: " + res.body());
         }
 
-        JSONArray arr = new JSONArray(res.body());
-        if (arr.length() == 0) {
-            return loadCurrentUserProfile()
+        final JSONArray arr = new JSONArray(res.body());
+
+        final Profile result;
+        if (arr.isEmpty()) {
+            result = loadCurrentUserProfile()
                     .orElseThrow(() -> new IllegalStateException("Profile not returned after init"));
         }
-        return ProfileJsonMapper.fromRow(arr.getJSONObject(0));
+        else {
+            result = ProfileJsonMapper.fromRow(arr.getJSONObject(0));
+        }
+
+        return result;
     }
 
-    public Profile upsertProfile(Profile profile) throws Exception {
-        // Ensure we use the current user's id
-        String currentUserId = client.getUserId();
-        Profile toSave = new Profile(
+    /**
+     * Inserts or updates the given profile for the current user.
+     *
+     * @param profile the profile to upsert
+     * @throws Exception             if the HTTP request fails
+     * @throws RuntimeException      if Supabase returns an error response
+     * @throws IllegalStateException if no profile is returned after upsert
+     */
+    public void upsertProfile(final Profile profile) throws Exception {
+        final String currentUserId = client.getUserId();
+        final Profile toSave = new Profile(
                 currentUserId,
                 profile.getWeightKg(),
                 profile.getHeightCm(),
                 profile.getAgeYears(),
                 profile.getSex(),
                 profile.getGoal(),
-                profile.getActivitylevelmet(),
+                profile.getActivityLevelMET(),
                 profile.getTargetWeightKg(),
                 profile.getDailyCalorieTarget(),
                 profile.getHealthCondition()
         );
 
-        String endpoint = "user_data?on_conflict=" + UserDataFields.USER_ID;
+        final String endpoint = "user_data?on_conflict=" + UserDataFields.USER_ID;
 
-        JSONObject body = ProfileJsonMapper.toRow(toSave);
+        final JSONObject body = ProfileJsonMapper.toRow(toSave);
 
-        HttpRequest req = client.rest(endpoint)
-                .header("Authorization", "Bearer " + client.getAccessToken())
-                .header("Content-Type", "application/json")
-                .header("Prefer", "resolution=merge-duplicates,return=representation")
-                .POST(HttpRequest.BodyPublishers.ofString(body.toString(), StandardCharsets.UTF_8))
+        final HttpRequest req = client.rest(endpoint)
+                .header(HEADER_AUTHORIZATION, AUTH_BEARER_PREFIX + client.getAccessToken())
+                .header(HEADER_CONTENT_TYPE, MIME_APPLICATION_JSON)
+                .header(HEADER_PREFER, PREFER_INIT)
+                .POST(HttpRequest.BodyPublishers.ofString(
+                        body.toString(), StandardCharsets.UTF_8))
                 .build();
 
-        HttpResponse<String> res = client.send(req);
-        if (res.statusCode() >= 400) {
+        final HttpResponse<String> res = client.send(req);
+        if (res.statusCode() >= HTTP_ERROR_STATUS_THRESHOLD) {
             throw new RuntimeException("Upsert user_data failed: " + res.body());
         }
-
-        JSONArray arr = new JSONArray(res.body());
-        if (arr.length() == 0) {
-            return loadCurrentUserProfile()
-                    .orElseThrow(() -> new IllegalStateException("Profile not returned after upsert"));
-        }
-        return ProfileJsonMapper.fromRow(arr.getJSONObject(0));
     }
-    public Profile updateCurrentUserProfile(Profile profile) throws Exception {
-        String currentUserId = client.getUserId();
 
-        // Force the userId to match the current user
-        Profile toSave = new Profile(
+    /**
+     * Updates the profile row for the current user.
+     *
+     * @param profile the new profile values
+     * @return the updated profile
+     * @throws Exception           if the HTTP request fails
+     * @throws RuntimeException    if Supabase returns an error response
+     * @throws IllegalStateException if no profile row is returned after update
+     */
+    @Override
+    public Profile updateCurrentUserProfile(final Profile profile) throws Exception {
+        final String currentUserId = client.getUserId();
+
+        final Profile toSave = new Profile(
                 currentUserId,
                 profile.getWeightKg(),
                 profile.getHeightCm(),
                 profile.getAgeYears(),
                 profile.getSex(),
                 profile.getGoal(),
-                profile.getActivitylevelmet(),
+                profile.getActivityLevelMET(),
                 profile.getTargetWeightKg(),
                 profile.getDailyCalorieTarget(),
                 profile.getHealthCondition()
         );
 
-        String endpoint = "user_data?userId=eq." + currentUserId;
+        final String endpoint = "user_data?userId=eq." + currentUserId;
 
-        JSONObject body = ProfileJsonMapper.toRow(toSave);
+        final JSONObject body = ProfileJsonMapper.toRow(toSave);
 
-        HttpRequest req = client.rest(endpoint)
-                .header("Authorization", "Bearer " + client.getAccessToken())
-                .header("Content-Type", "application/json")
-                .header("Prefer", "return=representation")
-                .method("PATCH", HttpRequest.BodyPublishers.ofString(body.toString(), StandardCharsets.UTF_8))
+        final HttpRequest req = client.rest(endpoint)
+                .header(HEADER_AUTHORIZATION, AUTH_BEARER_PREFIX + client.getAccessToken())
+                .header(HEADER_CONTENT_TYPE, MIME_APPLICATION_JSON)
+                .header(HEADER_PREFER, PREFER_UPDATE)
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(
+                        body.toString(), StandardCharsets.UTF_8))
                 .build();
 
-        HttpResponse<String> res = client.send(req);
-        if (res.statusCode() >= 400) {
+        final HttpResponse<String> res = client.send(req);
+        if (res.statusCode() >= HTTP_ERROR_STATUS_THRESHOLD) {
             throw new RuntimeException("Update user_data failed: " + res.body());
         }
 
-        JSONArray arr = new JSONArray(res.body());
-        if (arr.length() == 0) {
+        final JSONArray arr = new JSONArray(res.body());
+
+        final Profile result;
+        if (arr.isEmpty()) {
             throw new IllegalStateException("No profile row returned after update");
         }
+        else {
+            result = ProfileJsonMapper.fromRow(arr.getJSONObject(0));
+        }
 
-        return ProfileJsonMapper.fromRow(arr.getJSONObject(0));
+        return result;
     }
-
 }

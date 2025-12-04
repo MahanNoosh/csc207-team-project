@@ -1,47 +1,95 @@
-package tutcsc.group1.healthz.use_case.auth.sign_up;
+package tut0301.group1.healthz.usecase.auth.signup;
 
+import org.json.JSONException;
 import org.json.JSONObject;
-import tutcsc.group1.healthz.use_case.auth.AuthGateway;
 
+import tut0301.group1.healthz.usecase.auth.AuthGateway;
+
+/**
+ * Handles the user sign-up use case.
+ */
 public class SignupInteractor implements SignupInputBoundary {
-    private final AuthGateway auth;
+
+    private final AuthGateway authGateway;
     private final SignupOutputBoundary presenter;
 
-    public SignupInteractor(AuthGateway auth, SignupOutputBoundary presenter) {
-        this.auth = auth;
+    /**
+     * Creates a new signup interactor.
+     *
+     * @param authGateway the authentication gateway used to perform signup
+     * @param presenter   the presenter used to prepare the signup views
+     */
+    public SignupInteractor(final AuthGateway authGateway,
+                            final SignupOutputBoundary presenter) {
+        this.authGateway = authGateway;
         this.presenter = presenter;
     }
 
+    /**
+     * Executes the sign-up flow.
+     *
+     * @param input the sign-up data
+     */
+    // -@cs[IllegalCatch] Need to catch generic exceptions from auth gateway to show user-friendly errors.
     @Override
-    public void execute(SignupInputData input) {
-        try {
-            // 1. Validate passwords match
-            if (!input.passwordsMatch()) {
-                presenter.prepareFailView("Passwords do not match.");
-                return;
-            }
-
-            // 2. Perform signup via gateway
-            auth.signUpEmail(input.getEmail(), input.getPassword1(), input.getDisplayName());
-
-            // 3. On success, return minimal output data
-            SignupOutputData output = new SignupOutputData(input.getEmail());
-            presenter.prepareSuccessView(output);
-
-        } catch (Exception e) {
-            // 4. Extract a clean message if the error body is JSON (Supabase-style)
-            String message = e.getMessage();
+    public void execute(final SignupInputData input) {
+        if (input.passwordsMatch()) {
             try {
-                int brace = message.indexOf('{');
-                if (brace >= 0) {
-                    JSONObject err = new JSONObject(message.substring(brace));
-                    message = err.optString("msg", message);
-                }
-            } catch (Exception ignore) {
-                // not JSON, keep the original message
-            }
+                authGateway.signUpEmail(
+                        input.getEmail(),
+                        input.getPassword1(),
+                        input.getDisplayName()
+                );
 
-            presenter.prepareFailView("Sign-up failed: " + message);
+                final SignupOutputData outputData = new SignupOutputData(input.getEmail());
+                presenter.prepareSuccessView(outputData);
+            }
+            catch (Exception ex) {
+                final String raw = ex.getMessage();
+                String message = "Unknown error.";
+
+                if (raw != null && !raw.trim().isEmpty()) {
+                    final String extracted = extractMsg(raw);
+                    if (extracted != null) {
+                        message = extracted;
+                    }
+                    else {
+                        message = raw;
+                    }
+                }
+
+                presenter.prepareFailView("Sign-up failed: " + message);
+            }
         }
+        else {
+            presenter.prepareFailView("Passwords do not match.");
+        }
+    }
+
+    /**
+     * Attempts to extract a {@code msg} field from a JSON object embedded in the raw message.
+     *
+     * @param raw the raw exception message
+     * @return the extracted message, or {@code null} if none was found
+     */
+    private String extractMsg(final String raw) {
+        String result = null;
+        final int braceIndex = raw.indexOf('{');
+
+        if (braceIndex >= 0) {
+            final String jsonPart = raw.substring(braceIndex);
+            try {
+                final JSONObject jsonObject = new JSONObject(jsonPart);
+                final String msg = jsonObject.optString("msg", "");
+                if (!msg.isEmpty()) {
+                    result = msg;
+                }
+            }
+            catch (JSONException ex) {
+                // Ignore and fall back to null.
+            }
+        }
+
+        return result;
     }
 }
