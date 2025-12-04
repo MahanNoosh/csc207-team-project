@@ -1,25 +1,25 @@
 package tutcsc.group1.healthz.use_case.dashboard;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import tutcsc.group1.healthz.entities.dashboard.ActivityEntry;
 import tutcsc.group1.healthz.entities.dashboard.Profile;
 import tutcsc.group1.healthz.entities.nutrition.FoodLog;
 import tutcsc.group1.healthz.use_case.activity.activity_log.ActivityLogDataAccessInterface;
-import tutcsc.group1.healthz.use_case.food.logging.FoodLogGateway;
-
-import java.time.LocalDate;
-import java.util.List;
+import tutcsc.group1.healthz.use_case.food.logging.FoodLogDataAccessInterface;
 
 /**
  * Interactor for Dashboard Use Case
  */
 public class DashboardInteractor implements DashboardInputBoundary {
     private final UserDataDataAccessInterface userDataAccess;
-    private final FoodLogGateway foodLogGateway;
+    private final FoodLogDataAccessInterface foodLogGateway;
     private final ActivityLogDataAccessInterface activityLogDataAccess;
     private final DashboardOutputBoundary presenter;
 
     public DashboardInteractor(UserDataDataAccessInterface userDataAccess,
-                               FoodLogGateway foodLogGateway,
+                               FoodLogDataAccessInterface foodLogGateway,
                                ActivityLogDataAccessInterface activityLogDataAccess,
                                DashboardOutputBoundary presenter) {
         this.userDataAccess = userDataAccess;

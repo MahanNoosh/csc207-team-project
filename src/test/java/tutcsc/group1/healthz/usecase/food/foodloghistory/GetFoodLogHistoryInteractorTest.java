@@ -1,9 +1,13 @@
-package tut0301.group1.healthz.usecase.food.foodloghistory;
+package tutcsc.group1.healthz.usecase.food.foodloghistory;
 
-import tut0301.group1.healthz.entities.nutrition.FoodDetails;
-import tut0301.group1.healthz.entities.nutrition.FoodLog;
-import tut0301.group1.healthz.entities.nutrition.ServingInfo;
-import tut0301.group1.healthz.usecase.food.logging.FoodLogDataAccessInterface;
+import tutcsc.group1.healthz.entities.nutrition.FoodDetails;
+import tutcsc.group1.healthz.entities.nutrition.FoodLog;
+import tutcsc.group1.healthz.entities.nutrition.ServingInfo;
+import tutcsc.group1.healthz.use_case.food.food_log_history.GetFoodLogHistoryInputData;
+import tutcsc.group1.healthz.use_case.food.food_log_history.GetFoodLogHistoryInteractor;
+import tutcsc.group1.healthz.use_case.food.food_log_history.GetFoodLogHistoryOutputBoundary;
+import tutcsc.group1.healthz.use_case.food.food_log_history.GetFoodLogHistoryOutputData;
+import tutcsc.group1.healthz.use_case.food.logging.FoodLogDataAccessInterface;
 
 import java.io.IOException;
 import java.time.LocalDate;

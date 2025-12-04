@@ -1,4 +1,4 @@
-package tutcsc.group1.healthz.use_case.food.foodloghistory;
+package tutcsc.group1.healthz.use_case.food.food_log_history;
 
 /**
  * Input Boundary for Get Food Log History use case.
