@@ -1,9 +1,9 @@
-package tut0301.group1.healthz.interfaceadapter.setting;
+package tutcsc.group1.healthz.interface_adapter.setting;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import tut0301.group1.healthz.entities.Dashboard.Profile;
+import tutcsc.group1.healthz.entities.dashboard.Profile;
 
 /**
  * View model for the Update User feature.

@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.dataaccess.supabase;
+package tutcsc.group1.healthz.data_access.supabase;
 
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -8,9 +8,9 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import tut0301.group1.healthz.entities.Dashboard.Profile;
-import tut0301.group1.healthz.interfaceadapter.auth.mapping.ProfileJsonMapper;
-import tut0301.group1.healthz.usecase.dashboard.UserDataDataAccessInterface;
+import tutcsc.group1.healthz.entities.dashboard.Profile;
+import tutcsc.group1.healthz.interface_adapter.auth.mapping.ProfileJsonMapper;
+import tutcsc.group1.healthz.use_case.dashboard.UserDataDataAccessInterface;
 
 /**
  * Data access object that implements {@link UserDataDataAccessInterface} using Supabase's REST API.
@@ -133,7 +133,7 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
                 profile.getAgeYears(),
                 profile.getSex(),
                 profile.getGoal(),
-                profile.getActivityLevelMET(),
+                profile.getActivityLevelmet(),
                 profile.getTargetWeightKg(),
                 profile.getDailyCalorieTarget(),
                 profile.getHealthCondition()
@@ -177,7 +177,7 @@ public class SupabaseUserDataDataAccessObject implements UserDataDataAccessInter
                 profile.getAgeYears(),
                 profile.getSex(),
                 profile.getGoal(),
-                profile.getActivityLevelMET(),
+                profile.getActivityLevelmet(),
                 profile.getTargetWeightKg(),
                 profile.getDailyCalorieTarget(),
                 profile.getHealthCondition()

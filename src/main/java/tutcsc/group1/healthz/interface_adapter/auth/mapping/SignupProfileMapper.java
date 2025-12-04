@@ -1,14 +1,14 @@
-package tut0301.group1.healthz.interfaceadapter.auth.mapping;
+package tutcsc.group1.healthz.interface_adapter.auth.mapping;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
-import tut0301.group1.healthz.entities.Dashboard.Goal;
-import tut0301.group1.healthz.entities.Dashboard.Profile;
-import tut0301.group1.healthz.entities.Dashboard.Sex;
-import tut0301.group1.healthz.view.auth.SignupView;
+import tutcsc.group1.healthz.entities.dashboard.Goal;
+import tutcsc.group1.healthz.entities.dashboard.Profile;
+import tutcsc.group1.healthz.entities.dashboard.Sex;
+import tutcsc.group1.healthz.view.auth.SignupView;
 
 /**
  * Mapper for converting signup form data into a {@link Profile} entity.

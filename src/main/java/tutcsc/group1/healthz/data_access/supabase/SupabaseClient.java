@@ -1,4 +1,4 @@
-package tut0301.group1.healthz.dataaccess.supabase;
+package tutcsc.group1.healthz.data_access.supabase;
 
 import java.io.IOException;
 import java.net.URI;

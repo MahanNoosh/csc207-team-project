@@ -2,6 +2,7 @@ package tutcsc.group1.healthz.entities.dashboard;
 
 import java.util.Optional;
 
+@SuppressWarnings("checkstyle:WriteTag")
 public class Profile {
     /**
      * Unique identifier of the user.
@@ -193,7 +194,7 @@ public class Profile {
      *
      * @return activity level in MET units
      */
-    public Double getActivitylevelmet() {
+    public Double getActivityLevelmet() {
         return activitylevelmet;
     }
 

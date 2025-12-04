@@ -1,14 +1,14 @@
-package tut0301.group1.healthz.interfaceadapter.auth.mapping;
+package tutcsc.group1.healthz.interface_adapter.auth.mapping;
 
 import java.util.Optional;
 
 import org.json.JSONObject;
 
-import tut0301.group1.healthz.dataaccess.supabase.UserDataFields;
-import tut0301.group1.healthz.entities.Dashboard.Goal;
-import tut0301.group1.healthz.entities.Dashboard.HealthCondition;
-import tut0301.group1.healthz.entities.Dashboard.Profile;
-import tut0301.group1.healthz.entities.Dashboard.Sex;
+import tutcsc.group1.healthz.data_access.supabase.UserDataFields;
+import tutcsc.group1.healthz.entities.dashboard.Goal;
+import tutcsc.group1.healthz.entities.dashboard.HealthCondition;
+import tutcsc.group1.healthz.entities.dashboard.Profile;
+import tutcsc.group1.healthz.entities.dashboard.Sex;
 
 /**
  * Utility class for mapping between Supabase JSON rows and {@link Profile} entities.
@@ -90,7 +90,7 @@ public final class ProfileJsonMapper {
         putIfNotNull(obj, UserDataFields.WEIGHT_KG, profile.getWeightKg());
         putIfNotNull(obj, UserDataFields.HEIGHT_CM, profile.getHeightCm());
         putIfNotNull(obj, UserDataFields.AGE_YEARS, profile.getAgeYears());
-        putIfNotNull(obj, UserDataFields.ACTIVITY_MET, profile.getActivityLevelMET());
+        putIfNotNull(obj, UserDataFields.ACTIVITY_MET, profile.getActivityLevelmet());
         putIfNotNull(obj, UserDataFields.TARGET_WEIGHT_KG, profile.getTargetWeightKg());
 
         putEnumIfNotNull(obj, UserDataFields.SEX, profile.getSex());

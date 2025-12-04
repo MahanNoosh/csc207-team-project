@@ -4,7 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="300296b0-764f-4a52-acca-94e65cad2952" name="Changes" comment="" />
+    <list default="true" id="300296b0-764f-4a52-acca-94e65cad2952" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tut0301/group1/healthz/navigation/Navigator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/app/MainUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/app/MainUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/SupabaseClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/SupabaseClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/SupabaseUserDataDataAccessObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/data_access/supabase/SupabaseUserDataDataAccessObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/dashboard/Profile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/entities/dashboard/Profile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/mapping/ProfileJsonMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/mapping/ProfileJsonMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/mapping/SignupProfileMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/auth/mapping/SignupProfileMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/setting/UpdateUserViewModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/interface_adapter/setting/UpdateUserViewModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/navigation/Navigator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/navigation/Navigator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/sign_up/SignupInteractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/auth/sign_up/SignupInteractor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/nutrition_advice/HealthMetricsCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/use_case/nutrition_advice/HealthMetricsCalculator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/dashboard/ProfileCliRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/dashboard/ProfileCliRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/settings/SettingsView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tutcsc/group1/healthz/view/settings/SettingsView.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -45,31 +61,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.MainUI.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ActivityLogInteractorTest.successTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ActivityLogLoadTest and 1 more.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ActivityLogLoadTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ActivityLogSaveInteractorTest.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;pelin-branch&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.tabs&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.MainUI.executor": "Run",
+    "JUnit.ActivityLogInteractorTest.successTest.executor": "Run",
+    "JUnit.ActivityLogLoadTest and 1 more.executor": "Run",
+    "JUnit.ActivityLogLoadTest.executor": "Run",
+    "JUnit.ActivityLogSaveInteractorTest.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "dev",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "editor.preferences.tabs",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Application.MainUI">
     <configuration name="MainUI" type="Application" factoryName="Application">
       <envs>
@@ -81,6 +97,16 @@
       <option name="MAIN_CLASS_NAME" value="tutcsc.group1.healthz.app.MainUI" />
       <module name="health-app-ca-lab" />
       <option name="VM_PARAMETERS" value="--module-path &quot;C:\Users\Asus\javafx-sdk-21.0.9\lib&quot; --add-modules javafx.controls,javafx.fxml " />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>

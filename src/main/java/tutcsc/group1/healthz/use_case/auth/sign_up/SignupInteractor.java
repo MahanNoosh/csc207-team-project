@@ -1,9 +1,9 @@
-package tut0301.group1.healthz.usecase.auth.signup;
+package tutcsc.group1.healthz.use_case.auth.sign_up;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import tut0301.group1.healthz.usecase.auth.AuthGateway;
+import tutcsc.group1.healthz.use_case.auth.AuthGateway;
 
 /**
  * Handles the user sign-up use case.

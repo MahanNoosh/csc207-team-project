@@ -694,14 +694,20 @@ public final class Navigator {
      *
      * @param signupData the signup data for verification
      */
+
+    /**
+     * Navigate to Email Verification
+     */
     public void showEmailVerification(SignupView.SignupData signupData) {
+        // Remember signup data so retry helper can use it
         this.pendingSignupData = signupData;
 
-        final EmailVerificationView view = new EmailVerificationView(signupData);
-        view.setStatusText("Waiting for verification… We'll detect it automatically.");
+        EmailVerificationView view = new EmailVerificationView(signupData);
+        view.setStatusText("Waiting for verification… We’ll detect it automatically.");
 
-        view.getBackToLoginButton().setOnAction(event -> {
-            System.out.println("Back to login from email verification");
+        // Back to login -> stop retry and go back
+        view.getBackToLoginButton().setOnAction(e -> {
+            System.out.println("↩ Back to login from email verification");
             if (emailCheckTimeline != null) {
                 emailCheckTimeline.stop();
                 emailCheckTimeline = null;
@@ -709,21 +715,32 @@ public final class Navigator {
             showLogin();
         });
 
-        view.getResendButton().setOnAction(event -> {
+        // Resend button:
+        //  - sends a new email
+        //  - restarts the 3-minute login retry window
+        //  - applies a ~2min cooldown
+        view.getResendButton().setOnAction(e -> {
             System.out.println("User clicked: Resend verification email");
             resendVerificationEmail(signupData, view);
+
+            // restart 3-minute auto-login window (your existing helper)
             startEmailCheckTimeline();
-            view.startResendCooldown(RESEND_COOLDOWN_SECONDS);
+
+            // start the visible resend cooldown for ~2 minutes
+            view.startResendCooldown(120);
         });
 
+
+        // Start the initial 3-minute auto-login window
         startEmailCheckTimeline();
 
         primaryStage.setScene(view.getScene());
         primaryStage.setTitle("HealthZ - Verify your email");
     }
 
+    // helper:
     private void showError(String msg) {
-        final Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(null);
         alert.setContentText(msg);
@@ -731,22 +748,60 @@ public final class Navigator {
     }
 
     /**
-     * Navigate to Log In Page.
+     * Navigate to Log In Page
      */
-    // -@cs[IllegalCatch] Need to catch generic exceptions from authentication
     public void showLogin() {
         final LoginView loginView = new LoginView();
 
-        loginView.getSignUpButton().setOnAction(event -> {
+        // Sign up link -> go to signup
+        loginView.getSignUpButton().setOnAction(e -> {
             System.out.println("Navigating to Sign Up...");
             showSignup();
         });
 
-        loginView.getLoginButton().setOnAction(event -> {
+        // Continue button -> perform login, then go to main app
+        loginView.getLoginButton().setOnAction(e -> {
+            System.out.println("Logging in with " + loginView.getEmail());
+
+            final String url = System.getenv("SUPABASE_URL");
+            final String anon = System.getenv("SUPABASE_ANON_KEY");
+            if (url == null || anon == null) {
+                System.err.println("Set SUPABASE_URL and SUPABASE_ANON_KEY");
+                showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
+                return;
+            }
+
             try {
-                this.performLogin(loginView);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                final tutcsc.group1.healthz.data_access.supabase.SupabaseClient client = new tutcsc.group1.healthz.data_access.supabase.SupabaseClient(url, anon);
+                final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
+                final LoginViewModel loginViewModel = new LoginViewModel();
+                final LoginPresenter loginPresenter = new LoginPresenter(loginViewModel);
+                final LoginInputBoundary loginUseCase = new LoginInteractor(authGateway, loginPresenter);
+                final LoginController loginController = new LoginController(loginUseCase, loginPresenter);
+
+                // 1) Try login (can throw Exception)
+                loginController.login(loginView.getEmail(), loginView.getPassword());
+
+                if (loginViewModel.isLoggedIn()) {
+                    System.out.println("Login successful, ensuring profile row exists...");
+
+                    authenticatedClient = client;
+
+                    // 2) Make sure user_data row exists (can throw Exception)
+                    final tutcsc.group1.healthz.data_access.supabase.SupabaseUserDataDataAccessObject userDataGateway =
+                            new tutcsc.group1.healthz.data_access.supabase.SupabaseUserDataDataAccessObject(client);
+                    userDataGateway.createBlankForCurrentUserIfMissing();
+                    System.out.println("user_data row present/created.");
+
+                    // 3) Continue to main app
+                    showMainApp();
+                } else {
+                    System.out.println("Login failed.");
+                    showError("Login failed. Please check your email and password, or verify your email.");
+                }
+            } catch (Exception ex) {
+                System.err.println("Login error: " + ex.getMessage());
+                showError("Login error: " + ex.getMessage());
             }
         });
 
@@ -754,56 +809,11 @@ public final class Navigator {
         primaryStage.setTitle("HealthZ - Log In");
     }
 
-    // -@cs[IllegalCatch] Need to catch generic exceptions from authentication
-    @SuppressWarnings({"checkstyle:AbbreviationAsWordInName", "checkstyle:LambdaBodyLength", "checkstyle:IllegalCatch"})
-    private void performLogin(LoginView loginView) throws Exception {
-        System.out.println("Logging in with " + loginView.getEmail());
-
-        final String url = System.getenv(SUPABASE_URL_ENV);
-        final String anon = System.getenv(SUPABASE_ANON_KEY_ENV);
-        if (url == null || anon == null) {
-            System.err.println("Set SUPABASE_URL and SUPABASE_ANON_KEY");
-            showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
-        }
-        else {
-            final SupabaseClient client = new SupabaseClient(url, anon);
-            final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
-            final LoginViewModel loginVm = new LoginViewModel();
-            final LoginPresenter loginPresenter = new LoginPresenter(loginVm);
-            final LoginInputBoundary loginUc = new LoginInteractor(authGateway, loginPresenter);
-            final LoginController loginController = new LoginController(loginUc, loginPresenter);
-
-            loginController.login(loginView.getEmail(), loginView.getPassword());
-
-            if (loginVm.isLoggedIn()) {
-                System.out.println("Login successful, ensuring profile row exists...");
-
-                this.authenticatedClient = client;
-
-                try {
-                    final SupabaseUserDataDataAccessObject userDataGateway =
-                            new SupabaseUserDataDataAccessObject(client);
-                    userDataGateway.createBlankForCurrentUserIfMissing();
-                    System.out.println("user_data row present/created.");
-                }
-                catch (Exception ex) {
-                    System.err.println("Failed to init user_data row: " + ex.getMessage());
-                }
-
-                showMainApp();
-            }
-            else {
-                System.out.println("Login failed.");
-                showError("Login failed. Please check your email and password, or verify your email.");
-            }
-        }
-    }
-
     /**
-     * Navigate to Log Out Page.
+     * Navigate to Log Out Page
      */
     public void showLogout() {
-        final LogoutView logoutView = new LogoutView();
+        LogoutView logoutView = new LogoutView();
 
         setupLogoutNavigation(logoutView);
 
@@ -812,56 +822,50 @@ public final class Navigator {
     }
 
     /**
-     * Navigate to Food Log Page.
+     * Navigate to Food Log Page
      */
-    @SuppressWarnings("checkstyle:ExecutableStatementCount")
     public void showFoodLog() {
-        final String userId = getCurrentUserId();
+        String userId = getCurrentUserId();
 
-        final MacroSearchViewModel macroSearchViewModel = new MacroSearchViewModel();
-        final SearchFoodOutputBoundary searchPresenter = new FoodSearchPresenter(macroSearchViewModel);
-        final FoodSearchDataAccessInterface searchGateway = new FatSecretFoodSearchDataAccessObject();
-        final SearchFoodInputBoundary searchInteractor = new SearchFoodInteractor(searchGateway, searchPresenter);
-        final MacroSearchController macroSearchController = new MacroSearchController(searchInteractor);
+        // MacroSearch setup
+        MacroSearchViewModel macroSearchViewModel = new MacroSearchViewModel();
+        SearchFoodOutputBoundary searchPresenter = new FoodSearchPresenter(macroSearchViewModel);
+        FoodSearchDataAccessInterface searchGateway = new FatSecretFoodSearchDataAccessObject();
+        SearchFoodInputBoundary searchInteractor = new SearchFoodInteractor(searchGateway, searchPresenter);
+        MacroSearchController macroSearchController = new MacroSearchController(searchInteractor);
 
         macroSearchViewModel.setLoading(false);
         macroSearchViewModel.setMessage(null);
         macroSearchViewModel.setResults(java.util.List.of());
 
-        final LogFoodIntakeViewModel logFoodIntakeViewModel = new LogFoodIntakeViewModel();
-        final LogFoodIntakePresenter logFoodIntakePresenter = new LogFoodIntakePresenter(logFoodIntakeViewModel);
-        final FoodLogGateway foodLogGateway = new SupabaseFoodLogGateway(authenticatedClient);
-        final LogFoodIntakeInputBoundary logFoodIntakeInteractor = new LogFoodIntakeInteractor(
+        // LogFoodIntake setup
+        LogFoodIntakeViewModel logFoodIntakeViewModel = new LogFoodIntakeViewModel();
+        LogFoodIntakePresenter logFoodIntakePresenter = new LogFoodIntakePresenter(logFoodIntakeViewModel);
+        FoodLogGateway foodLogGateway = new SupabaseFoodLogGateway(authenticatedClient);
+        LogFoodIntakeInputBoundary logFoodIntakeInteractor = new LogFoodIntakeInteractor(foodLogGateway, logFoodIntakePresenter);
+        LogFoodIntakeController logFoodIntakeController = new LogFoodIntakeController(logFoodIntakeInteractor);
+
+        // MacroDetail setup
+        MacroDetailViewModel macroDetailViewModel = new MacroDetailViewModel();
+        FoodDetailPresenter detailPresenter = new FoodDetailPresenter(macroDetailViewModel);
+        FoodDetailGateway detailGateway = new FatSecretFoodDetailDataAccessObject();
+        GetFoodDetailInputBoundary detailInteractor = new GetFoodDetailInteractor(detailGateway, detailPresenter);
+        MacroDetailController macroDetailController = new MacroDetailController(detailInteractor);
+
+        // GetFoodLogHistory setup
+        GetFoodLogHistoryViewModel foodLogHistoryViewModel = new GetFoodLogHistoryViewModel();
+        GetFoodLogHistoryPresenter foodLogHistoryPresenter = new GetFoodLogHistoryPresenter(foodLogHistoryViewModel);
+        // Reuse the same foodLogGateway instance from above
+        GetFoodLogHistoryInputBoundary foodLogHistoryInteractor = new GetFoodLogHistoryInteractor(
                 foodLogGateway,
-                logFoodIntakePresenter
-        );
-        final LogFoodIntakeController logFoodIntakeController = new LogFoodIntakeController(logFoodIntakeInteractor);
+                foodLogHistoryPresenter);
+        GetFoodLogHistoryController foodLogHistoryController = new GetFoodLogHistoryController(foodLogHistoryInteractor);
 
-        final MacroDetailViewModel macroDetailViewModel = new MacroDetailViewModel();
-        final FoodDetailPresenter detailPresenter = new FoodDetailPresenter(macroDetailViewModel);
-        final FoodDetailGateway detailGateway = new FatSecretFoodDetailDataAccessObject();
-        final GetFoodDetailInputBoundary detailInteractor = new GetFoodDetailInteractor(
-                detailGateway,
-                detailPresenter
-        );
-        final MacroDetailController macroDetailController = new MacroDetailController(detailInteractor);
+        // user info needed for sidebar
+        String displayName = getUserDisplayName();
+        String email = getCurrentUserEmail();
 
-        final GetFoodLogHistoryViewModel foodLogHistoryViewModel = new GetFoodLogHistoryViewModel();
-        final GetFoodLogHistoryPresenter foodLogHistoryPresenter = new GetFoodLogHistoryPresenter(
-                foodLogHistoryViewModel
-        );
-        final GetFoodLogHistoryInputBoundary foodLogHistoryInteractor = new GetFoodLogHistoryInteractor(
-                foodLogGateway,
-                foodLogHistoryPresenter
-        );
-        final GetFoodLogHistoryController foodLogHistoryController = new GetFoodLogHistoryController(
-                foodLogHistoryInteractor
-        );
-
-        final String displayName = getUserDisplayName();
-        final String email = getCurrentUserEmail();
-
-        final FoodLogView foodLogView = new FoodLogView(
+        FoodLogView foodLogView = new FoodLogView(
                 this,
                 macroSearchController,
                 macroSearchViewModel,
@@ -880,135 +884,143 @@ public final class Navigator {
         primaryStage.setTitle("HealthZ - Food Log");
     }
 
+    // ========== PRIVATE HELPER METHODS ==========
+
     /**
-     * Setup navigation for Login page.
-     * Connects Sign Up and Log In buttons to navigation.
-     *
-     * @param landingView the landing view to setup
+     * Setup navigation for Login page
+     * Connects Sign Up and Log In buttons to navigation
      */
     private void setupLoginNavigation(LandingView landingView) {
-        landingView.getSignUpButton().setOnAction(event -> {
+        // Connect Sign Up button
+        landingView.getSignUpButton().setOnAction(e -> {
             System.out.println("Navigating to Sign Up...");
             showSignup();
         });
 
-        landingView.getLogInButton().setOnAction(event -> {
+        // Connect Log In button
+        landingView.getLogInButton().setOnAction(e -> {
             System.out.println("Logging in...");
             showLogin();
         });
     }
 
-    // -@cs[IllegalCatch] Need to catch generic exceptions from authentication
-    @SuppressWarnings({"checkstyle:AbbreviationAsWordInName", "checkstyle:CyclomaticComplexity",
-            "checkstyle:NPathComplexity", "checkstyle:ExecutableStatementCount"})
-    private void tryLoginAndSaveProfileOnce(boolean silent) {
+    private void tryLoginAndSaveProfileOnce(final boolean silent) {
         if (pendingSignupData == null) {
             if (!silent) {
                 showError("No signup in progress. Please sign up again.");
             }
+            return;
         }
-        else {
-            final SignupView.SignupData signupData = pendingSignupData;
 
-            final String url = System.getenv(SUPABASE_URL_ENV);
-            final String anon = System.getenv(SUPABASE_ANON_KEY_ENV);
-            if (url == null || anon == null) {
-                if (!silent) {
-                    showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
-                }
+        final SignupView.SignupData signupData = pendingSignupData;
+
+        final String url = System.getenv("SUPABASE_URL");
+        final String anon = System.getenv("SUPABASE_ANON_KEY");
+        if (url == null || anon == null) {
+            if (!silent) {
+                showError("Supabase not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
             }
-            else {
-                final SupabaseClient client = new SupabaseClient(url, anon);
+            return;
+        }
 
-                final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
-                final LoginViewModel loginVm = new LoginViewModel();
-                final LoginPresenter loginPresenter = new LoginPresenter(loginVm);
-                final LoginInputBoundary loginUc = new LoginInteractor(authGateway, loginPresenter);
-                final LoginController loginController = new LoginController(loginUc, loginPresenter);
+        try {
+            final tutcsc.group1.healthz.data_access.supabase.SupabaseClient client = new tutcsc.group1.healthz.data_access.supabase.SupabaseClient(url, anon);
+            final AuthGateway authGateway = new SupabaseAuthDataAccessObject(client);
+            final LoginViewModel loginViewModel = new LoginViewModel();
+            final LoginPresenter loginPresenter = new LoginPresenter(loginViewModel);
+            final LoginInputBoundary loginUseCase = new LoginInteractor(authGateway, loginPresenter);
+            final LoginController loginController = new LoginController(loginUseCase, loginPresenter);
 
-                System.out.println("Attempting login for " + signupData.getEmail());
-                loginController.login(signupData.getEmail(), signupData.getPassword());
+            System.out.println("Attempting login for " + signupData.getEmail());
+            // <-- this can throw Exception, we now catch it
+            loginController.login(signupData.getEmail(), signupData.getPassword());
 
-                if (!loginVm.isLoggedIn()) {
-                    System.out.println("Still not logged in (email probably not verified yet).");
-                    if (!silent) {
-                        showError(
-                                "We couldn't log you in yet.\n"
-                                        + "Please make sure you clicked the verification link in your email,\n"
-                                        + "then try again."
-                        );
-                    }
+            if (!loginViewModel.isLoggedIn()) {
+                System.out.println("Still not logged in (email probably not verified yet).");
+                if (!silent) {
+                    showError(
+                            "We couldn't log you in yet.\n"
+                                    + "Please make sure you clicked the verification link in your email,\n"
+                                    + "then try again."
+                    );
                 }
-                else {
-                    try {
-                        final String userId = loginVm.getUserId();
-                        System.out.println("Login succeeded. userId = " + userId);
+                return;
+            }
 
-                        this.authenticatedClient = client;
+            final String userId = loginViewModel.getUserId();
+            System.out.println("Login succeeded. userId = " + userId);
 
-                        final Profile profile = SignupProfileMapper.toProfile(userId, signupData);
+            authenticatedClient = client;
 
-                        final SupabaseUserDataDataAccessObject userDataGateway =
-                                new SupabaseUserDataDataAccessObject(client);
-                        userDataGateway.upsertProfile(profile);
+            // Map signup data -> Profile
+            final Profile profile = tutcsc.group1.healthz.interface_adapter.auth.mapping.SignupProfileMapper.toProfile(userId, signupData);
 
-                        System.out.println("Profile saved successfully. Navigating to main app...");
+            // Save profile (also can throw Exception)
+            final tutcsc.group1.healthz.data_access.supabase.SupabaseUserDataDataAccessObject userDataGateway =
+                    new tutcsc.group1.healthz.data_access.supabase.SupabaseUserDataDataAccessObject(client);
+            userDataGateway.upsertProfile(profile);
 
-                        if (emailCheckTimeline != null) {
-                            emailCheckTimeline.stop();
-                            emailCheckTimeline = null;
-                        }
+            System.out.println("Profile saved successfully. Navigating to main app...");
 
-                        showMainApp();
-                    }
-                    catch (Exception ex) {
-                        System.err.println("Login / profile save failed: " + ex.getMessage());
-                        if (!silent) {
-                            showError("Failed to save your profile: " + ex.getMessage());
-                        }
-                    }
-                }
+            if (emailCheckTimeline != null) {
+                emailCheckTimeline.stop();
+                emailCheckTimeline = null;
+            }
+
+            showMainApp();
+        } catch (Exception ex) {
+            System.err.println("Login / profile save failed: " + ex.getMessage());
+            if (!silent) {
+                showError("Failed to save your profile: " + ex.getMessage());
             }
         }
     }
 
+    /**
+     * Resend verification email to the user.
+     *
+     * @param signupData the signup data containing the user's email
+     * @param view the email verification view to update with status messages
+     */
     // -@cs[IllegalCatch] Need to catch generic exceptions from client
     private void resendVerificationEmail(SignupView.SignupData signupData, EmailVerificationView view) {
-        final String url = System.getenv(SUPABASE_URL_ENV);
-        final String anon = System.getenv(SUPABASE_ANON_KEY_ENV);
+        String url  = System.getenv("SUPABASE_URL");
+        String anon = System.getenv("SUPABASE_ANON_KEY");
         if (url == null || anon == null) {
             System.err.println("Supabase not configured; cannot resend verification email.");
             view.setStatusText("Could not resend email (server not configured).");
+            return;
         }
-        else {
-            try {
-                final SupabaseClient client = new SupabaseClient(url, anon);
-                client.resendSignupVerification(signupData.getEmail());
 
-                System.out.println("Resent verification email to " + signupData.getEmail());
-                view.setStatusText("Verification email resent to "
-                        + signupData.getEmail()
-                        + ". Waiting for verification…");
-            }
-            catch (Exception ex) {
-                System.err.println("Failed to resend verification email: " + ex.getMessage());
-                view.setStatusText("Failed to resend email. Please check your inbox or try again later.");
-            }
+        try {
+            tutcsc.group1.healthz.data_access.supabase.SupabaseClient client = new tutcsc.group1.healthz.data_access.supabase.SupabaseClient(url, anon);
+            client.resendSignupVerification(signupData.getEmail());
+
+            System.out.println("Resent verification email to " + signupData.getEmail());
+            view.setStatusText("Verification email resent to " + signupData.getEmail() + ". Waiting for verification…");
+        } catch (Exception ex) {
+            System.err.println("Failed to resend verification email: " + ex.getMessage());
+            view.setStatusText("Failed to resend email. Please check your inbox or try again later.");
         }
     }
 
+    /**
+     * Start a timeline that automatically checks for email verification every 10 seconds.
+     */
     private void startEmailCheckTimeline() {
+        // Stop old one if it exists
         if (emailCheckTimeline != null) {
             emailCheckTimeline.stop();
         }
 
+        final int maxAttempts = 18; // 18 * 10s = ~3 minutes
         emailCheckTimeline = new Timeline();
-        emailCheckTimeline.setCycleCount(EMAIL_CHECK_MAX_ATTEMPTS);
+        emailCheckTimeline.setCycleCount(maxAttempts);
 
         emailCheckTimeline.getKeyFrames().add(
-                new KeyFrame(Duration.seconds(EMAIL_CHECK_INTERVAL_SECONDS), event -> {
-                    System.out.println("Auto-checking email verification...");
-                    tryLoginAndSaveProfileOnce(true);
+                new KeyFrame(Duration.seconds(10), ev -> {
+                    System.out.println("⏳ Auto-checking email verification...");
+                    tryLoginAndSaveProfileOnce(true); // silent mode
                 })
         );
 
@@ -1016,37 +1028,41 @@ public final class Navigator {
     }
 
     /**
-     * Setup navigation for Dashboard page.
-     *
-     * @param dashboardView the dashboard view to setup
+     * Setup navigation for Dashboard page
      */
     private void setupDashboardNavigation(DashboardView dashboardView) {
-        dashboardView.getSettingsButton().setOnAction(event -> {
+        // Settings button
+        dashboardView.getSettingsButton().setOnAction(e -> {
             System.out.println("Navigating to Settings...");
             showSettings();
         });
 
-        dashboardView.getRecipesButton().setOnAction(event -> {
+        // Recipes button
+        dashboardView.getRecipesButton().setOnAction(e -> {
             System.out.println("Navigating to Recipes...");
             showRecipeSearch();
         });
 
-        dashboardView.getMacrosButton().setOnAction(event -> {
+        // Macros button
+        dashboardView.getMacrosButton().setOnAction(e -> {
             System.out.println("Navigating to Macro Search...");
             showMacroSearch();
         });
 
-        dashboardView.getFoodLogButton().setOnAction(event -> {
+        // Food Log button
+        dashboardView.getFoodLogButton().setOnAction(e -> {
             System.out.println("Navigating to Food Log...");
             showFoodLog();
         });
 
-        dashboardView.getActivityLogButton().setOnAction(event -> {
+        // Activity Log button
+        dashboardView.getActivityLogButton().setOnAction(e -> {
             System.out.println("Navigating to Activity Log...");
             showActivityTracker();
         });
 
-        dashboardView.getLogOutButton().setOnAction(event -> {
+        // Log out Button
+        dashboardView.getLogOutButton().setOnAction(e -> {
             System.out.println("Navigating to Log out...");
             showLogout();
         });
@@ -1060,14 +1076,17 @@ public final class Navigator {
     private void setupLogoutNavigation(LogoutView logoutView) {
         logoutView.getLogoutButton().setOnAction(event -> {
             System.out.println("Logging Out...");
+            // TODO: implement log out
         });
 
         logoutView.getCancelButton().setOnAction(event -> {
             System.out.println("Returning to Dashboard...");
             try {
                 showDashboard();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            }
+            catch (Exception ex) {
+                System.err.println("Failed to show dashboard: " + ex.getMessage());
+                showError("Could not navigate to dashboard.");
             }
         });
     }
@@ -1077,42 +1096,46 @@ public final class Navigator {
      *
      * @param recipeSearchView the recipe search view to setup
      */
-    @SuppressWarnings({"checkstyle:RightCurly", "checkstyle:CatchParameterName"})
     private void setupRecipeNavigation(RecipeSearchView recipeSearchView) {
         recipeSearchView.getFavoriteRecipesButton().setOnAction(event -> {
             System.out.println("Navigating to favorite recipes page...");
-            showFavoriteRecipes();
+            try {
+                showFavoriteRecipes();
+            }
+            catch (Exception ex) {
+                System.err.println("Failed to show favorite recipes: " + ex.getMessage());
+                showError("Could not navigate to favorite recipes.");
+            }
         });
 
         recipeSearchView.getHealthzButton().setOnAction(event -> {
             System.out.println("Navigating to Dashboard...");
             try {
                 showDashboard();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            }
+            catch (Exception ex) {
+                System.err.println("Failed to show dashboard: " + ex.getMessage());
+                showError("Could not navigate to dashboard.");
             }
         });
     }
 
     /**
-     * Setup navigation for Recipe Details page.
-     *
-     * @param recipeDetailView the recipe detail view to setup
+     * Setup navigation for Recipe Details page
      */
     private void setupRecipeDetailNavigation(RecipeDetailView recipeDetailView) {
-        recipeDetailView.getBackButton().setOnAction(event -> {
+        recipeDetailView.getBackButton().setOnAction(e -> {
             System.out.println("Going back from recipe detail...");
             showRecipeSearch();
         });
     }
 
+
     /**
-     * Setup navigation for Favorite Recipe page.
-     *
-     * @param favoriteRecipeView the favorite recipe view to setup
+     * Setup navigation for Favorite Recipe page
      */
     private void setupFavoriteRecipesNavigation(FavoriteRecipeView favoriteRecipeView) {
-        favoriteRecipeView.getBackButton().setOnAction(event -> {
+        favoriteRecipeView.getBackButton().setOnAction(e -> {
             System.out.println("Navigating to Back button...");
             showRecipeSearch();
         });
