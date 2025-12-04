@@ -2,7 +2,6 @@ package tutcsc.group1.healthz.use_case.food.logging;
 
 /**
  * Input Boundary for logging food intake.
- *
  * The Controller calls this interface.
  * The Interactor implements this interface.
  */

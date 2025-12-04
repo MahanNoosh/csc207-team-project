@@ -5,10 +5,8 @@ import tutcsc.group1.healthz.use_case.food.foodloghistory.GetFoodLogHistoryOutpu
 
 /**
  * Presenter for Get Food Log History functionality.
- *
  * Implements GetFoodLogHistoryOutputBoundary from the Use Case layer.
  * Updates the GetFoodLogHistoryViewModel based on the results.
- *
  * Clean Architecture compliance:
  * - Presenter (Interface Adapter layer) implements OutputBoundary (Use Case layer interface)
  * - Presenter converts OutputData to ViewModel format

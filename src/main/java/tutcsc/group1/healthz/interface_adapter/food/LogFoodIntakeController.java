@@ -6,7 +6,7 @@ import tutcsc.group1.healthz.use_case.food.logging.LogFoodIntakeInputBoundary;
 import tutcsc.group1.healthz.use_case.food.logging.LogFoodIntakeInputData;
 
 /**
- * Controller for LogFoodIntake functionality.*
+ * Controller for LogFoodIntake functionality.
  * Responsibilities:
  * - Receives user input from the View
  * - Creates InputData objects
@@ -37,7 +37,7 @@ public class LogFoodIntakeController {
      */
     public void logFood(String userId, FoodDetails foodDetails, ServingInfo selectedServing,
                        double servingMultiplier, String mealType) {
-        LogFoodIntakeInputData inputData = new LogFoodIntakeInputData(
+        final LogFoodIntakeInputData inputData = new LogFoodIntakeInputData(
             userId,
             foodDetails,
             selectedServing,

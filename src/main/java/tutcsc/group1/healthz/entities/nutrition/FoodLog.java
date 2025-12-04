@@ -3,126 +3,208 @@ package tutcsc.group1.healthz.entities.nutrition;
 import java.time.LocalDateTime;
 
 /**
- * FoodLog: Entity representing a single food intake log entry.
+ * FoodLog represents a log entry of a food consumption event.
  *
- * Uses domain entities FoodDetails and ServingInfo for detailed tracking.
+ * <p>Stores the selected food, serving information, multiplier,
+ * calculated macros and timestamp.</p>
  */
 public class FoodLog {
+
+    /** Food details for the item consumed. */
     private final FoodDetails food;
-    private final ServingInfo servingInfo;  // The specific serving selected
-    private double servingMultiplier;       // How many of the selected serving
-    private Macro actualMacro;              // Calculated from servingInfo nutrition * servingMultiplier
+
+    /** Serving information chosen by the user. */
+    private final ServingInfo servingInfo;
+
+    /** Number of servings consumed. */
+    private double servingMultiplier;
+
+    /** Calculated macro values. */
+    private Macro actualMacro;
+
+    /** Timestamp of the log entry. */
     private final LocalDateTime loggedAt;
-    private final String meal;              // Meal type ("Breakfast", "Lunch", "Dinner", "Snack")
+
+    /** Meal type (Breakfast, Lunch, etc.). */
+    private final String meal;
 
     /**
-     * Constructor with domain FoodDetails and ServingInfo.
+     * Construct a FoodLog instance.
+     *
+     * @param food the food details
+     * @param servingInfo serving data
+     * @param servingMultiplier servings consumed
+     * @param meal meal type
+     * @param loggedAt timestamp of log
      */
-    public FoodLog(FoodDetails food, ServingInfo servingInfo,
-                   double servingMultiplier, String meal, LocalDateTime loggedAt) {
-
+    public FoodLog(
+            final FoodDetails food,
+            final ServingInfo servingInfo,
+            final double servingMultiplier,
+            final String meal,
+            final LocalDateTime loggedAt) {
         this.food = food;
         this.servingInfo = servingInfo;
         this.servingMultiplier = servingMultiplier;
         this.meal = meal;
         this.loggedAt = loggedAt;
 
-        // Create Macro from ServingInfo's nutrition fields and scale by multiplier
         this.actualMacro = createMacroFromServingInfo(servingInfo, servingMultiplier);
     }
 
     /**
-     * Helper method to create Macro from ServingInfo and times multiplier.
+     * Create macro values computed from serving and multiplier.
+     *
+     * @param serving serving information
+     * @param multiplier servings multiplier
+     * @return calculated Macro
      */
-    private Macro createMacroFromServingInfo(ServingInfo serving, double multiplier) {
-        double calories = (serving.calories != null ? serving.calories : 0.0) * multiplier;
-        double protein = (serving.protein != null ? serving.protein : 0.0) * multiplier;
-        double fat = (serving.fat != null ? serving.fat : 0.0) * multiplier;
-        double carbs = (serving.carbs != null ? serving.carbs : 0.0) * multiplier;
+    private Macro createMacroFromServingInfo(final ServingInfo serving, final double multiplier) {
+        final double caloriesValue;
+        if (serving.getCalories() == null) {
+            caloriesValue = 0.0;
+        }
+        else {
+            caloriesValue = serving.getCalories() * multiplier;
+        }
 
-        return new Macro(calories, protein, fat, carbs);
+        final double proteinValue;
+        if (serving.getProtein() == null) {
+            proteinValue = 0.0;
+        }
+        else {
+            proteinValue = serving.getProtein() * multiplier;
+        }
+
+        final double fatValue;
+        if (serving.getFat() == null) {
+            fatValue = 0.0;
+        }
+        else {
+            fatValue = serving.getFat() * multiplier;
+        }
+
+        final double carbsValue;
+        if (serving.getCarbs() == null) {
+            carbsValue = 0.0;
+        }
+        else {
+            carbsValue = serving.getCarbs() * multiplier;
+        }
+
+        return new Macro(caloriesValue, proteinValue, fatValue, carbsValue);
     }
 
-
-
+    /**
+     * Get calculated macro values.
+     *
+     * @return macro values
+     */
     public Macro getActualMacro() {
         return actualMacro;
     }
 
     /**
-     * Get the actual serving size consumed.
-     * This is servingInfo.servingAmount * servingMultiplier.
+     * Get actual serving size.
+     *
+     * @return consumed size
      */
     public double getActualServingSize() {
-        return servingInfo.servingAmount * servingMultiplier;
+        return servingInfo.getServingAmount() * servingMultiplier;
     }
 
     /**
-     * Get the serving unit (from ServingInfo).
+     * Get serving unit.
+     *
+     * @return serving unit
      */
-    public String getServingUnit() {return servingInfo.servingUnit;
+    public String getServingUnit() {
+        return servingInfo.getServingUnit();
     }
 
     /**
-     * Get the serving description (e.g., "100 g", "1/2 large").
+     * Get serving description.
+     *
+     * @return description text
      */
     public String getServingDescription() {
-        return servingInfo.servingDescription;
+        return servingInfo.getServingDescription();
     }
 
-    // Getters
-
+    /**
+     * Get food details.
+     *
+     * @return food details
+     */
     public FoodDetails getFood() {
         return food;
     }
 
+    /**
+     * Get serving info.
+     *
+     * @return serving info
+     */
     public ServingInfo getServingInfo() {
         return servingInfo;
     }
 
+    /**
+     * Get serving multiplier.
+     *
+     * @return multiplier
+     */
     public double getServingMultiplier() {
         return servingMultiplier;
     }
 
+    /**
+     * Get timestamp.
+     *
+     * @return timestamp
+     */
     public LocalDateTime getLoggedAt() {
         return loggedAt;
     }
 
+    /**
+     * Get meal type.
+     *
+     * @return meal type
+     */
     public String getMeal() {
         return meal;
     }
 
     /**
-     * Update the serving multiplier (how many servings).
+     * Update serving multiplier.
      *
-     * @param newMultiplier New multiplier (e.g., 1.5 for 1.5 servings)
+     * @param newMultiplier new multiplier value
+     * @throws IllegalArgumentException if multiplier < 0
      */
-    public void updateServingMultiplier(double newMultiplier) {
+    public void updateServingMultiplier(final double newMultiplier) {
         if (newMultiplier <= 0) {
-            throw new IllegalArgumentException("New multiplier must be positive: " + newMultiplier);
+            throw new IllegalArgumentException(
+                    "New multiplier must be positive: " + newMultiplier
+            );
         }
-
         this.servingMultiplier = newMultiplier;
-        // Recalculate actual macro based on ServingInfo
         this.actualMacro = createMacroFromServingInfo(servingInfo, newMultiplier);
     }
 
     /**
-     * Update based on actual amount consumed.
-     * Calculates new multiplier based on the amount relative to serving size.
+     * Update based on new amount consumed.
      *
-     * @param newAmount New amount (e.g., 150.0 for 150g if serving is "100 g")
+     * @param newAmount actual amount consumed
+     * @throws IllegalArgumentException if newAmount <= 0
      */
-    public void updateServingAmount(double newAmount) {
+    public void updateServingAmount(final double newAmount) {
         if (newAmount <= 0) {
-            throw new IllegalArgumentException("New amount must be positive: " + newAmount);
+            throw new IllegalArgumentException(
+                    "New amount must be positive: " + newAmount
+            );
         }
-
-        // Calculate new multiplier based on the new amount
-        this.servingMultiplier = newAmount / servingInfo.servingAmount;
-
-        // Recalculate and update actual macro
+        this.servingMultiplier = newAmount / servingInfo.getServingAmount();
         this.actualMacro = createMacroFromServingInfo(servingInfo, servingMultiplier);
     }
 }
-

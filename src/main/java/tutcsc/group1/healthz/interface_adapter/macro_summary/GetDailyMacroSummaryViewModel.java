@@ -1,98 +1,153 @@
 package tutcsc.group1.healthz.interface_adapter.macro_summary;
 
+import java.time.LocalDate;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import tutcsc.group1.healthz.entities.nutrition.Macro;
 
-import java.time.LocalDate;
-
 /**
- * ViewModel for Get Daily Calorie Summary functionality.
+ * ViewModel for Get Daily Macro Summary functionality.
  *
- * Holds the presentation state for displaying calorie summary statistics.
- * This includes macronutrients, activity calories, and daily target.
+ * <p>
+ * Holds the presentation state for displaying macronutrient summary statistics.
  */
 public class GetDailyMacroSummaryViewModel {
+
     private LocalDate date;
 
-    private final ObjectProperty<Macro> totalMacro = new SimpleObjectProperty<>(Macro.ZERO);
-    private double totalActivityCalories;
-    private double dailyCalorieTarget;
+    private final ObjectProperty<Macro> totalMacro =
+            new SimpleObjectProperty<>(Macro.ZERO);
 
     private String errorMessage;
     private boolean loading;
 
+    /**
+     * Constructs a new GetDailyMacroSummaryViewModel with default values.
+     */
     public GetDailyMacroSummaryViewModel() {
-        // totalMacro is initialized to ZERO above
-        this.totalActivityCalories = 0.0;
-        this.dailyCalorieTarget = 2000.0;
         this.loading = false;
     }
 
+    /**
+     * Returns the observable macro property.
+     *
+     * @return the totalMacro property
+     */
     public ObjectProperty<Macro> totalMacroProperty() {
         return totalMacro;
     }
 
+    /**
+     * Returns the current total macro.
+     *
+     * @return the total macro object
+     */
     public Macro getTotalMacro() {
         return totalMacro.get();
     }
 
-    public void setTotalMacro(Macro totalMacro) {
-        this.totalMacro.set(totalMacro != null ? totalMacro : Macro.ZERO);
+    /**
+     * Sets the total macronutrient summary.
+     *
+     * @param newMacro the macro object, or null to reset to ZERO
+     */
+    public void setTotalMacro(Macro newMacro) {
+        if (newMacro == null) {
+            this.totalMacro.set(Macro.ZERO);
+        }
+        else {
+            this.totalMacro.set(newMacro);
+        }
     }
 
+    /**
+     * Returns the selected date.
+     *
+     * @return the date
+     */
     public LocalDate getDate() {
         return date;
     }
 
+    /**
+     * Sets the selected date.
+     *
+     * @param date the date to set
+     */
     public void setDate(LocalDate date) {
         this.date = date;
     }
 
+    /**
+     * Returns the current error message.
+     *
+     * @return the error message
+     */
     public String getErrorMessage() {
         return errorMessage;
     }
 
+    /**
+     * Sets the error message.
+     *
+     * @param errorMessage the message to set
+     */
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
+    /**
+     * Returns whether the ViewModel is currently loading.
+     *
+     * @return true if loading, false otherwise
+     */
     public boolean isLoading() {
         return loading;
     }
 
+    /**
+     * Sets the loading state.
+     *
+     * @param loading true to indicate loading
+     */
     public void setLoading(boolean loading) {
         this.loading = loading;
     }
 
-    public double getTotalCalories() { return getTotalMacro().calories(); }
-    public double getTotalProtein() { return getTotalMacro().proteinG(); }
-    public double getTotalFat() { return getTotalMacro().fatG(); }
-    public double getTotalCarbs() { return getTotalMacro().carbsG(); }
-
-    public double getTotalActivityCalories() { return totalActivityCalories; }
-    public void setTotalActivityCalories(double totalActivityCalories) {
-        this.totalActivityCalories = totalActivityCalories;
-    }
-
-    public double getDailyCalorieTarget() { return dailyCalorieTarget; }
-    public void setDailyCalorieTarget(double dailyCalorieTarget) {
-        this.dailyCalorieTarget = dailyCalorieTarget;
+    /**
+     * Returns total protein in grams.
+     *
+     * @return protein grams
+     */
+    public double getTotalProtein() {
+        return getTotalMacro().proteinG();
     }
 
     /**
-     * Calculate net remaining calories.
-     * Formula: target - consumed + burned
+     * Returns total fat in grams.
+     *
+     * @return fat grams
      */
-    public double getNetRemainingCalories() {
-        return dailyCalorieTarget - getTotalCalories() + totalActivityCalories;
+    public double getTotalFat() {
+        return getTotalMacro().fatG();
     }
 
+    /**
+     * Returns total carbohydrates in grams.
+     *
+     * @return carbs grams
+     */
+    public double getTotalCarbs() {
+        return getTotalMacro().carbsG();
+    }
+
+    /**
+     * Resets the ViewModel state.
+     */
     public void clear() {
         this.date = null;
         this.totalMacro.set(Macro.ZERO);
-        this.totalActivityCalories = 0.0;
-        this.dailyCalorieTarget = 2000.0;
         this.errorMessage = null;
         this.loading = false;
     }

@@ -5,10 +5,8 @@ import tutcsc.group1.healthz.use_case.food.logging.LogFoodIntakeOutputData;
 
 /**
  * Presenter for LogFoodIntake functionality.
- *
  * Implements LogFoodIntakeOutputBoundary from the Use Case layer.
  * Updates the LogFoodIntakeViewModel based on logging results.
- *
  * Clean Architecture compliance:
  * - Presenter (Interface Adapter layer) implements OutputBoundary (Use Case layer interface)
  * - Presenter converts OutputData to ViewModel format
@@ -30,7 +28,8 @@ public class LogFoodIntakePresenter implements LogFoodIntakeOutputBoundary {
             viewModel.setMessage(outputData.getMessage());
             viewModel.setFoodLog(outputData.getFoodLog());
             viewModel.setLoading(false);
-        } else {
+        }
+        else {
             // Error case: update ViewModel with error message
             viewModel.setSuccess(false);
             viewModel.setMessage(outputData.getMessage());

@@ -11,7 +11,10 @@ public class LogFoodIntakeOutputData {
     private final String message;
 
     /**
-     * Constructor for successful result.
+     * Constructor for a successful result.
+     *
+     * @param foodLog The logged food entry.
+     * @param message A descriptive success message.
      */
     public LogFoodIntakeOutputData(FoodLog foodLog, String message) {
         this.foodLog = foodLog;
@@ -20,7 +23,9 @@ public class LogFoodIntakeOutputData {
     }
 
     /**
-     * Constructor for error result.
+     * Constructor for an error result.
+     *
+     * @param errorMessage The error description.
      */
     public LogFoodIntakeOutputData(String errorMessage) {
         this.foodLog = null;

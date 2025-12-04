@@ -16,6 +16,15 @@ public class BasicFood {
     /**
      * Full constructor for creating a BasicFood entity.
      * All parsing and data extraction should be done before calling this constructor.
+     *
+     * @param foodId          the unique identifier for the food
+     * @param foodName        the name of the food
+     * @param foodDescription a description of the food
+     * @param foodType        the type/category of the food
+     * @param foodUrl         the URL reference for the food
+     * @param macro           the macronutrient profile
+     * @param servingSize     the size of the serving
+     * @param servingUnit     the unit of measurement for the serving
      */
     public BasicFood(long foodId, String foodName, String foodDescription,
                      String foodType, String foodUrl, Macro macro,
@@ -33,6 +42,11 @@ public class BasicFood {
     /**
      * Convenience constructor for creating a BasicFood with minimal information.
      * Sets foodId to 0, foodUrl to null, servingSize to 100.0, and servingUnit to "g".
+     *
+     * @param foodName        the name of the food
+     * @param foodDescription a description of the food
+     * @param foodType        the type/category of the food
+     * @param macro           the macronutrient profile
      */
     public BasicFood(String foodName, String foodDescription, String foodType, Macro macro) {
         this(0L, foodName, foodDescription, foodType, null, macro, 0, "g");

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 /**
  * Input Data for Get Food Log History use case.
- *
  * Contains the information needed to retrieve food logs for a specific date.
  */
 public class GetFoodLogHistoryInputData {
@@ -16,6 +15,7 @@ public class GetFoodLogHistoryInputData {
      *
      * @param userId The ID of the user
      * @param date The date to retrieve logs for
+     * @throws IllegalArgumentException if userId or date is null
      */
     public GetFoodLogHistoryInputData(String userId, LocalDate date) {
         if (userId == null || userId.trim().isEmpty()) {
