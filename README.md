@@ -7,6 +7,38 @@
 
 A comprehensive health and nutrition tracking application built with Clean Architecture principles, enabling users to discover recipes, track activities, and manage personalized health goals.
 
+## Home
+![Home Page](./src/main/resources/images/home_page.png)
+
+---
+
+## Onboarding / Sign Up Flow
+![Sign Up – Step 1](./src/main/resources/images/signup1.jpg)
+![Sign Up – Step 2](./src/main/resources/images/signup2.jpg)
+![Sign Up – Step 3](./src/main/resources/images/signup3.jpg)
+![Sign Up – Step 4](./src/main/resources/images/signup4.jpg)
+![Sign Up – Step 5](./src/main/resources/images/signup5.jpg)
+
+---
+
+## Search & Discovery
+![Search Filter](./src/main/resources/images/search_filter.png)
+![Search Results](./src/main/resources/images/search_food_name.png)
+
+---
+
+## Nutrition Information
+![Nutrition Lookup](./src/main/resources/images/nutrition_lookup.jpg)
+![Food Detail](./src/main/resources/images/food_detail.jpg)
+
+---
+
+## Tracking
+![Food Log](./src/main/resources/images/food_log.jpg)
+![Activity Tracker](./src/main/resources/images/activity_tracker.jpg)
+
+---
+
 ## 🌟 Features
 
 ### 🍳 Recipe Search & Discovery
