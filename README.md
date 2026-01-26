@@ -7,6 +7,8 @@
 
 A comprehensive health and nutrition tracking application built with Clean Architecture principles, enabling users to discover recipes, track activities, and manage personalized health goals.
 
+[Figma Design](https://www.figma.com/design/JOtTuUqmnF8bVy280Rmg1g/CSC207-HealthZ?node-id=0-1&t=rXSVEdYzSCTHGX1b-1)
+
 ## Home
 ![Home Page](./src/main/resources/images/home_page.png)
 
